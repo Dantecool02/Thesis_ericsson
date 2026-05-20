@@ -1,0 +1,476 @@
+[
+  {
+    "chapter": "Title page",
+    "page": 1,
+    "commented_text": "Efficiency-Accuracy",
+    "comment": "Performance?"
+  },
+  {
+    "chapter": "Contents",
+    "page": 15,
+    "commented_text": "1.2.2.1 Research question",
+    "comment": "inte ok att ha en ensam nivå 3 underrubrik, gör detta till 1.2.3 istället. man vill generellt inte ha nivåer med ensamma underrubriker"
+  },
+  {
+    "chapter": "Contents",
+    "page": 15,
+    "commented_text": "Problem",
+    "comment": "Research problem? Ganska konstigt namn på rubrik"
+  },
+  {
+    "chapter": "Contents",
+    "page": 15,
+    "commented_text": "1.5 Research Methodology . . . . . . . . . . . . . . . . . . . . . 4 1.6 Delimitations . . . . . . . . . . . . . . . . . . . . . . . . . . 5 1.7 Structure of the thesis",
+    "comment": "inkonsekvent med stor vs. liten bokstav i rubriker håll dig till en dvs. \n\nResearch methodology\n\neller\n\nStructure of the Thesis\n\nUpp till dig men tycker det första är mer proffsigt, dvs. endast stor bokstav i första ordet"
+  },
+  {
+    "chapter": "Contents",
+    "page": 15,
+    "commented_text": "3 Method",
+    "comment": "Vet att du bad om feedback för detta tidigare men du bör inte följa templaten exakt till varje rubrik här imo, det kan bli väldigt forcerat. Hellre att du hittar rubriker som är mer naturliga för ditt arbete.\n\nEx. sample size och target population här är helt irrelevanta - är ju typ om man gör enkätstudier etc."
+  },
+  {
+    "chapter": "List of acronyms and abbreviations",
+    "page": 25,
+    "commented_text": "List of acronyms and abbreviations",
+    "comment": "Snyggt att du använder dig av detta!"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 27,
+    "commented_text": "RAG",
+    "comment": "För alla förkortningar så bör det första gången stå Retrieval Augmented Generation (RAG) - tror det finns något kommando för detta för förkortningssystemet"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 27,
+    "commented_text": "the project.",
+    "comment": "this thesis project"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 27,
+    "commented_text": "the",
+    "comment": "the necessary background in\n\nbtw om du inte redan gör det bör du använda Grammarly, tror det ev. hade fångat exempelvis detta"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 27,
+    "commented_text": "isolated nearest-neighbor",
+    "comment": "vector similarity (onödigt att dumpa massa nya begrepp på läsaren - speciellt då detta avsnitt ska vara lite mer övergripande, detaljerna kan vara med i avsnitt 2)"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 28,
+    "commented_text": "waste computation",
+    "comment": "computational power? computations?"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 28,
+    "commented_text": "More broadly, the model-routing literature frames this as a cost–performance decision, where different execution paths carry different expected benefits and costs, and a router should select the path appropriate for the input [5].",
+    "comment": "tycker inte den här meningen säger särskilt mycket"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 28,
+    "commented_text": "general model routing.",
+    "comment": "vad är general model routing? förslagsvis skriv om tidigare mening så att det förklarar var model routing är"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 28,
+    "commented_text": "routing between different language models,",
+    "comment": "detta har vi inte tagit upp?"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 28,
+    "commented_text": "vector-retrieval baseline,",
+    "comment": "en hel del detaljer om vector retrieval, om meningar som denna ska vara med så bör du förklara vad det är med en mening eller två (så tidigt som möjligt i kapitlet)."
+  },
+  {
+    "chapter": "Introduction",
+    "page": 28,
+    "commented_text": "large decoder",
+    "comment": "a computationally expensive (onödigt att förvirra folk genom att droppa decoder etc.)"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 28,
+    "commented_text": "Prior work on encoder-only classification supports this design for narrow text-classification tasks [7].",
+    "comment": "känns som en väldigt plötslig referensdrop. ta bort denna meningen? flytta till kap 2 eller related work"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 28,
+    "commented_text": "path",
+    "comment": "path?"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 28,
+    "commented_text": "but does not answer whether this particular retrieval-mode choice can be predicted before retrieval, from the query text alone.",
+    "comment": "but does not quantify how well this particular..."
+  },
+  {
+    "chapter": "Introduction",
+    "page": 28,
+    "commented_text": "general model routing.",
+    "comment": "var exakt i ditt språk! vet inte hur mycket av detta som är llm:at men jätteviktigt att du är precis. en exempel mening skulle kunna vara \"For instance, model routing can thus on a question level decide whether to use a powerful language model or a less computationally expensive (but worse performing) smaller language model."
+  },
+  {
+    "chapter": "Introduction",
+    "page": 29,
+    "commented_text": "Original",
+    "comment": "Original?"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 29,
+    "commented_text": "engineering",
+    "comment": "ta bort"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 29,
+    "commented_text": "The engineering problem is to decide, for a given query, whether cheap vector retrieval suﬀices or whether graph-enhanced retrieval is required, and to make that decision before the expensive path runs.",
+    "comment": "The research problem is to for a given query decide whether..."
+  },
+  {
+    "chapter": "Introduction",
+    "page": 29,
+    "commented_text": "A ModernBERT-based query classifier serves this role instead of a large general-purpose LLM router, keeping the control layer itself cheap [7, 8].",
+    "comment": "Det här är en väldigt specifik implementerings del (dvs. del av lösningen)? Bör förmodligen ej vara i problem definition"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 29,
+    "commented_text": "predictable at all",
+    "comment": "ta bort"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 29,
+    "commented_text": "1.2.2 Scientific and engineering issues",
+    "comment": "förstår inte poängen med denna rubrik, känns som att den kan integreras i ovanstående"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 29,
+    "commented_text": "The engineering issue is that 2WikiMultihopQA provides answer super- vision but not routing labels directly. The project therefore constructs routing labels by executing both retrieval modes on 2WikiMultihopQA and comparing the outputs against benchmark answers using LLM-as-a-Judge, treating the judge as a fallible labeling instrument rather than unquestioned ground truth [9, 10].",
+    "comment": "jättespecifikt? ta bort eller formulera om och flytta till metod?"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 29,
+    "commented_text": "Within a fixed Hybrid RAG setting, how predictable is the distinction between queries for which vector retrieval is suﬀicient and queries for which graph- enhanced retrieval is required, based on the query text alone?",
+    "comment": "Skriv om och gör mer direkt\ntyp\nWithin a ... , how well can a neural language classifier model predict the optimal mode in terms of mätvärde1, mätvärde2 ... based on the query text alone?"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 29,
+    "commented_text": "Original",
+    "comment": "ksk rubriken bör vara Problem definition?"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 29,
+    "commented_text": "The engineering problem is to decide, for a given query, whether cheap vector retrieval suﬀices or whether graph-enhanced retrieval is required, and to make that decision before the expensive path runs.",
+    "comment": "alt. \"research\""
+  },
+  {
+    "chapter": "Introduction",
+    "page": 29,
+    "commented_text": "The engineering problem is to decide, for a given query, whether cheap vector retrieval suﬀices or whether graph-enhanced retrieval is required, and to make that decision before the expensive path runs.",
+    "comment": "den sista and to make... känns underförstådd, ta bort?"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 30,
+    "commented_text": "For Ericsson, internal technical documentation is large, fragmented, and absent from public language-model pretraining. High-quality grounded QA is useful, but indiscriminately applying the most expensive retrieval strategy creates unnecessary latency.",
+    "comment": "typ tredje gången jag läser den här meningen känns det som. se över strukturen i detta kaptiel så att du undviker allt för mycket repetition"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 30,
+    "commented_text": "the goal is narrower than it might seem.",
+    "comment": "ta bort"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 30,
+    "commented_text": "The project does not aim to prove that graph retrieval is universally superior, nor that LightRAG is the best possible RAG framework.",
+    "comment": "???? varför ta upp vad uppsatsen inte är, detta gör man isåfall i delimitations men tror detta bara bör tas bort"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 30,
+    "commented_text": "can serve as a useful control layer.",
+    "comment": "confidently route the question to the sufficient mode."
+  },
+  {
+    "chapter": "Introduction",
+    "page": 30,
+    "commented_text": "2WikiMultihopQA",
+    "comment": "vad är detta ens, detta måste tas upp tidigare"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 30,
+    "commented_text": "1.5 Research Methodology",
+    "comment": "Bara första meningen är egentligen research methodology, döp om eller ta bort avsnittet tror jag?"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 30,
+    "commented_text": "2WikiMultihopQA",
+    "comment": "exempelvis i bakgrunden?"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 31,
+    "commented_text": "1.6 Delimitations",
+    "comment": "Bra! Mycket tydligt imo!"
+  },
+  {
+    "chapter": "Introduction",
+    "page": 31,
+    "commented_text": "1.7 Structure of the thesis",
+    "comment": "OK!"
+  },
+  {
+    "chapter": "Background",
+    "page": 33,
+    "commented_text": "RAG connects a generative language model to external knowledge. The original formulation combines parametric knowledge in a neural language model with non-parametric memory retrieved from a document collection [11]. Later surveys describe RAG more broadly as a family of systems for grounding LLM outputs in external documents, databases, or other knowledge sources [1]. For industrial QA the motivation is straightforward: the relevant facts are often private, domain-specific, or updated after the language model was trained.",
+    "comment": "Du bör i detta stycke tidigtmotivera varför RAG behövs, dvs. varför behöver det connectas till external knowledge? Vad händer om man promptar en LLM med en privat, domain-specific fråga? Bör nämna att LLM:er hallucinerar och att detta får den att svara på ett korrekt sätt samt kan referera till källor"
+  },
+  {
+    "chapter": "Background",
+    "page": 33,
+    "commented_text": "𝑝(𝑎∣𝑞)",
+    "comment": "vad är theta och eta här? najs med en matematisk formel men se till att det är kristallklart och faktiskt hjälper läsaren att förstå"
+  },
+  {
+    "chapter": "Background",
+    "page": 33,
+    "commented_text": "Background",
+    "comment": "ha gärna fler figurer i bakgrunden! t.ex. kan du nog på något fint sätt få läsaren att visualisera skillnaden mellan vector och graph rag"
+  },
+  {
+    "chapter": "Background",
+    "page": 34,
+    "commented_text": "Retrieval is not a passive preprocessing step, it is a central part of the system’s behavior.",
+    "comment": "det här en en sjukt LLM:ig mening. Se till att du korrekturläser allt själv och skriver om konstiga meningar som detta..."
+  },
+  {
+    "chapter": "Background",
+    "page": 34,
+    "commented_text": "At Ericsson, internal technical documents cannot be assumed to exist in public model pretraining, so a RAG system is needed to ground answers in company-controlled knowledge.",
+    "comment": "jättebra mening, detta motiverar arbetet mycket väl - synd att den är gömd i bakgrunden, bör finnas något liknande i introduktionen tidigt"
+  },
+  {
+    "chapter": "Background",
+    "page": 34,
+    "commented_text": "Grounded QA is useful; indiscriminate use of expensive retrieval wastes resources.",
+    "comment": "LLM:igt......................."
+  },
+  {
+    "chapter": "Background",
+    "page": 34,
+    "commented_text": "space,",
+    "comment": "space using an embedding model"
+  },
+  {
+    "chapter": "Background",
+    "page": 34,
+    "commented_text": "by similarity.",
+    "comment": "bör specificera att det är similarity m.a.p. vektorns placering, dvs. avståndet i vektorrymden"
+  },
+  {
+    "chapter": "Background",
+    "page": 34,
+    "commented_text": "original",
+    "comment": "alltså den första RAG-modellen någonsin? förstår inte riktigt denna mening eller vad Wikipedia kommer ifrån. bör skriva om denna mening"
+  },
+  {
+    "chapter": "Background",
+    "page": 34,
+    "commented_text": "If the required evidence is split across documents, a nearest-neighbor chunk search may retrieve only part of the information needed to answer correctly.",
+    "comment": "Hade varit jättebra med exempel på en fråga som skulle behöva den har typen av behandling - försök konkretisera så ofta som möjligt mha exempel så att läsaren kan ha något att relatera till och knyta annars abstrakt info till"
+  },
+  {
+    "chapter": "Background",
+    "page": 34,
+    "commented_text": "Graph-enhanced RAG systems address this limitation by adding structured representations of entities, relations, or communities. GraphRAG, for example, builds graph-based structure over a corpus and uses that structure to support query-focused summarization and reasoning over private document collections [2]. LightRAG similarly aims to combine simple retrieval with graph-enhanced representations while exposing multiple retrieval modes [3]. These systems motivate the idea that richer retrieval can help when the query requires more than local passage similarity.",
+    "comment": "Kan vi göra det tydligare vad skillnaden mellan GraphRAG och LightRAG är?"
+  },
+  {
+    "chapter": "Background",
+    "page": 34,
+    "commented_text": "The cost side matters just as much.",
+    "comment": "However, graph-enhanced systems are significantly more computationally expensive than vector-based systems. \n\nnuvarande är väldigt informellt"
+  },
+  {
+    "chapter": "Background",
+    "page": 35,
+    "commented_text": "[2, 0].",
+    "comment": "referens 0???"
+  },
+  {
+    "chapter": "Background",
+    "page": 35,
+    "commented_text": "Graph retrieval is therefore not an unconditional replacement for vector retrieval, but an expensive capability that should ideally be used only when it is needed.",
+    "comment": "LLM:igt igen haha\n\nIt is not <thing>, but a <other thing>!"
+  },
+  {
+    "chapter": "Background",
+    "page": 35,
+    "commented_text": "Figure 2.1: The retrieval-mode routing problem studied in this thesis. The router should select a cheap vector-like path when it is suﬀicient and a graph- enhanced path when the query requires richer retrieval.",
+    "comment": "jättebra figur!! måste dock referas till i texten!!!"
+  },
+  {
+    "chapter": "Background",
+    "page": 35,
+    "commented_text": "challenges the assumption",
+    "comment": "lol tror ingen har denna assumption, låter återigen llmigt"
+  },
+  {
+    "chapter": "Background",
+    "page": 35,
+    "commented_text": "over directly",
+    "comment": "to our mode-based retrieval"
+  },
+  {
+    "chapter": "Background",
+    "page": 35,
+    "commented_text": "With the retrieval framework fixed and only two modes available, the scientific question becomes measurable.",
+    "comment": "?????????????????????????? korrekturläs mannen..."
+  },
+  {
+    "chapter": "Background",
+    "page": 35,
+    "commented_text": "Graph retrieval is therefore not an unconditional replacement for vector retrieval, but an expensive capability that should ideally be used only when it is needed.",
+    "comment": "helt ok att lämna denna som det är dock, låter ganska bra!"
+  },
+  {
+    "chapter": "Background",
+    "page": 35,
+    "commented_text": "With the retrieval framework fixed and only two modes available, the scientific question becomes measurable.",
+    "comment": "(dvs. ta bort detta, ai-slop)"
+  },
+  {
+    "chapter": "Background",
+    "page": 36,
+    "commented_text": "An important constraint is that the router is query-only. It sees the text of the query and predicts whether graph-enhanced retrieval is required before any retrieval runs.",
+    "comment": "snackar vi om vår implementation nu? det bör vi generellt inte göra i bakgrunden utan här lägger vi upp vad begreppen betyder"
+  },
+  {
+    "chapter": "Background",
+    "page": 36,
+    "commented_text": "Encoder-only language models are well suited to this kind of narrow classi- fication. BERT introduced deep bidirectional transformer representations for language understanding [0], and later comparisons between encoder-only and decoder-only architectures confirm that encoders remain attractive when the output is a class label and eﬀiciency matters [7]. ModernBERT is a recent encoder designed specifically for eﬀicient fine-tuning and inference [8].",
+    "comment": "Bör ha en separat rubrik eller underrubrik om language models och vad de är (samt din andra idf modell, måste finnas kontext så man kan förstå dessa!)"
+  },
+  {
+    "chapter": "Background",
+    "page": 36,
+    "commented_text": "2.4 Related Work",
+    "comment": "denna rubrik är lite väl tunn, beskriv artiklarna i djupare detalj. chansar på att du inte djupläst dem? gör så och sätt dem i ditt kontext här och lägg upp det så att det är uppenbart vad de har gjort men också vad som saknas. det mest relevanta här är ju egentligen routing-artiklarna eftersom det är det problemet du är ute efter, inte lika viktigt med graphrag/lightrag"
+  },
+  {
+    "chapter": "Method",
+    "page": 37,
+    "commented_text": "sampling, and target population.",
+    "comment": "???"
+  },
+  {
+    "chapter": "Method",
+    "page": 37,
+    "commented_text": "Step 1 Prepare 2WikiMultihopQA samples and preserve the mapping between questions, answers, context documents, and supporting facts.",
+    "comment": "De här 6 stegen bör utgöra en betydligt större del av bakgrunden än att bara droppas så här, kanske t.o.m. en underrubrik var? Återigen bör du förmodligen helt lägga om vilka rubriker du har i hela kapitel 3 så att det känns logiskt för dig (ex. i någon typ av kronologisk ordning)"
+  },
+  {
+    "chapter": "Method",
+    "page": 38,
+    "commented_text": "Figure 3.1: Planned research process for constructing and evaluating a learned retrieval-mode router.",
+    "comment": "Sjukt bra figur! Asbra att kunna se hela processen. Kan säkert göra den snyggare men inehållsmässigt så är detta suveränt"
+  },
+  {
+    "chapter": "Method",
+    "page": 39,
+    "commented_text": "in original sample order,",
+    "comment": "irrelevant?"
+  },
+  {
+    "chapter": "Method",
+    "page": 39,
+    "commented_text": "The evaluation will therefore report class-sensitive metrics such as AUPRC, precision, recall, F1, and balanced accuracy rather than relying only on overall accuracy [0].",
+    "comment": "BRA!"
+  },
+  {
+    "chapter": "Method",
+    "page": 39,
+    "commented_text": "3.3.3 Target Population",
+    "comment": "återigen, denna rubrik bör förmodligen ej vara med"
+  },
+  {
+    "chapter": "Method",
+    "page": 40,
+    "commented_text": "A retrieval output is treated as suﬀicient when the judged answer matches the benchmark answer for the query. A query is labeled naive_enough when Naive is insuﬀicient but Mix when Naive is suﬀicient, mix_required is suﬀicient, and when neither mode answers correctly. none_sufficient Examples where neither retrieval mode is suﬀicient are retained for analysis but excluded from the main binary router training set. This makes the binary label correspond to the minimum viable retrieval mode rather than general answer correctness, while still treating LLM-as-a-Judge as an imperfect evaluator [10].",
+    "comment": "Detta bör nämnas innan rubriken 3.3 iom att vi pratar om outputten av detta där?"
+  },
+  {
+    "chapter": "Method",
+    "page": 40,
+    "commented_text": "3.4.1 Test environment and model",
+    "comment": "ok innehåll"
+  },
+  {
+    "chapter": "Method",
+    "page": 40,
+    "commented_text": "A retrieval output is treated as suﬀicient when the judged answer matches the benchmark answer for the query. A query is labeled naive_enough when Naive is insuﬀicient but Mix when Naive is suﬀicient, mix_required is suﬀicient, and when neither mode answers correctly. none_sufficient Examples where neither retrieval mode is suﬀicient are retained for analysis but excluded from the main binary router training set. This makes the binary label correspond to the minimum viable retrieval mode rather than general answer correctness, while still treating LLM-as-a-Judge as an imperfect evaluator [10].",
+    "comment": "återigen, du bör kasta om hela det här kapitlet"
+  },
+  {
+    "chapter": "Method",
+    "page": 41,
+    "commented_text": "token usage is treated as supplementary metadata.",
+    "comment": "varför? vi bör nämna execution time och token usage som viktiga metrics tidigare också"
+  },
+  {
+    "chapter": "Method",
+    "page": 42,
+    "commented_text": "A practical risk is that API cost and throughput can limit how quickly retrieval outputs and judge labels are produced, so the pipeline supports incremental execution and completed outputs are reused when a run is interrupted or extended.",
+    "comment": "förstår ej denna mening"
+  },
+  {
+    "chapter": "Method",
+    "page": 43,
+    "commented_text": "held-out",
+    "comment": "bör definiera vad held-out är (du använder detta begreppet en del, antar att det motsvarar test-settet?)"
+  },
+  {
+    "chapter": "Method",
+    "page": 44,
+    "commented_text": "always using Mix.",
+    "comment": "in terms of generation speed?"
+  },
+  {
+    "chapter": "Method",
+    "page": 44,
+    "commented_text": "All dataset splits, model predictions, metric calculations, and policy comparisons are saved so that reported tables and figures can be regenerated from the same inputs.",
+    "comment": "imo är allt detta underförstått, ta bort"
+  },
+  {
+    "chapter": "Method",
+    "page": 44,
+    "commented_text": "The classifier evaluation compares the ModernBERT router with a TF-IDF logistic-regression baseline and a majority-class baseline,",
+    "comment": "måste ha mycket mer detaljer än detta på båda modellerna (vi tar inte ens upp vad TF-IDF baselinen är i hela kapitlet??)"
+  },
+  {
+    "chapter": "Method",
+    "page": 45,
+    "commented_text": "3.8 System documentation The primary documentation is a maintained project repository with a clear README covering the purpose of the prototype, the required environment, the main pipeline steps, reproduction instructions, and output organization. For a software-based thesis this is the most useful form because it stays close to the code and can be updated as the implementation changes. The report itself documents the system architecture, the data flow from benchmark sample to routing label, the evaluation procedure, and the main configuration choices. Detailed operational material can be placed in an appendix if needed. The guiding standard is traceability. Any reported result should be traceable back to the dataset split, retrieval outputs, judge labels, router predictions, and evaluation procedure that produced it. Since the prototype is an experimental research system rather than a deployed service, this matters more than a separate operations manual.",
+    "comment": "ta bort. ev. kan du ha med någonstans i arbetet att code is available at + github-länk"
+  }
+]

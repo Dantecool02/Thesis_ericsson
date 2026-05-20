@@ -1,0 +1,41 @@
+{
+"Author1": {"Last name": "Wesslund", "First name": "Dante", "Local User Id": "u1eah7gh", "E-mail": "dantew@kth.se", "organisation": {"L1": "School of Electrical Engineering and Computer Science" }},
+"Cycle": "2", "Course code": "DA233X", "Credits": "30.0",
+"Degree1": {"Educational program": "Master's Programme, Machine Learning, 120 credits","programcode": "TMAIM" ,"Degree": "Degree of Master of Science in Engineering" ,"subjectArea": "Computer Science and Engineering" },
+"Title": {"Main title": "Adaptive Hybrid RAG", "Subtitle": "Optimizing the Efficiency-Accuracy Trade-off via Learned Query Routing", "Language": "eng" }, "Alternative title": {"Main title": "Adaptiv hybrid-RAG", "Subtitle": "Optimering av avvägningen mellan effektivitet och noggrannhet med inlärd frågeroutning", "Language": "swe" },
+"Supervisor1": {"Last name": "Eriksson", "First name": "Arvid", "E-mail": "arveri@kth.se", "organisation": {"L1": "School of Electrical Engineering and Computer Science" }},
+"Supervisor2": {"Last name": "Zhang", "First name": "Peng", "Other organisation": "Ericsson" },
+"Examiner1": {"Last name": "Herman", "First name": "Pawel", "E-mail": "paherman@kth.se", "organisation": {"L1": "School of Electrical Engineering and Computer Science" }},
+"Cooperation": {"Partner_name": "Ericsson"},
+"National Subject Categories": "10210, 10208",
+"SDGs": "9, 12",
+"Other information": {"Year": "2026", "Number of pages": "0,0" },
+"Copyrightleft": "copyright",
+"Series": {\relax , },
+"Opponents": {"Name": ""},
+"Number of lang instances": "2",
+"abstracts": {
+"eng": €€€€
+"Large language models can generate fluent text but cannot reliably answer questions whose answer lies outside their training data, which has made retrieval-augmented generation a standard architecture for grounded question answering over private corpora. Vector retrieval is the cheap default, but it can fail when the answer requires combining information from several documents. Graph-enhanced retrieval methods such as GraphRAG and LightRAG address this limitation by constructing a graph of entities and relations over the corpus, at the price of being significantly more compute-intensive than vector retrieval. Applying graph-enhanced retrieval to every query is therefore wasteful when the cheap mode already suffices.
+
+This thesis studies whether the choice between LightRAG's cheap vector retrieval mode (\emph{Naive}) and its more expensive graph-enhanced mode (\emph{Mix}) can be predicted from the query text alone, using a lightweight encoder-only classifier as the routing layer rather than a large language-model controller. Routing labels are constructed on the 2WikiMultihopQA benchmark by executing both retrieval modes on each question and using an LLM-as-a-Judge protocol to compare each mode's answer against the gold answer. A ModernBERT-based router is compared against a TF-IDF logistic-regression baseline as well as static always-\emph{Naive}, always-\emph{Mix}, and majority-class reference policies, and is reported with 1\,000-iteration bootstrap confidence intervals across three training seeds.
+
+On the held-out test split, the ModernBERT router reaches an AUPRC of $0.732 \pm 0.005$ on the minority \texttt{mix\_required} class, a balanced accuracy of $0.756 \pm 0.008$, and an F1 of $0.645 \pm 0.002$, improving on a strong TF-IDF baseline (AUPRC 0.708, balanced accuracy 0.727, F1 0.605) while remaining within bootstrap intervals on AUROC. A per-question-type breakdown localizes most of the routing signal in the compositional question slice, where the encoder router improves AUPRC by roughly six points over the TF-IDF baseline. At its validation-selected operating point the router reduces mean routed execution time by roughly one third compared with always-\emph{Mix} while keeping non-trivial recall on the minority class. The result indicates that retrieval-mode selection in a Hybrid retrieval-augmented generation system can be made adaptive without moving the routing decision itself into an expensive model call."
+€€€€,
+"swe": €€€€
+"Stora språkmodeller kan generera flytande text men kan inte tillförlitligt besvara frågor vars svar ligger utanför deras träningsdata, vilket har gjort hämtningsförstärkt generering (retrieval-augmented generation, RAG) till en standardarkitektur för förankrad frågebesvaring över privata textkorpus. Vektorbaserad hämtning är det billiga standardvalet, men den kan misslyckas när svaret kräver att information från flera dokument kombineras. Grafbaserad RAG, såsom GraphRAG och LightRAG, hanterar detta genom att konstruera en graf över entiteter och relationer i korpusen, till priset av att vara avsevärt mer beräkningsintensiv än vektorhämtning. Att applicera grafbaserad hämtning på varje fråga är därmed slöseri när det billiga läget redan räcker.
+
+Detta examensarbete undersöker om valet mellan LightRAGs billiga vektorläge (\emph{Naive}) och dess dyrare grafförstärkta läge (\emph{Mix}) går att förutsäga enbart från frågetexten, med hjälp av en lättviktig encoder-baserad klassificerare som routinglager istället för en stor språkmodell. Routing-etiketter konstrueras på riktmärket 2WikiMultihopQA genom att köra båda hämtningslägena på varje fråga och använda ett LLM-som-domare-protokoll för att jämföra svaren mot rätt svar. En ModernBERT-baserad router jämförs mot en TF-IDF logistisk regression-baseline samt statiska alltid-\emph{Naive}-, alltid-\emph{Mix}- och majoritetsklasspolicies, med bootstrap-konfidensintervall över tre träningsfrön på testmängden.
+
+På den undanlagda testmängden uppnår ModernBERT-routern AUPRC $0{,}732 \pm 0{,}005$ på minoritetsklassen \texttt{mix\_required}, balanserad noggrannhet $0{,}756 \pm 0{,}008$ och F1 $0{,}645 \pm 0{,}002$, vilket är bättre än en stark TF-IDF-baseline (AUPRC $0{,}708$, balanserad noggrannhet $0{,}727$, F1 $0{,}605$) medan AUROC ligger inom bootstrap-intervallen. En uppdelning per frågetyp visar att större delen av routingsignalen ligger i den kompositionella frågetypen, där encoder-routern förbättrar AUPRC med ungefär sex procentenheter över TF-IDF-baselinen. Vid den validerings\-valda tröskeln minskar routern den genomsnittliga körningstiden med ungefär en tredjedel jämfört med alltid-\emph{Mix} samtidigt som den behåller icke-trivial täckning på minoritetsklassen. Resultatet visar att hämtningslägesval i ett hybrid-RAG-system kan göras adaptivt utan att routningsbeslutet i sig flyttas in i ytterligare en dyr modell."
+€€€€,
+},
+"keywords": {
+"eng": €€€€
+"Retrieval-Augmented Generation, Graph RAG, Query routing, LightRAG, 2WikiMultihopQA, LLM-as-a-Judge"
+€€€€,
+"swe": €€€€
+"Retrieval-Augmented Generation, Grafbaserad RAG, Frågeroutning, LightRAG, 2WikiMultihopQA, LLM-som-domare"
+€€€€,
+}
+}

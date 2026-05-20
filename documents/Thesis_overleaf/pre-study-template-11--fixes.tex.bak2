@@ -1,0 +1,1452 @@
+
+%%
+%% forked from https://gits-15.sys.kth.se/giampi/kthlatex kthlatex-0.2rc4 on 2020-02-13
+%% expanded upon by Gerald Q. Maguire Jr.
+%% This template has been adapted by Anders Sjögren to the University
+%% Engineering Program in Computer Science at KTH ICT. This adaptation was
+%% translation of English headings into Swedish with the addition of Swedish.
+%% Many thanks to others who have provided constructive input regarding the template.
+
+% Make it possible to conditionally depend on the TeX engine used
+\RequirePackage{ifxetex}
+\RequirePackage{ifluatex}
+\newif\ifxeorlua
+\ifxetex\xeorluatrue\fi
+\ifluatex\xeorluatrue\fi
+
+\ifxeorlua
+% The following is to ensure that the PDF uses a recent version rather than the typical PDF 1-5
+%  This same version of PDF should be set as an option for hyperef
+
+\RequirePackage{expl3}
+\RequirePackage{etoolbox}
+
+
+\ExplSyntaxOn
+%pdf_version_gset:n{2.0}
+%\pdf_version_gset:n{1.5}
+
+%% Alternatively, if you have a LaTeX newer than June 2022, you can use the following. However, then you have to remove the pdfversion from hyperef. It also breaks hyperxmp. So perhaps it is too early to try using it!
+%\DocumentMetadata
+%{
+%% testphase = phase-I, % tagging without paragraph tagging
+% testphase = phase-II % tagging with paragraph tagging and other new stuff.
+%pdfversion = 2.0 % pdfversion must be set here.
+%}
+
+% Optionally, you can set the uncompress flag to make it easier to examine the PDF
+%\pdf_uncompress: % to check the pdf
+\ExplSyntaxOff
+\else
+\RequirePackage{expl3}
+\ExplSyntaxOn
+%\pdf_version_gset:n{2.0}
+\pdf_version_gset:n{1.5}
+\ExplSyntaxOff
+\fi
+
+%% Define a pair of commands to disable and reenable specific packages - see https://tex.stackexchange.com/questions/39415/unload-a-latex-package
+\makeatletter
+\newcommand{\disablepackage}[2]{%
+  \disable@package@load{#1}{#2}%
+}
+\newcommand{\reenablepackage}[1]{%
+  \reenable@package@load{#1}%
+}
+\makeatother
+%% To avoid the warning: "Package transparent Warning: Loading aborted, because pdfTeX is not running in PDF mode."
+\ifxeorlua
+\disablepackage{transparent}{}
+\fi
+
+%% The template is designed to handle a thesis in English or Swedish
+\documentclass[english, bibtex]{kththesis}               % the bibliographic processor to use: biblatex or bibtex
+%nomenclature,           % add the option nomenclature
+%digitaloutput,          % optimize for digital output (this changes the color palette)
+%includeExtraAbstracts, % uncomment to allow abstracts in languages beyond English & Swedish
+
+
+% if pdflatex \usepackage[utf8]{inputenc}
+
+%% Conventions for todo notes:
+% Informational
+%% \generalExpl{Comments/directions/... in English}
+\newcommand*{\generalExpl}[1]{\todo[inline]{#1}}                
+
+% Language-specific information (currently in English or Swedish)
+\newcommand*{\engExpl}[1]{\todo[inline, backgroundcolor=kth-lightgreen40]{#1}} %% \engExpl{English descriptions about formatting}
+\newcommand*{\sweExpl}[1]{\todo[inline, backgroundcolor=kth-lightblue40]{#1}}  %% % \sweExpl{Text på svenska}
+
+% warnings
+\newcommand*{\warningExpl}[1]{\todo[inline, backgroundcolor=kth-lightred40]{#1}} %% \warningExpl{warnings}
+
+% Uncomment to hide specific comments, to hide **all** ToDos add `final` to
+% document class
+% \renewcommand\warningExpl[1]{}
+% \renewcommand\generalExpl[1]{}
+% \renewcommand\engExpl[1]{}
+% For example uncommenting the following line hides the Swedish language explanations
+% \renewcommand\sweExpl[1]{}
+
+
+% \usepackage[style=numeric,sorting=none,backend=biber]{biblatex}
+\iftoggle{biblatex}{
+    %\usepackage[language=english,bibstyle=authoryear,citestyle=authoryear, maxbibnames=99]{biblatex}
+    % Alternatively you might use another style, such as IEEE and use citestyle=numeric-comp  to put multiple citations in a single pair of square brackets
+    \usepackage[style=ieee,citestyle=numeric-comp]{biblatex}
+    \addbibresource{references.bib}
+    %\DeclareLanguageMapping{norsk}{norwegian}
+}{
+    % The line(s) below are for BibTeX
+    \bibliographystyle{bibstyle/myIEEEtran}
+    %\bibliographystyle{apalike}
+}
+
+
+% include a variety of packages that are useful
+\input{lib/includes}
+\input{lib/kthcolors}
+
+%\glsdisablehyper
+%\makeglossaries
+%\makenoidxglossaries
+%\input{lib/acronyms}                %load the acronyms file
+
+\input{lib/defines}  % load some additional definitions to make writing more consistent
+
+% The following is needed in conjunction with generating the DiVA data with abstracts and keywords using the scontents package and a modified listings environment
+%\usepackage{listings}   %  already included
+
+\makeatletter
+\let\verbatimsc\@undefined
+\let\endverbatimsc\@undefined
+\lst@AddToHook{Init}{\hyphenpenalty=50\relax}
+\makeatother
+
+
+\lstnewenvironment{verbatimsc}
+    {
+    \lstset{%
+        basicstyle=\ttfamily\tiny,
+        backgroundcolor=\color{white},
+        %basicstyle=\tiny,
+        %columns=fullflexible,
+        columns=[l]fixed,
+        language=[LaTeX]TeX,
+        %numbers=left,
+        %numberstyle=\tiny\color{gray},
+        keywordstyle=\color{red},
+        breaklines=true,                 % sets automatic line breaking
+        breakatwhitespace=true,          % sets if automatic breaks should only happen at whitespace
+        %keepspaces=false,
+        breakindent=0em,
+        %fancyvrb=true,
+        frame=none,                     % turn off any box
+        postbreak={}                    % turn off any hook arrow for continuation lines
+    }
+}{}
+
+%% Add some more keywords to bring out the structure more
+\lstdefinestyle{[LaTeX]TeX}{
+morekeywords={begin, todo, textbf, textit, texttt}
+}
+
+%% definition of new command for bytefield package
+\newcommand{\colorbitbox}[3]{%
+	\rlap{\bitbox{#2}{\color{#1}\rule{\width}{\height}}}%
+	\bitbox{#2}{#3}}
+
+
+
+
+% define a left aligned table cell that is ragged right
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+
+% Because backref is not compatible with biblatex
+\iftoggle{biblatex}{
+    \usepackage[plainpages=false]{hyperref}
+}{
+    \usepackage[
+    backref=page,
+    pagebackref=false,
+    plainpages=false,
+                            % PDF related options
+    unicode=true,           % Unicode encoded PDF strings
+    bookmarks=true,         % generate bookmarks in PDF files
+    bookmarksopen=false,    % Do not automatically open the bookmarks in the PDF reading program
+    pdfpagemode=UseNone,    % None, UseOutlines, UseThumbs, or FullScreen
+    destlabel,              % better naming of destinations
+    pdfencoding=auto,       % for unicode in 
+    ]{hyperref}
+   %% Removed use of backref package as it is incompatible with using attachfile
+}
+
+\usepackage[all]{hypcap}	%% prevents an issue related to hyperref and caption linking
+
+%% Acronyms
+% note that nonumberlist - removes the cross references to the pages where the acronym appears
+% note that super will set the descriptions text aligned
+% note that nomain - does not produce a main glossary, thus only acronyms will be in the glossary
+% note that nopostdot - will prevent there being a period at the end of each entry
+\usepackage[acronym, style=super, section=section, nonumberlist, nomain,
+nopostdot]{glossaries}
+\setlength{\glsdescwidth}{0.75\textwidth}
+\usepackage[]{glossaries-extra}
+\ifinswedish
+    %\usepackage{glossaries-swedish}
+\fi
+
+%% For use with the README_notes
+% Define a new type of glossary so that the acronyms defined in the README_notes document can be distinct from those in the thesis template
+% the tlg, tld, and dn will be the file extensions used for this glossary
+\newglossary[tlg]{readme}{tld}{tdn}{README acronyms}
+
+
+\input{lib/includes-after-hyperref}
+
+%\glsdisablehyper
+\makeglossaries
+%\makenoidxglossaries
+
+% The following bit of ugliness is because of the problems PDFLaTeX has handling a non-breaking hyphen
+% unless it is converted to UTF-8 encoding.
+% If you do not use such characters in your acronyms, this could be simplified to just include the acronyms file.
+\ifxeorlua
+\input{lib/acronyms}                %load the acronyms file
+\else
+\input{lib/acronyms-for-pdflatex}
+\fi
+
+% place holders for languages lacking .lbx files
+\input{lib/placeHolder_lbx_files}
+
+% insert the configuration information with author(s), examiner, supervisor(s), ...
+\input{custom_configuration}
+
+% read in the plain text definitions, if they exist
+\IfFileExists{custom_configuration_plaintext.tex}{\input{custom_configuration_plaintext.tex}}{}
+
+
+% Enter the English and Swedish keywords here for use in the PDF metadata _and_ for later use
+% following the respective abstract.
+% Try to put the words in the same order in both languages to facilitate matching. For example:
+\EnglishKeywords{Retrieval-Augmented Generation, Graph RAG, Query routing, LightRAG, 2WikiMultihopQA, LLM-as-a-Judge}
+\SwedishKeywords{Retrieval-Augmented Generation, grafbaserad RAG, frågeroutning, LightRAG, 2WikiMultihopQA, LLM-som-domare}
+
+%%%%% For the oral presentation
+%% Add this information once your examiner has scheduled your oral presentation
+\presentationDateAndTimeISO{}
+\presentationLanguage{}  % generally: eng or swe
+\presentationRoom{}
+\presentationAddress{}
+\presentationCity{Stockholm}
+
+% When there are multiple opponents, separate their names with '\&'
+% Opponent's information
+%\opponentsNames{A. B. Normal \& A. X. E. Normalè}
+\opponentsNames{}
+
+% It is possible to have a cover illustration
+%\coverIllustration{figures/image1.png}
+% if so, the author might acknowledge this or give the copyright information for it with:
+%\coverIllustrationCredit{A. B. Normal}
+
+% Once a thesis is approved by the examiner, add the TRITA number
+% The TRITA number for a thesis consists of two parts: a series (unique to each school)
+% and the number in the series, which is formatted as the year followed by a colon and
+% then a unique series number for the thesis - starting with 1 each year.
+%\trita{TRITA -- XXX-EX}{2026:0000}
+
+% Put the title, author, and keyword information into the PDF meta information
+\input{lib/pdf_related_includes}
+
+
+% the custom colors and the commands are defined in defines.tex    
+\hypersetup{
+	colorlinks  = true,
+	breaklinks  = true,
+	linkcolor   = \linkscolor,
+	urlcolor    = \urlscolor,
+	citecolor   = \refscolor,
+	anchorcolor = black
+}
+
+\ifnomenclature
+% The following lines make the page numbers and equations hyperlinks in the Nomenclature list
+\renewcommand*{\pagedeclaration}[1]{\unskip, \dotfill\hyperlink{page.#1}{page\nobreakspace#1}}
+% The following does not work correctly, as the name of the cross-reference is incorrect
+%\renewcommand*{\eqdeclaration}[1]{, see equation\nobreakspace(\hyperlink{equation.#1}{#1})}
+
+% You can also change the page heading for the nomenclature
+\renewcommand{\nomname}{List of Symbols Used}
+
+% You can even add customization text before the list
+\renewcommand{\nompreamble}{The following symbols will be later used within the body of the thesis.}
+\makenomenclature
+\fi
+
+%
+% The commands below are to configure JSON listings
+% 
+% format for JSON listings
+\colorlet{punct}{red!60!black}
+\definecolor{delim}{RGB}{20,105,176}
+\definecolor{numb}{RGB}{106, 109, 32}
+\definecolor{string}{RGB}{0, 0, 0}
+
+\lstdefinelanguage{json}{
+    numbers=none,
+    numberstyle=\small,
+    frame=none,
+    rulecolor=\color{black},
+    showspaces=false,
+    showtabs=false,
+    breaklines=true,
+    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{gray}\hookrightarrow\space}},
+    breakatwhitespace=true,
+    basicstyle=\ttfamily\small,
+    extendedchars=false,
+    upquote=true,
+    morestring=[b]",
+    stringstyle=\color{string},
+    literate=
+     *{0}{{{\color{numb}0}}}{1}
+      {1}{{{\color{numb}1}}}{1}
+      {2}{{{\color{numb}2}}}{1}
+      {3}{{{\color{numb}3}}}{1}
+      {4}{{{\color{numb}4}}}{1}
+      {5}{{{\color{numb}5}}}{1}
+      {6}{{{\color{numb}6}}}{1}
+      {7}{{{\color{numb}7}}}{1}
+      {8}{{{\color{numb}8}}}{1}
+      {9}{{{\color{numb}9}}}{1}
+      {:}{{{\color{punct}{:}}}}{1}
+      {,}{{{\color{punct}{,}}}}{1}
+      {\{}{{{\color{delim}{\{}}}}{1}
+      {\}}{{{\color{delim}{\}}}}}{1}
+      {[}{{{\color{delim}{[}}}}{1}
+      {]}{{{\color{delim}{]}}}}{1}
+      {’}{{\char13}}1,
+}
+
+\lstdefinelanguage{XML}
+{
+  basicstyle=\ttfamily\color{blue}\bfseries\small,
+  morestring=[b]",
+  morestring=[s]{>}{<},
+  morecomment=[s]{<?}{?>},
+  stringstyle=\color{black},
+  identifierstyle=\color{blue},
+  keywordstyle=\color{cyan},
+  breaklines=true,
+  postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{gray}\hookrightarrow\space}},
+  breakatwhitespace=true,
+  morekeywords={xmlns,version,type}% list your attributes here
+}
+
+% If you use both listing and lstlisting environments - the following makes them both use the same counter and the same formatting in the List of Listings
+\makeatletter
+\AtBeginDocument{\let\c@listing\c@lstlisting}
+\AtBeginDocument{\let\l@listing\l@lstlisting}
+\makeatother
+
+% Change the heading for the "List of Listings" to simply "Listings"
+\renewcommand{\lstlistlistingname}{Listings}
+
+% number each listing within the chapter
+\numberwithin{listing}{chapter}
+
+\usepackage{subfiles}
+
+% To have Creative Commons (CC) license and logos use the doclicense package
+% Note that the lowercase version of the license has to be used in the modifier
+% i.e., one of by, by-nc, by-nd, by-nc-nd, by-sa, by-nc-sa, zero.
+% For background see:
+% https://www.kb.se/samverkan-och-utveckling/oppen-tillgang-och-bibsamkonsortiet/open-access-and-bibsam-consortium/open-access/creative-commons-faq-for-researchers.html
+% https://kib.ki.se/en/publish-analyse/publish-your-article-open-access/open-licence-your-publication-cc
+\begin{comment}
+\usepackage[
+    type={CC},
+    %modifier={by-nc-nd},
+    %version={4.0},
+    modifier={by-nc},
+    imagemodifier={-eu-88x31},  % to get Euro symbol rather than Dollar sign
+    hyphenation={RaggedRight},
+    version={4.0},
+    %modifier={zero},
+    %version={1.0},
+]{doclicense}
+\end{comment}
+\listfiles
+
+\begin{document}
+%\selectlanguage{swedish}
+%
+\selectlanguage{english}
+
+%%% Set the numbering for the title page to a numbering series not in the preface or body
+\pagenumbering{alph}
+\kthcover
+\clearpage\thispagestyle{empty}\mbox{} % empty back of front cover
+\titlepage
+
+% If you do not want to have a bookinfo page, comment out the line saying \bookinfopage and add a \cleardoublepage
+% If you want a bookinfo page: you will get a copyright notice, unless you have used the doclicense package in which case you will get a Creative Commons license. To include the doclicense package, uncomment the configuration of this package above and configure it with your choice of license.
+\bookinfopage
+
+% Frontmatter includes the abstracts and table-of-contents
+\frontmatter
+\setcounter{page}{1}
+\begin{abstract}
+% The first abstract should be in the language of the thesis.
+% Abstract fungerar på svenska också.
+  \markboth{\abstractname}{}
+\begin{scontents}[store-env=lang]
+eng
+\end{scontents}
+%%% The contents of the abstract (between the begin and end of scontents) will be saved in LaTeX format
+%%% and output on the page(s) at the end of the thesis with information for DiVA facilitating the correct
+%%% entry of the meta data for your thesis.
+%%% These page(s) will be removed before the thesis is inserted into DiVA.
+\engExpl{All theses at KTH are \textbf{required} to have an abstract in both \textit{English} and \textit{Swedish}.}
+
+\engExpl{Exchange students may want to include one or more abstracts in the language(s) used in their home institutions to avoid the need to write another thesis when returning to their home institution.}
+
+\generalExpl{Keep in mind that most of your potential readers are only going to read your \texttt{title} and \texttt{abstract}. This is why the abstract must give them enough information so that they can decide if this document is relevant to them or not. Otherwise, the likely default choice is to ignore the rest of your document.\\
+An abstract should stand on its own, \ie no citations, cross-references to the body of the document, acronyms must be spelled out, \ldots .\\Write this early and revise as necessary. This will help keep you focused on what you are trying to do.}
+
+\begin{scontents}[store-env=abstracts,print-env=true]
+\generalExpl{Enter your abstract here!}
+An abstract is (typically) about 250 and 350 words (1/2 A4-page) with the following components:
+% key parts of the abstract
+\begin{itemize}
+  \item What is the topic area? (optional) Introduces the subject area for the project.
+  \item Short problem statement
+  \item Why was this problem worth a Bachelor's/Master’s thesis project? (\ie, why is the problem both significant and of a suitable degree of difficulty for a Bachelor's/Master’s thesis project? Why has no one else solved it yet?)
+  \item How did you solve the problem? What was your method/insight?
+  \item Results/Conclusions/Consequences/Impact: What are your key results/\linebreak[4]conclusions? What will others do based on your results? What can be done now that you have finished - that could not be done before your thesis project was completed?
+\end{itemize}
+
+\end{scontents}
+\engExpl{The following are some notes about what can be included (in terms of LaTeX) in your abstract.}
+Choice of typeface with \textbackslash textit, \textbackslash textbf, and \textbackslash texttt:  \textit{x}, \textbf{x}, and \texttt{x}.
+
+Text superscripts and subscripts with \textbackslash textsubscript and \textbackslash textsuperscript: A\textsubscript{x} and A\textsuperscript{x}.
+
+Some symbols that you might find useful are available, such as: \textbackslash textregistered, \textbackslash texttrademark, and \textbackslash textcopyright. For example, 
+the copyright symbol: \textbackslash textcopyright Maguire 2022 results in \textcopyright Maguire 2022. Additionally, here are some examples of text superscripts (which can be combined with some symbols): \textbackslash textsuperscript\{99m\}Tc, A\textbackslash textsuperscript\{*\}, A\textbackslash textsuperscript\{\textbackslash textregistered\}, and A\textbackslash texttrademark resulting in \textsuperscript{99m}Tc, A\textsuperscript{*}, A\textsuperscript{\textregistered}, and A\texttrademark. Two examples of subscripts are: H\textbackslash textsubscript\{2\}O and CO\textbackslash textsubscript\{2\} which produce  H\textsubscript{2}O and CO\textsubscript{2}.
+
+You can use simple environments with begin and end: itemize and enumerate and within these use instances of \textbackslash item.
+
+The following commands can be used: \textbackslash eg, \textbackslash Eg, \textbackslash ie, \textbackslash Ie, \textbackslash etc, and \textbackslash etal: \eg, \Eg, \ie, \Ie, \etc, and \etal.
+
+The following commands for numbering with lowercase Roman numerals: \textbackslash first, \textbackslash Second, \textbackslash third, \textbackslash fourth, \textbackslash fifth, \textbackslash sixth, \textbackslash seventh, and \textbackslash eighth: \first, \Second, \third, \fourth, \fifth, \sixth, \seventh, and \eighth. Note that the second case is set with a capital 'S' to avoid conflicts with the use of second as a unit in the \texttt{siunitx} package.
+
+Equations using \textbackslash( xxxx \textbackslash) or \textbackslash[ xxxx \textbackslash] can be used in the abstract. For example: \( (C_5O_2H_8)_n \)
+or \[ \int_{a}^{b} x^2 \,dx \]
+Note that you \textbf{cannot} use an equation between dollar signs.
+
+
+Even LaTeX comments can be handled by using a backslash to quote the percent symbol, for example: \% comment.
+Note that one can include percentages, such as: 51\% or \SI{51}{\percent}.
+
+\subsection*{Keywords}
+\begin{scontents}[store-env=keywords,print-env=true]
+% If you set the EnglishKeywords earlier, you can retrieve them with:
+\InsertKeywords{english}
+% If you did not set the EnglishKeywords earlier then simply enter the keywords here:
+% comma separate keywords, such as: Canvas Learning Management System, Docker containers, Performance tuning
+\end{scontents}
+\engExpl{\textbf{Choosing good keywords can help others to locate your paper, thesis, dissertation, \ldots and related work.}}
+Choose the most specific keyword from those used in your domain, see for example: the ACM Computing Classification System ({\small \url{https://www.acm.org/publications/computing-classification-system/how-to-use})},
+the IEEE Taxonomy ({\small \url{https://www.ieee.org/publications/services/thesaurus-thank-you.html}}), PhySH (Physics Subject Headings)\linebreak[4] ({\small \url{https://physh.aps.org/}}), \ldots or keyword selection tools such as the  National Library of Medicine's Medical Subject Headings (MeSH)  ({\small \url{https://www.nlm.nih.gov/mesh/authors.html}}) or Google's Keyword Tool ({\small \url{https://keywordtool.io/}})\\
+
+\textbf{Formatting the keywords}:
+\begin{itemize}
+  \item The first letter of a keyword should be set with a capital letter and proper names should be capitalized as usual.
+  \item Spell out acronyms and abbreviations.
+  \item Avoid "stop words" - as they generally carry little or no information.
+  \item List your keywords separated by commas (``,'').
+\end{itemize}    
+Since you should have both English and Swedish keywords - you might think of ordering the keywords in corresponding order (\ie, so that the n\textsuperscript{th} word in each list correspond) - this makes it easier to mechanically find matching keywords.
+\end{abstract}
+\cleardoublepage
+\babelpolyLangStart{swedish}
+\begin{abstract}
+    \markboth{\abstractname}{}
+\begin{scontents}[store-env=lang]
+swe
+\end{scontents}
+\warningExpl{Inside the following scontents environment, you cannot use a \textbackslash include{filename} as the command rather than the file contents will end up in the for DiVA information. Additionally, you should not use a straight double quote character in the abstracts or keywords, use two single quote characters instead.}
+\sweExpl{Alla avhandlingar vid KTH \textbf{måste ha} ett abstrakt på både \textit{engelska} och \textit{svenska}.\\
+Om du skriver din avhandling på svenska ska detta göras först (och placera det som det första abstraktet) - och du bör revidera det vid behov.}
+
+\engExpl{If you are writing your thesis in English, you can leave this until the draft version that goes to your opponent for the written opposition. In this way, you can provide the English and Swedish abstract/summary information that can be used in the announcement for your oral presentation.\\If you are writing your thesis in English, then this section can be a summary targeted at a more general reader. However, if you are writing your thesis in Swedish, then the reverse is true – your abstract should be for your target audience, while an English summary can be written targeted at a more general audience.\\This means that the English abstract and Swedish sammnfattning  
+or Swedish abstract and English summary need not be literal translations of each other.}
+
+\warningExpl{Do not use the \textbackslash glspl\{\} command in an abstract that is not in English, as my programs do not know how to generate plurals in other languages. Instead, you will need to spell these terms out or give the proper plural form. In fact, it is a good idea not to use the glossary commands at all in an abstract/summary in a language other than the language used in the \texttt{acronyms.tex file} - since the glossary package does \textbf{not} support use of more than one language.}
+
+\engExpl{The abstract in the language used for the thesis should be the first abstract, while the Summary/Sammanfattning in the other language can follow}
+\begin{scontents}[store-env=abstracts,print-env=true]
+\generalExpl{Enter your Swedish abstract or summary here!}
+
+\end{scontents}
+\subsection*{Nyckelord}
+\begin{scontents}[store-env=keywords,print-env=true]
+% SwedishKeywords were set earlier, hence we can use alternative 2
+\InsertKeywords{swedish}
+\end{scontents}
+\sweExpl{Nyckelord som beskriver innehållet i uppsatsen eller rapporten}
+\end{abstract}
+\cleardoublepage
+\babelpolyLangStop{swedish}
+% Note that the \cleardoublepage has to be before the 
+% \babelpolyLangStop - otherwise the running headers will not be in the correct language
+
+
+\engExpl{If you add the class option \texttt{includeExtraAbstracts} in your \texttt{docuemntclass}, then you can enable abstracts/summaries in a number of languages. Include those versions of abstracts that you need.}
+\generalExpl{If you are an exchange student, use the relevant language or languages for abstracts for your home university, as this will often avoid the need for writing another thesis for your home university.}
+\generalExpl{If you are fluent in other languages, feel free to add the abstracts in one or more of them.}
+
+\engExpl{The set of languages that can be easily included are based on those languages that were used in theses at KTH in the period 2018-2019, along with several others that have been used in theses since.}
+\warningExpl{Note that you may need to augment the set of languages used in \texttt{polyglossia} or
+\texttt{babel} (see the file \texttt{kththesis.cls}). If you add a new language, when specifying the language for the abstract, use the three-letter ISO 639-2 Code – specifically the "B" (bibliographic) variant of these codes (note that this is the same language code used in DiVA).}
+
+\cleardoublepage
+\iftoggle{includeExtraAbstracts}{
+% To include abstracts in languages other than English and Swedish:
+%  1. Ensure 'includeExtraAbstracts' is an active option in \documentclass.
+%  2. Uncomment the relevant '\input' line(s) below.
+%  3. Edit the content within the corresponding file in the 'Additional_Abstracts/' folder.
+% Include only the abstracts that you want and fill them in as appropriate
+% The template will automatically include the information that you entered
+%
+% Languages in frequency order based on DiVA data from 2025-05-28
+
+% --- Include Spanish abstract ---
+%\input{Additional_Abstracts/abstract_spanish}
+
+% --- Include French abstract ---
+%\input{Additional_Abstracts/abstract_french}
+
+% --- Include German abstract ---
+%\input{Additional_Abstracts/abstract_german}
+
+% --- Include Italian abstract ---
+%\input{Additional_Abstracts/abstract_italian}
+
+% --- Include Chinese abstract ---
+%\input{Additional_Abstracts/abstract_chinese}
+
+% --- Include Norwegian abstract ---
+%\input{Additional_Abstracts/abstract_norweign}
+
+% --- Include Catalan abstract ---
+%\input{Additional_Abstracts/abstract_catalan}
+
+% --- Include Finnish abstract ---
+%\input{Additional_Abstracts/abstract_finnish}
+
+% --- Include Portuguese abstract ---
+%\input{Additional_Abstracts/abstract_chinese}
+
+% --- Include Dutch abstract ---
+%\input{Additional_Abstracts/abstract_dutch}
+
+% --- Include Swahili / Kiswahili summary ---
+%\input{Additional_Abstracts/abstract_swahili}
+
+% --- Include Russian summary ---
+%\input{Additional_Abstracts/abstract_russian}
+
+% --- Include Polish abstract ---
+%\input{Additional_Abstracts/abstract_polishn}
+
+% --- Include Ukrainian abstract ---
+%\input{Additional_Abstracts/abstract_ukrainian}
+
+% --- Include Hindi abstract ---
+%\input{Additional_Abstracts/abstract_hindi}
+
+% --- Include Danish abstract ---
+%\input{Additional_Abstracts/abstract_danish}
+
+% --- Include Estonian abstract ---
+%\input{Additional_Abstracts/abstract_estonian}
+
+% --- Include Slovak abstract ---
+%\input{Additional_Abstracts/abstract_slovak}
+
+% --- Include Serbian abstract ---
+%\input{Additional_Abstracts/abstract_serbian}
+
+% --- Include Bosnian abstract ---
+%\input{Additional_Abstracts/abstract_bosnian}
+
+%% missing many languages
+
+
+
+}{} %% End the iiftoggle{includeExtraAbstracts}
+
+\section*{Acknowledgments}
+\markboth{Acknowledgments}{}
+\sweExpl{Författarnas tack}
+
+\engExpl{It is nice to acknowledge the people that have helped you. It is
+  also necessary to acknowledge any special permissions that you have gotten –
+  for example, getting permission from the copyright owner to reproduce a
+  figure. In this case, you should acknowledge them and this permission here
+  and in the figure’s caption. \\
+  Note: If you do \textbf{not} have the copyright owner’s permission, then you \textbf{cannot} use any copyrighted figures/tables/\ldots . Unless stated otherwise all figures/tables/\ldots are generally copyrighted.
+}
+\sweExpl{I detta kapitel kan du ev nämna något om
+  din bakgrund om det påverkar rapporten på något sätt. Har du t ex inte
+  möjlighet att skriva perfekt svenska för att du är nyanländ till landet kan
+  det vara på sin plats att nämna detta här. OBS, detta får dock inte vara en
+  ursäkt för att lämna in en rapport med undermåligt språk, undermålig grammatik och
+  stavning (t ex får fel som en automatisk stavningskontroll och
+  grammatikkontroll kan upptäcka inte förekomma)\\
+En dualism som måste hanteras i hela rapporten och projektet
+}
+
+\engExpl{To ensure academic transparency, you must report whether and how generative AI has been used in your examinable work.  This includes any new content, including, but not limited text, images, tables, or code.}
+\sweExpl{För att säkerställa akademisk transparens måste du rapportera om och hur generativ AI har använts i ditt examinerbara arbete. Detta inkluderar allt nytt innehåll, inklusive, men inte begränsat till, text, bilder, tabeller eller kod.}
+
+I would like to thank xxxx for having yyyy. Or in the case of two authors:\\
+We would like to thank xxxx for having yyyy.
+
+\acknowlegmentssignature
+
+\fancypagestyle{plain}{}
+\renewcommand{\chaptermark}[1]{ \markboth{#1}{}} 
+\tableofcontents
+  \markboth{\contentsname}{}
+
+\cleardoublepage
+\listoffigures
+
+\cleardoublepage
+
+\listoftables
+\cleardoublepage
+\lstlistoflistings\engExpl{If you have listings in your thesis. If not, then remove this preface page.}
+\cleardoublepage
+% Align the text expansion of the glossary entries
+\newglossarystyle{mylong}{%
+  \setglossarystyle{long}%
+  \renewenvironment{theglossary}%
+     {\begin{longtable}[l]{@{}p{\dimexpr 2cm-\tabcolsep}p{0.8\hsize}}}% <-- change the value here
+     {\end{longtable}}%
+ }
+%\glsaddall
+%\printglossaries[type=\acronymtype, title={List of acronyms}]
+\printglossary[style=mylong, type=\acronymtype, title={List of acronyms and abbreviations}]
+%\printglossary[type=\acronymtype, title={List of acronyms and abbreviations}]
+
+%\printnoidxglossary[style=mylong, title={List of acronyms and abbreviations}]
+\engExpl{The list of acronyms and abbreviations should be in alphabetical order based on the spelling of the acronym or abbreviation.
+}
+
+% if the nomenclature option was specified, then include the nomenclature page(s)
+\ifnomenclature
+    \cleardoublepage
+    % Output the nomenclature list
+    \printnomenclature
+\fi
+
+%% The following label is essential to know the page number of the last page of the preface
+%% It is used to compute the data for the "For DIVA" pages
+\label{pg:lastPageofPreface}
+% Mainmatter is where the actual contents of the thesis goes
+\mainmatter
+\glsresetall
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\selectlanguage{english}
+\chapter{Introduction}
+\label{ch:introduction}
+
+This chapter introduces the thesis topic and motivates the problem studied in this thesis project. Section~\ref{sec:background} gives the necessary background in retrieval-augmented question answering and the cost of different retrieval modes. Section~\ref{sec:problem} defines the problem and research question. Section~\ref{sec:purpose} states the purpose of the work, Section~\ref{sec:goals} presents the goals, Section~\ref{sec:researchMethodology} outlines the research methodology, Section~\ref{sec:delimitations} defines the delimitations, and Section~\ref{sec:structure} describes the structure of the rest of the thesis.
+
+\section{Background}
+\label{sec:background}
+
+\Gls{rag} has become a common architecture for grounding \gls{llm} outputs in external documents, especially when the relevant information is private, domain-specific, or changes after model pretraining \cite{gao2023ragsurvey}. A typical \gls{rag} system retrieves text passages from a corpus and conditions the generator on those passages, making the language model less dependent on memorized knowledge.
+
+The simplest retrieval layer is vector similarity search over document chunks. It is efficient and often effective for local factual questions, but it can struggle when a query depends on linking evidence across documents, resolving relationships between entities, or comparing distributed attributes. Multi-hop question answering benchmarks are designed around exactly this regime, in which the answer can only be derived by chaining several supporting facts together. 2WikiMultihopQA \cite{ho2020twowiki} is one such benchmark and is the dataset used in this thesis. Graph-enhanced \gls{rag} systems address this by introducing structured representations of entities, relations, or higher-level document organization. Recent systems such as GraphRAG and LightRAG show how graph-based structure can support retrieval beyond vector similarity chunks \cite{edge2024graphrag,lightrag2024}.
+
+Richer retrieval is not free, though. Graph construction, graph traversal, larger context assembly, and additional language-model calls can increase execution time. At Ericsson, where internal technical repositories are large and fragmented, graph-enhanced retrieval may improve answer quality for difficult questions, but applying it to every query can waste computational power on questions that cheaper vector retrieval already handles \cite{jeong2024adaptiverag,hu2024routerbench}.
+
+This tension motivates adaptive retrieval. Self-RAG and Adaptive-RAG argue that retrieval behavior should depend on the query rather than follow a fixed policy \cite{asai2023selfrag,jeong2024adaptiverag}. A closely related problem is \emph{model routing}, where a router decides for each query whether a powerful but computationally expensive language model is needed or whether a cheaper, smaller one would be sufficient \cite{hu2024routerbench}.
+
+The question studied here is narrower than general model routing. Instead of routing between different language models, the project routes between retrieval modes inside a fixed Hybrid \gls{rag} setting. The low-cost path is LightRAG's \emph{Naive} mode, which uses only vector retrieval, and the high-cost path is LightRAG's \emph{Mix} mode, which combines vector retrieval with graph-enhanced retrieval. The routing layer is intentionally lightweight, because if the router itself requires a computationally expensive model, much of the intended efficiency gain is lost.
+
+\section{Problem}
+\label{sec:problem}
+
+Hybrid \gls{rag} systems expose a practical tension between retrieval quality and retrieval cost. Vector retrieval suffices for many questions, while graph-enhanced retrieval helps when the answer depends on relationships or evidence distributed across several documents. A static policy cannot exploit this distinction, because always using \emph{Naive} risks missing cases where graph-enhanced retrieval is needed, while always using \emph{Mix} wastes computation on easier queries.
+
+The project focuses on that decision point. In LightRAG, the choice is operationalized as \emph{Naive} retrieval versus \emph{Mix} retrieval. Prior work motivates both graph-based \gls{rag} and adaptive retrieval \cite{edge2024graphrag,lightrag2024,asai2023selfrag,jeong2024adaptiverag}, but does not quantify how well this particular retrieval-mode choice can be predicted before retrieval, from the query text alone.
+
+\subsection{Problem definition}
+\label{sec:problemDefinition}
+
+The practical motivation comes from industrial \gls{qa} over large technical repositories. Ericsson works with internal documentation where relevant information is fragmented across documents and absent from public language-model pretraining. \Gls{rag} is needed for grounding, but graph-enhanced retrieval should ideally be reserved for queries where vector retrieval is insufficient.
+
+The research problem is to decide, for a given query, whether cheap vector retrieval suffices or whether graph-enhanced retrieval is required.
+
+The scientific issue is whether retrieval need is predictable from the query alone. If the distinction between vector-sufficient and graph-required queries is mainly determined by corpus state after retrieval, a query-only router should not work. If the distinction is partly reflected in how the question is phrased, a supervised classifier may learn a useful decision boundary.
+
+\subsection{Research question}
+\label{sec:researchQuestion}
+
+Within a fixed Hybrid \gls{rag} setting, how predictable is the distinction between queries for which vector retrieval is sufficient and queries for which graph-enhanced retrieval is required, based on the query text alone?
+
+\section{Purpose}
+\label{sec:purpose}
+The purpose is to investigate whether retrieval-mode selection in a Hybrid \gls{rag} system can be made adaptive without moving the routing decision into another expensive model call. Graph-enhanced retrieval should be used when it is needed, but avoided when vector retrieval already suffices.
+
+The question is whether the need for graph-enhanced retrieval is predictable enough from the query text that a lightweight classifier can confidently route each query to the sufficient mode. The contribution is therefore empirical, asking whether the vector-sufficient versus graph-required distinction can be learned in a fixed experimental setting.
+
+
+
+\section{Goals}
+\label{sec:goals}
+The main goal is to design and evaluate a learned routing layer that predicts whether a query should use LightRAG's \emph{Naive} or \emph{Mix} retrieval mode. Four concrete objectives structure the work.
+
+\begin{enumerate}
+\item Implement a reproducible pipeline for preparing 2WikiMultihopQA samples, indexing them in LightRAG, and executing both \emph{Naive} and \emph{Mix} retrieval modes.
+\item Construct a supervised routing dataset by labeling each query according to the minimum viable retrieval mode, using \gls{llmjudge} to compare retrieval outputs against benchmark answers.
+\item Train lightweight query-only routers, including a ModernBERT-based classifier and a classical \gls{tfidf} logistic-regression baseline, to predict whether graph-enhanced retrieval is required.
+\item Evaluate the routers both as held-out classifiers using metrics such as \gls{auprc} and as thresholded routing policies through offline simulation against majority-class, always-\emph{Naive}, and always-\emph{Mix} baselines.
+\end{enumerate}
+
+\section{Research Methodology}
+\label{sec:researchMethodology}
+
+This thesis is a quantitative empirical study on a public multi-hop question-answering benchmark, as is common for evaluating retrieval and routing methods. The predictability of retrieval-mode selection from the query text will be evaluated by training query-only routers on judged routing labels and obtaining classification metrics on held-out data, such as \gls{auprc}, balanced accuracy, F1, precision, and recall on the minority class. The same routers will additionally be evaluated as thresholded routing policies and compared against static baseline policies along a cost metric. Bootstrap confidence intervals will be used to estimate the uncertainty of these metrics. Comparisons between the learned routers and the static baselines will then be used to answer the research question.
+
+\section{Delimitations}
+\label{sec:delimitations}
+
+The scope is deliberately limited to query-only retrieval-mode routing. The router receives the query text as input and does not inspect retrieved documents, intermediate graph state, answer drafts, or model uncertainty after generation. This makes the routing problem cheaper and cleaner, but it means the project does not evaluate routers that adapt after retrieval has already begun.
+
+The retrieval setting is LightRAG with two modes: \emph{Naive} and \emph{Mix}. These operationalize the broader vector-versus-graph distinction, but results should not be assumed to transfer automatically to every Hybrid \gls{rag} framework.
+
+The primary benchmark is 2WikiMultihopQA \cite{ho2020twowiki}, chosen because it is public, provides supporting evidence, and makes the experiment reproducible without depending on confidential data. Ericsson documentation motivates the industrial problem but is not the core benchmark.
+
+Routing labels come from \gls{llmjudge} and are treated as judged supervision, not absolute ground truth. Cases where neither retrieval mode produces a correct answer are excluded from router training.
+
+\section{Structure of the thesis}
+\label{sec:structure}
+
+Chapter~\ref{ch:background} presents the technical and scientific background on \gls{rag}, graph-enhanced retrieval, adaptive retrieval, query routing, ModernBERT, and related work. Chapter~\ref{ch:methods} describes the experimental method, including data preparation, LightRAG execution, label generation, model training, and evaluation design. Chapter~\ref{ch:implementation} describes the implementation, presents the held-out classification and cost--performance experiments, reports the results, and discusses what they imply about the predictability of retrieval-mode selection. Chapter~\ref{ch:conclusionsAndFutureWork} concludes with answers to the research question and suggestions for future work.
+
+\cleardoublepage
+\chapter{Background}
+\label{ch:background}
+This chapter provides the theoretical and related-work basis for the thesis. Section~\ref{sec:backgroundRag} introduces \gls{rag}. Section~\ref{sec:backgroundHybridGraph} explains the distinction between vector retrieval and graph-enhanced retrieval. Section~\ref{sec:backgroundAdaptiveRetrieval} describes adaptive retrieval and query routing. Section~\ref{sec:relatedWork} positions the thesis in relation to previous work.
+
+\section{Retrieval-Augmented Generation}
+\label{sec:backgroundRag}
+
+\Gls{rag} connects a generative language model to external knowledge. The original formulation combines parametric knowledge in a neural language model with non-parametric memory retrieved from a document collection \cite{lewis2020rag}. Later surveys describe \gls{rag} more broadly as a family of systems for grounding \gls{llm} outputs in external documents, databases, or other knowledge sources \cite{gao2023ragsurvey}. For industrial \gls{qa} the motivation is straightforward: the relevant facts are often private, domain-specific, or updated after the language model was trained.
+
+A simplified \gls{rag} process can be written as a retrieval-conditional generation problem, following the retrieval-marginalization view in the original formulation but using notation adapted for this project \cite{lewis2020rag}. Given a query \(q\), a retriever selects a set of documents or chunks \(\mathcal{D}_k(q)\), and a generator produces an answer \(a\) conditioned on the query and the retrieved context.
+
+\begin{equation}
+\label{eq:ragGeneration}
+p(a \mid q) =
+\sum_{d \in \mathcal{D}_k(q)}
+p_\theta(a \mid q,d)\,p_\eta(d \mid q).
+\end{equation}
+
+Equation~\ref{eq:ragGeneration} is not meant as an implementation claim about every modern \gls{rag} system, but it captures the dependency that matters here. The generated answer depends on which evidence the retrieval system exposes to the language model. Retrieval is not a passive preprocessing step, it is a central part of the system's behavior.
+
+At Ericsson, internal technical documents cannot be assumed to exist in public model pretraining, so a \gls{rag} system is needed to ground answers in company-controlled knowledge. But the retrieval method must still decide how much structure and computation to use for each query. Grounded \gls{qa} is useful; indiscriminate use of expensive retrieval wastes resources.
+
+\section{Vector Retrieval, Hybrid Retrieval, and Graph-Based RAG}
+\label{sec:backgroundHybridGraph}
+
+Most practical \gls{rag} systems start with vector retrieval. Documents are split into chunks, each chunk is embedded into a vector space, and queries are matched to chunks by similarity. The original \gls{rag} model indexes chunked Wikipedia passages and retrieves top-\(k\) passages through maximum inner-product search \cite{lewis2020rag}. Dense Passage Retrieval takes a similar approach, representing questions and passages with dense encoders and retrieving by vector similarity for open-domain \gls{qa} \cite{karpukhin2020dpr}. Vector retrieval is therefore a natural low-cost baseline.
+
+The weakness of pure vector retrieval is that similarity to individual chunks does not always capture relational structure. Multi-hop \gls{qa} benchmarks are built around questions whose answers require multiple reasoning steps or supporting evidence from more than one location \cite{yang2018hotpotqa,ho2020twowiki,trivedi2022musique}. If the required evidence is split across documents, a nearest-neighbor chunk search may retrieve only part of the information needed to answer correctly.
+
+Graph-enhanced \gls{rag} systems address this limitation by adding structured representations of entities, relations, or communities. GraphRAG, for example, builds graph-based structure over a corpus and uses that structure to support query-focused summarization and reasoning over private document collections \cite{edge2024graphrag}. LightRAG similarly aims to combine simple retrieval with graph-enhanced representations while exposing multiple retrieval modes \cite{lightrag2024}. These systems motivate the idea that richer retrieval can help when the query requires more than local passage similarity.
+
+The cost side matters just as much. Graph-enhanced systems require additional work for graph construction, traversal, context assembly, and language-model calls. The GraphRAG pipeline, for example, uses an \gls{llm} to build graph structure and generate community-level summaries, and Microsoft's own cost discussion identifies repeated \gls{llm} calls during graph construction as a major cost driver \cite{edge2024graphrag,microsoft2024graphragcosts}. Graph retrieval is therefore not an unconditional replacement for vector retrieval, but an expensive capability that should ideally be used only when it is needed.
+
+\begin{figure}[!ht]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+    every node/.style={font=\small},
+    box/.style={draw, rounded corners, align=center, minimum width=2.8cm, minimum height=0.95cm},
+    pathbox/.style={draw, rounded corners, align=center, minimum width=3.6cm, minimum height=1.15cm},
+    decision/.style={draw, diamond, aspect=1.8, align=center, inner sep=2pt, minimum width=2.2cm},
+    line/.style={->, thick}
+]
+    \node[box] (query) at (0,0) {User query\\\(q\)};
+    \node[decision] (router) at (3.1,0) {Query\\router};
+    \node[pathbox] (naive) at (6.6,1.35) {\textbf{Vector sufficient}\\Low-cost path\\LightRAG \emph{Naive}};
+    \node[pathbox] (mix) at (6.6,-1.35) {\textbf{Graph required}\\High-cost path\\LightRAG \emph{Mix}};
+    \node[box] (answer) at (10.5,0) {Generated\\answer};
+
+    \draw[line] (query) -- (router);
+    \draw[line] (router) -- (naive.west);
+    \draw[line] (router) -- (mix.west);
+    \draw[line] (naive) -- (answer);
+    \draw[line] (mix) -- (answer);
+\end{tikzpicture}%
+}
+\caption{The retrieval-mode routing problem studied in this thesis. The router should select a cheap vector-like path when it is sufficient and a graph-enhanced path when the query requires richer retrieval.}
+\label{fig:retrievalModeRouting}
+\end{figure}
+
+\section{Adaptive Retrieval and Query Routing}
+\label{sec:backgroundAdaptiveRetrieval}
+
+Adaptive retrieval challenges the assumption that the same retrieval strategy should be used for every input. Self-RAG learns to retrieve, generate, and critique through self-reflection, making retrieval behavior conditional rather than fixed \cite{asai2023selfrag}. Adaptive-RAG studies how question complexity can guide the selection of retrieval-augmented reasoning strategies \cite{jeong2024adaptiverag}. Both support the premise that retrieval should depend on the query.
+
+The routing literature frames this more explicitly as a cost--performance problem. RouterBench studies multi-model routing, where different language models have different expected cost and quality characteristics \cite{hu2024routerbench}. Although RouterBench concerns model routing rather than retrieval-mode routing, the abstraction carries over directly because a router observes an input and chooses among execution paths before the expensive computation happens.
+
+The move made here is to adapt routing from the model layer to the retrieval layer. Instead of asking which language model should answer, the project asks which retrieval mode should supply evidence. The cost-aware intuition is the same as in RouterBench and the query-dependent motivation the same as in Adaptive-RAG, but the action space is narrower \cite{hu2024routerbench,jeong2024adaptiverag}. With the retrieval framework fixed and only two modes available, the scientific question becomes measurable.
+
+An important constraint is that the router is query-only. It sees the text of the query and predicts whether graph-enhanced retrieval is required before any retrieval runs. This is consistent with adaptive-retrieval work that predicts query complexity before selecting a strategy \cite{jeong2024adaptiverag,hu2024routerbench}. It makes the task harder than routing with access to retrieved documents or generated answers, but it preserves the potential efficiency gain. A router that needs to run an expensive retrieval step before deciding would undermine its role as a cheap control layer.
+
+Encoder-only language models are well suited to this kind of narrow classification. \Gls{bert} introduced deep bidirectional transformer representations for language understanding \cite{devlin2019bert}, and later comparisons between encoder-only and decoder-only architectures confirm that encoders remain attractive when the output is a class label and efficiency matters \cite{benayas2024encoder}. ModernBERT is a recent encoder designed specifically for efficient fine-tuning and inference \cite{warner2024modernbert}.
+
+The plan is therefore to compare a ModernBERT-based router with a simpler \gls{tfidf} logistic-regression baseline. The baseline matters because the routing distinction may be partly lexical, since some question forms may simply correlate with graph need. ModernBERT tests whether pretrained semantic representations improve beyond those surface patterns.
+
+\section{Related Work}
+\label{sec:relatedWork}
+
+GraphRAG and LightRAG demonstrate that graph-enhanced retrieval can add structure beyond local vector similarity \cite{edge2024graphrag,lightrag2024}. They motivate the high-cost retrieval path, but neither answers the question of \emph{when} graph-enhanced retrieval should be selected over a cheaper vector-based path.
+
+Self-RAG and Adaptive-RAG show that retrieval behavior can be conditional rather than fixed \cite{asai2023selfrag,jeong2024adaptiverag}. The present work follows that idea but applies it to a smaller action space: two retrieval modes in one Hybrid \gls{rag} framework rather than a general strategy selector.
+
+RouterBench frames routing as a systems problem where the decision should account for both expected quality and cost \cite{hu2024routerbench}, and recent encoder-only classification work supports using compact bidirectional models for efficient text classification \cite{devlin2019bert,benayas2024encoder,warner2024modernbert}. What is missing from this literature is a focused study of LightRAG's \emph{Naive}-versus-\emph{Mix} choice as a supervised, query-only routing problem. That is the gap the project addresses.
+
+\cleardoublepage
+\chapter{Methods}
+\label{ch:methods}
+
+This chapter describes the data, the routing pipeline, the router models, and the evaluation procedure used to study query-only retrieval-mode routing. Section~\ref{sec:methodData} describes the benchmark data and how it is preprocessed and indexed. Section~\ref{sec:methodPipeline} describes the routing-label pipeline that turns raw benchmark questions into a supervised routing dataset. Section~\ref{sec:methodDataset} describes the resulting binary routing dataset and the held-out splits used for evaluation. Section~\ref{sec:methodRouters} describes the two router models, a ModernBERT-based classifier and a \gls{tfidf} logistic-regression baseline. Section~\ref{sec:methodEvaluation} describes the held-out classification metrics and the offline routing-policy evaluation.
+
+\section{Data}
+\label{sec:methodData}
+
+\subsection{2WikiMultihopQA}
+\label{sec:method2wiki}
+
+The benchmark used in this thesis is 2WikiMultihopQA \cite{ho2020twowiki}, a public multi-hop question answering dataset constructed from Wikipedia. Each sample contains a question, a gold answer, a set of context documents drawn from Wikipedia, and a set of supporting facts that mark which sentences in the context are required to derive the answer. Questions are annotated with one of four types that describe the reasoning structure. These types are \texttt{comparison}, \texttt{compositional}, \texttt{bridge\_comparison}, and \texttt{inference}.
+
+2WikiMultihopQA is chosen for three reasons. It is public, which makes the experiment reproducible. It is multi-hop by construction, so the answer cannot in general be read off a single passage, which is the setting in which graph-enhanced retrieval is expected to differ most from vector retrieval. And the supporting-fact annotations make it possible to relate the routing decision back to which documents the answer actually depends on. Other multi-hop benchmarks such as HotpotQA and MuSiQue \cite{yang2018hotpotqa,trivedi2022musique} share this motivation. 2WikiMultihopQA was preferred because its context documents are short and well-suited to indexing in LightRAG without further chunking heuristics.
+
+\subsection{Preprocessing and indexing}
+\label{sec:methodPreprocessing}
+
+The benchmark splits are processed in their original sample order. Each sample is converted into a structured record containing a stable sample identifier, the question, the gold answer, the question type, the context documents, and the supporting facts. The mapping between sample identifier and these fields is preserved throughout the pipeline so that every later artifact (retrieval output, judge label, router prediction) can be traced back to the original sample.
+
+Context documents from these structured records are then inserted into LightRAG \cite{lightrag2024}, which during indexing builds both a vector index over chunked text and an entity-relation graph derived from the same chunks. The indexing pass is incremental and idempotent. Previously inserted documents are recognized and skipped, which makes it possible to resume an interrupted run without rebuilding the index from scratch. Once the index has been built, it is treated as a fixed part of the experimental setup. Stochasticity in graph construction (entity extraction, relation extraction, summarization) is therefore baked into the index and does not introduce additional variance during the dual-mode retrieval experiments.
+
+\section{Routing-label pipeline}
+\label{sec:methodPipeline}
+
+Figure~\ref{fig:methodPipeline} shows the end-to-end pipeline. Starting from 2WikiMultihopQA samples, the corpus is indexed in LightRAG, every queryable sample is executed with both \emph{Naive} and \emph{Mix} retrieval, an \gls{llmjudge} assigns a routing class to each query, and the resulting binary labels are used to train and evaluate query-only routers.
+
+\begin{figure}[!ht]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+    node distance=1.0cm and 1.0cm,
+    every node/.style={font=\small},
+    box/.style={draw, rounded corners, align=center, minimum width=3.0cm, minimum height=1.0cm},
+    line/.style={->, thick}
+]
+    \node[box] (data) {2WikiMultihopQA\\samples};
+    \node[box, right=of data] (index) {LightRAG\\index};
+    \node[box, right=of index] (query) {Run \emph{Naive}\\and \emph{Mix}};
+    \node[box, right=of query] (judge) {LLM-as-a-Judge\\routing label};
+    \node[box, below=of judge] (dataset) {Binary router\\dataset};
+    \node[box, left=of dataset] (train) {Train query-only\\routers};
+    \node[box, left=of train] (eval) {Held-out and\\policy evaluation};
+
+    \draw[line] (data) -- (index);
+    \draw[line] (index) -- (query);
+    \draw[line] (query) -- (judge);
+    \draw[line] (judge) -- (dataset);
+    \draw[line] (dataset) -- (train);
+    \draw[line] (train) -- (eval);
+\end{tikzpicture}%
+}
+\caption{End-to-end pipeline from 2WikiMultihopQA samples to router evaluation. Each step writes its output to disk so the remaining steps can be re-run without repeating expensive earlier steps.}
+\label{fig:methodPipeline}
+\end{figure}
+
+\subsection{Dual-mode retrieval}
+\label{sec:methodDualMode}
+
+For every benchmark question \(q_i\), the indexed corpus is queried with both LightRAG retrieval modes, giving
+\begin{equation}
+\label{eq:dualModeOutputs}
+r_i^{N} = R_N(q_i),
+\qquad
+r_i^{M} = R_M(q_i),
+\end{equation}
+where \(R_N\) denotes LightRAG \emph{Naive} (the cheap vector path) and \(R_M\) denotes LightRAG \emph{Mix} (the graph-enhanced path). The recorded artifacts for each query are the two generated answers \(r_i^N\) and \(r_i^M\), the measured execution time \(t_i^N\) and \(t_i^M\) for each mode, and the number of context documents and supporting facts associated with the sample.
+
+Execution time is measured per query and used as the cost metric throughout the thesis. Token usage would be a natural alternative cost dimension, but LightRAG's modes invoke an internal language model several times during retrieval (for example for graph traversal and context assembly) and these internal calls were not instrumented in this work. The choice of execution time as the cost metric is discussed further in Section~\ref{sec:methodEvaluation} and revisited in Chapter~\ref{ch:conclusionsAndFutureWork}.
+
+\subsection{LLM-as-a-Judge labeling}
+\label{sec:methodJudge}
+
+The 2WikiMultihopQA benchmark provides gold answers but does not provide routing labels. Routing labels are constructed by running an \gls{llmjudge} \cite{zheng2023judge} that compares each query's two generated answers against the benchmark answer. For each query the judge returns one of three classes. The class \texttt{naive\_enough} is assigned when \(r_i^N\) matches the gold answer, so the cheap mode was sufficient. The class \texttt{mix\_required} is assigned when \(r_i^N\) does not match the gold answer but \(r_i^M\) does, so the graph-enhanced mode was required to recover the answer. The class \texttt{none\_enough} is assigned when neither mode produced an answer that matches the gold answer.
+This produces the binary routing label
+\begin{equation}
+\label{eq:routingLabel}
+y_i =
+\begin{cases}
+0, & \text{judge class is \texttt{naive\_enough}},\\
+1, & \text{judge class is \texttt{mix\_required}},
+\end{cases}
+\end{equation}
+with \texttt{none\_enough} cases excluded from the binary router training set, since for these queries neither retrieval mode succeeds and the question is no longer a routing decision but an answer-quality failure.
+
+The \gls{llmjudge} is treated as judged supervision rather than ground truth. The risk of judge error is mitigated in three ways. First, the judge sees the gold answer in addition to the candidate answers, which turns the task into a constrained comparison rather than open-ended quality scoring \cite{zheng2023judge}. Second, ambiguous \texttt{none\_enough} cases are excluded from router training rather than forced into one of the two binary classes. Third, the same judge model and prompt are used across the entire dataset, which keeps the labeling protocol internally consistent even if it is biased.
+
+\section{Binary routing dataset}
+\label{sec:methodDataset}
+
+After the dual-mode execution and judge labeling, the binary routing dataset contains 1\,286 judged queries with a routing class of either \texttt{naive\_enough} or \texttt{mix\_required}. Of these, 959 (74.6\,\%) are labeled \texttt{naive\_enough} and 327 (25.4\,\%) are labeled \texttt{mix\_required}. The class distribution is therefore imbalanced, which is taken into account during training and during reporting (Section~\ref{sec:methodEvaluation}).
+
+The dataset is split into 900 training examples, 193 validation examples, and 193 test examples (approximately 70/15/15), stratified by routing label so that both classes appear in all three splits in the same proportion as in the overall dataset. ``Held-out'' refers to data not used during training. The validation split is held out from training and is used only for early stopping and threshold selection. The test split is held out from both training and threshold selection and is used only for final reported metrics.
+
+Table~\ref{tab:datasetSummary} summarizes the routing dataset by split and 2WikiMultihopQA question type. The class proportions are preserved across splits by construction, but the distribution of \texttt{mix\_required} labels is uneven across question types. \texttt{Compositional} questions are by far the most likely to require graph-enhanced retrieval, while \texttt{comparison} questions are usually answered by the cheap mode.
+
+\begin{table}[!ht]
+\begin{center}
+\caption{Routing dataset summary by split and 2WikiMultihopQA question type. Counts show the number of judged binary examples in each cell; percentages in parentheses are the share of \texttt{mix\_required} within the cell.}
+\label{tab:datasetSummary}
+\begin{tabular}{l|r|rrrr}
+\textbf{Split} & \textbf{Total} & \textbf{comparison} & \textbf{compositional} & \textbf{bridge\_comp.} & \textbf{inference} \\
+\hline
+Train & 900 & 411 (1.2\%) & 310 (58.4\%) & 153 (23.5\%) & 26 (26.9\%) \\
+Validation & 193 & 94 (4.3\%) & 62 (64.5\%) & 29 (13.8\%) & 8 (12.5\%) \\
+Test & 193 & 89 (3.4\%) & 64 (51.6\%) & 39 (33.3\%) & 1 (0.0\%) \\
+\hline
+Overall & 1\,286 & 594 (2.0\%) & 436 (58.3\%) & 221 (24.0\%) & 35 (22.9\%) \\
+\end{tabular}
+\end{center}
+\end{table}
+
+\section{Router models}
+\label{sec:methodRouters}
+
+Both router models take only the question text as input and output a score \(s_\phi(q_i) = P_\phi(y_i = 1 \mid q_i) \in [0,1]\) interpreted as the probability that \emph{Mix} is required.
+
+\subsection{TF-IDF logistic-regression baseline}
+\label{sec:methodTfidf}
+
+The baseline router is a logistic regression trained on \gls{tfidf} features of the question. The pipeline first builds a vocabulary from the training questions, where each token is a unigram or bigram after lowercasing and basic English stop-word removal. Each question is then represented as a sparse vector \(\mathbf{x}_i \in \mathbb{R}^{V}\) whose entries are the term frequency of each vocabulary term multiplied by the inverse document frequency of that term in the training corpus. The logistic-regression head produces the router score as
+\begin{equation}
+\label{eq:tfidfScore}
+s_\phi(q_i) = \sigma(\mathbf{w}^\top \mathbf{x}_i + b),
+\qquad
+\sigma(z) = \frac{1}{1 + e^{-z}},
+\end{equation}
+where \(\mathbf{w} \in \mathbb{R}^{V}\) and \(b \in \mathbb{R}\) are learned by minimizing the L2-regularized binary cross-entropy loss with balanced class weights, so that the minority \texttt{mix\_required} class is not ignored.
+
+The baseline is intentionally simple. It has no pretrained semantic representations and can only exploit lexical patterns in the question. The role of this baseline is to indicate how much of the routing signal is captured by surface lexical cues, which calibrates how much improvement a transformer encoder can plausibly add.
+
+\subsection{ModernBERT router}
+\label{sec:methodModernBert}
+
+The transformer router is a ModernBERT-base \cite{warner2024modernbert} encoder with a binary classification head. The question is tokenized and encoded by ModernBERT into a sequence of contextualized hidden states. The pooled representation \(h_i \in \mathbb{R}^{d}\) is then mapped to two logits by the classification head,
+\begin{equation}
+\label{eq:modernBertLogits}
+z_i = W h_i + b,
+\qquad
+W \in \mathbb{R}^{2 \times d}, \quad b \in \mathbb{R}^{2},
+\end{equation}
+where \(z_{i,0}\) corresponds to \texttt{naive\_enough} and \(z_{i,1}\) to \texttt{mix\_required}. The router score is the softmax probability of the \texttt{mix\_required} class, given by
+\begin{equation}
+\label{eq:modernBertSoftmax}
+s_\phi(q_i)
+=
+\frac{\exp(z_{i,1})}{\exp(z_{i,0}) + \exp(z_{i,1})}.
+\end{equation}
+
+The model is fine-tuned by minimizing class-balanced cross-entropy on the judged routing labels,
+\begin{equation}
+\label{eq:modernBertLoss}
+\mathcal{L}(\phi)
+=
+-\frac{1}{n}\sum_{i=1}^{n}
+\alpha_{y_i} \log P_\phi(y_i \mid q_i),
+\end{equation}
+where \(\alpha_{y_i}\) is the inverse class-frequency weight for the label of example \(i\), so that the minority \texttt{mix\_required} class is not down-weighted by the imbalanced training distribution. Optimization uses AdamW \cite{loshchilov2019decoupled} with a linear warm-up and linear decay schedule. The best checkpoint is selected on the validation split using the F1 score on the \texttt{mix\_required} class, and the chosen checkpoint is the one used for all reported test metrics. Hyperparameters are listed in Chapter~\ref{ch:implementation}.
+
+\section{Evaluation}
+\label{sec:methodEvaluation}
+
+Evaluation has two complementary sides. Held-out classification metrics measure how well the router predicts the judged routing label. Offline policy evaluation measures what happens when the router's predictions are used to actually route queries between \emph{Naive} and \emph{Mix}. Both evaluations use the held-out test split. The validation split is used only for early stopping and for selecting an operating threshold.
+
+\subsection{Held-out classification metrics}
+\label{sec:methodHeldOut}
+
+Because the binary class distribution is imbalanced, the primary threshold-independent metric is the \gls{auprc} on the \texttt{mix\_required} class. \Gls{auprc} measures how well the router ranks \texttt{mix\_required} queries above \texttt{naive\_enough} queries and is more informative than the area under the receiver-operating-characteristic curve when the positive class is in the minority \cite{saito2015precision}. The receiver-operating-characteristic area is also reported for comparison with prior work.
+
+For thresholded evaluation, the router score \(s_\phi(q_i)\) is converted to a class prediction by applying a threshold \(\tau\). The thresholded policy is
+\begin{equation}
+\label{eq:routingPolicy}
+\pi_\tau(q) =
+\begin{cases}
+M, & s_\phi(q) \geq \tau,\\
+N, & s_\phi(q) < \tau,
+\end{cases}
+\end{equation}
+where \(M\) denotes \emph{Mix} and \(N\) denotes \emph{Naive}. At a chosen threshold the reported classification metrics are accuracy, balanced accuracy, precision and recall on the \texttt{mix\_required} class, and the F1 score
+\begin{equation}
+\label{eq:f1}
+F_1 = 2 \cdot
+\frac{\mathrm{precision} \cdot \mathrm{recall}}
+     {\mathrm{precision} + \mathrm{recall}}.
+\end{equation}
+Balanced accuracy is included because the class distribution is imbalanced and plain accuracy can be high even for a trivial always-\emph{Naive} policy.
+
+Confidence intervals are reported using a 1\,000-iteration bootstrap that resamples the test rows with replacement and recomputes the metric on each resample. Reported intervals are the 2.5th and 97.5th percentiles of the bootstrap distribution. Multiple training seeds are also reported for the ModernBERT router, so that variance from random initialization can be separated from variance from finite test data.
+
+\subsection{Offline routing policy}
+\label{sec:methodOfflinePolicy}
+
+The offline policy evaluation reuses the precomputed retrieval outputs and execution times from Section~\ref{sec:methodDualMode}. For each held-out query, both \(r_i^N\) and \(r_i^M\) are already available, along with their execution times \(t_i^N\) and \(t_i^M\). A routing policy \(\pi_\tau\) at threshold \(\tau\) is then simulated row by row. For each query the policy selects either the \emph{Naive} or the \emph{Mix} precomputed result, and aggregate statistics are computed across the entire held-out split. The mean routed execution time is
+\begin{equation}
+\label{eq:averageRoutedTime}
+C(\pi_\tau) =
+\frac{1}{m}\sum_{i=1}^{m}
+\left[
+\mathbf{1}\{\pi_\tau(q_i)=N\}\,t_i^N
++ \mathbf{1}\{\pi_\tau(q_i)=M\}\,t_i^M
+\right],
+\end{equation}
+where \(m\) is the number of held-out queries. The same simulation is run for two static baseline policies for comparison. The first is an always-\emph{Naive} policy, and the second is an always-\emph{Mix} policy. These baselines bracket what a static retrieval strategy can achieve on the test set without any per-query decision and serve as the reference points against which the learned router's cost--quality trade-off is reported.
+
+Threshold selection uses the validation split only. The threshold reported on test is the one that maximizes a chosen validation metric, and the same threshold is then applied unchanged to test. This prevents the threshold from being tuned on the data it is evaluated on.
+
+\cleardoublepage
+\chapter{Implementation}
+\label{ch:implementation}
+
+This chapter describes the implementation and the experiments. Section~\ref{sec:implTraining} describes how the two router models were trained. Section~\ref{sec:implClassification} presents the held-out classification experiment, which evaluates how well each router predicts the judged routing label. Section~\ref{sec:implPolicy} presents the cost--performance experiment, which evaluates each router as a thresholded routing policy against the static always-\emph{Naive} and always-\emph{Mix} baselines. Section~\ref{sec:implResults} reports the results of both experiments. Section~\ref{sec:implDiscussion} discusses what the results imply about the predictability of retrieval-mode selection, where the router fails, and what the practical cost--quality trade-off looks like.
+
+\section{Model training}
+\label{sec:implTraining}
+
+Both routers are trained on the 900-example training split of the binary routing dataset described in Section~\ref{sec:methodDataset}. The validation split is used only for early stopping (ModernBERT) and threshold selection (both routers). The test split is used only for the metrics reported in Section~\ref{sec:implResults}.
+
+\subsection{TF-IDF logistic-regression baseline}
+\label{sec:implTfidf}
+
+The baseline is built with scikit-learn. Questions are lowercased and stripped of standard English stop words, then converted into sparse term-frequency vectors with both unigram and bigram features and weighted by inverse document frequency learned on the training split. A logistic regression with $L_2$ regularization is fitted on top of these features, with the regularization strength left at the scikit-learn default and the class weights set to \texttt{balanced} so that the loss on each example is inversely proportional to the frequency of its class in the training data. Fitting on the 900 training questions takes a few seconds on a single CPU. The same fitted pipeline (vectorizer plus regression head) is then used to score the validation and test splits, producing a probability for the \texttt{mix\_required} class per query.
+
+\subsection{ModernBERT router}
+\label{sec:implModernBert}
+
+The ModernBERT router uses the \texttt{answerdotai/ModernBERT-base} checkpoint from Hugging Face \cite{warner2024modernbert} with a binary classification head. Questions are tokenized with the standard ModernBERT tokenizer and truncated or padded to a maximum length of 128 tokens, which comfortably accommodates every question in the 2WikiMultihopQA splits used here.
+
+Training uses the AdamW optimizer \cite{loshchilov2019decoupled} with a learning rate of $2 \times 10^{-5}$, a weight decay of $0.01$, gradient accumulation of two steps with a per-device batch size of $8$ (effective batch size $16$), a linear warm-up over the first $10\,\%$ of steps followed by linear decay, and gradient clipping at $1.0$. The loss is class-balanced cross-entropy with weights $\alpha_c$ inversely proportional to class frequency in the training split, so that the minority \texttt{mix\_required} class is not down-weighted by the imbalanced training distribution. The model is trained for up to $8$ epochs with early stopping based on validation F1 on the \texttt{mix\_required} class, requiring at least $3$ epochs before stopping and using a patience of $3$ epochs.
+
+To separate variance from random initialization from variance from finite test data, the ModernBERT router is trained with three different random seeds ($7$, $13$, $42$). Each seed independently selects its own best checkpoint on the validation split and its own decision threshold on the validation split. The three runs are reported as a multi-seed mean and standard deviation in Section~\ref{sec:implResults}. All ModernBERT training and inference was performed on CPU. The model is small enough and the dataset short enough that the full fine-tuning run completes within a single afternoon, which is part of why a lightweight encoder router is attractive as a control layer.
+
+\section{Held-out classification experiment}
+\label{sec:implClassification}
+
+The held-out classification experiment evaluates each router as a binary classifier of judged routing labels on the test split. The router scores are first evaluated threshold-independently, by computing \gls{auprc} on the \texttt{mix\_required} class and the area under the receiver-operating-characteristic curve (AUROC). \Gls{auprc} is the primary metric because it is sensitive to performance on the minority class, which is the class the routing decision actually cares about \cite{saito2015precision}.
+
+For thresholded metrics, the decision threshold is selected on the validation split. The selection rule is the threshold $\tau^\star$ that maximizes F1 on \texttt{mix\_required} on the validation split, swept over a fixed grid in $[0.05, 0.95]$. The selected $\tau^\star$ is then applied unchanged to the test split, where accuracy, balanced accuracy, precision, recall, and F1 on \texttt{mix\_required} are reported. A trivial majority-class predictor (always-\emph{Naive}) is included as a degenerate reference because the class imbalance makes plain accuracy easy to inflate.
+
+All metrics are reported with 95\,\% bootstrap intervals using 1\,000 resamples of the 193 test rows. For ModernBERT, point estimates are additionally reported across the three training seeds.
+
+\section{Cost--performance experiment}
+\label{sec:implPolicy}
+
+The cost--performance experiment evaluates each router as an offline routing policy. The precomputed retrieval outputs and per-query execution times for both LightRAG modes are reused so that the simulation does not have to re-run any retrieval. A routing policy $\pi_{\tau}$ at threshold $\tau$ sends each test query either to the \emph{Naive} or to the \emph{Mix} precomputed result. The mean routed time on the test split is then computed as in Equation~\ref{eq:averageRoutedTime}.
+
+For each router, the threshold curve is computed over a dense grid of $\tau$ values in $[0, 1]$, producing a Pareto-style trace in (mean routed time, F1\,on \texttt{mix\_required}) space. The same simulation is run for the two static baseline policies, always-\emph{Naive} and always-\emph{Mix}. These bracket what a static policy can achieve on the test set and serve as the reference points against which the learned routers are compared.
+
+\section{Results}
+\label{sec:implResults}
+
+Table~\ref{tab:headlineResults} summarizes the test-set performance of the four reported policies. The first two are the static always-\emph{Naive} and always-\emph{Mix} baselines. The third is the TF-IDF baseline router at its validation-selected threshold. The fourth is the ModernBERT router at its validation-selected threshold, averaged over three seeds. Bootstrap confidence intervals are shown for the learned routers' key metrics. The ModernBERT router improves on the TF-IDF baseline on every metric except AUROC, where the difference is within the bootstrap interval. The largest gain is in balanced accuracy (from $0.727$ to $0.756$) and recall on \texttt{mix\_required} (from $0.531$ to $0.605$), which together indicate that the encoder router catches more of the queries that genuinely need graph-enhanced retrieval. Both learned routers leave the always-\emph{Mix} policy far behind on cost without losing much accuracy.
+
+\begin{table}[!ht]
+\centering
+\caption{Test-set performance summary. \texttt{AUPRC} and \texttt{AUROC} are threshold-independent. \texttt{F1\textsubscript{mix}}, balanced accuracy, accuracy, mean routed time and mix-route rate are reported at the validation-selected threshold $\tau^\star$. Bracketed values for the learned routers are 95\,\% bootstrap intervals on the test set (1\,000 resamples). ModernBERT values are the mean over three training seeds $\pm$ standard deviation.}
+\label{tab:headlineResults}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l|cccccc}
+\textbf{Policy} & \textbf{AUPRC} & \textbf{AUROC} & \textbf{Bal.\ acc.} & \textbf{F1\textsubscript{mix}} & \textbf{Acc.} & \textbf{Mean time (s)} \\
+\hline
+Always-\emph{Naive} & --- & --- & 0.500 & 0.000 & 0.746 & 10.88 \\
+Always-\emph{Mix}   & --- & --- & 0.500 & 0.405 & 0.254 & 21.36 \\
+TF-IDF (LR) & 0.708 [0.581, 0.821] & 0.864 [0.798, 0.917] & 0.727 & 0.605 [0.470, 0.722] & 0.824 [0.768, 0.876] & 13.03 \\
+ModernBERT (mean $\pm$ s.d.) & $0.732 \pm 0.005$ & $0.854 \pm 0.004$ & $0.756 \pm 0.008$ & $0.645 \pm 0.002$ & $0.831 \pm 0.013$ & $13.94 \pm 0.17$ \\
+\end{tabular}%
+}
+\end{table}
+
+Figure~\ref{fig:prCurveTest} shows the test-set precision--recall curves on the \texttt{mix\_required} class for the TF-IDF baseline and the three ModernBERT seeds. The base rate (the test-set fraction of \texttt{mix\_required}) is shown as a horizontal dashed line. The ModernBERT curves dominate the TF-IDF curve over most of the recall range, which is consistent with the AUPRC numbers in Table~\ref{tab:headlineResults}. The receiver-operating-characteristic curves (Figure~\ref{fig:rocCurveTest}) are closer together, reflecting that AUROC is less sensitive to performance on the minority class.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/thesis/pr_curve_test.pdf}
+\caption{Precision--recall curves on the held-out test split for the TF-IDF baseline and the three ModernBERT training seeds. The dashed horizontal line is the test-set base rate of \texttt{mix\_required}.}
+\label{fig:prCurveTest}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/thesis/roc_curve_test.pdf}
+\caption{Receiver-operating-characteristic curves on the held-out test split.}
+\label{fig:rocCurveTest}
+\end{figure}
+
+Figure~\ref{fig:thresholdVsF1} shows how F1 on \texttt{mix\_required} varies with the decision threshold on the test split, with the validation-selected threshold of each model marked as a dot. The ModernBERT seeds disagree about where their optimal validation threshold lies (seed $42$ selects $\tau^\star = 0.24$, seed $13$ selects $\tau^\star = 0.53$, seed $7$ selects $\tau^\star = 0.83$), but their test F1 at the chosen threshold is consistent (mean $0.645$, standard deviation $0.002$), suggesting the F1 plateau is broad and the routers degrade gracefully when the threshold is mistuned.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/thesis/threshold_vs_f1_mix.pdf}
+\caption{F1 on \texttt{mix\_required} as a function of the decision threshold on the held-out test split. Dots mark the validation-selected threshold for each model.}
+\label{fig:thresholdVsF1}
+\end{figure}
+
+Figure~\ref{fig:thresholdVsTime} shows the mean routed time on test as the threshold sweeps from $0$ (every query routed to \emph{Mix}) to $1$ (every query routed to \emph{Naive}). The always-\emph{Naive} and always-\emph{Mix} levels are shown as horizontal dashed lines and act as a sanity check. At $\tau = 0$ every router collapses to always-\emph{Mix}, and at $\tau = 1$ every router collapses to always-\emph{Naive}, which is what the figure shows.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/thesis/threshold_vs_routed_time.pdf}
+\caption{Mean routed execution time on the held-out test split as the decision threshold sweeps. The two horizontal dashed lines are the always-\emph{Naive} and always-\emph{Mix} reference levels.}
+\label{fig:thresholdVsTime}
+\end{figure}
+
+Figure~\ref{fig:costFrontier} combines the two preceding views into a cost--performance frontier. Each router traces a Pareto curve in (mean routed time, F1\textsubscript{mix}) space as $\tau$ sweeps. The static always-\emph{Naive} and always-\emph{Mix} policies appear as the two extreme operating points. The validation-selected operating points for the learned routers lie above the straight line connecting the two static endpoints. This is the operating range in which a router is genuinely useful, providing operating points that no static policy can reach by itself. The ModernBERT router lies slightly above and to the right of the TF-IDF baseline, reaching higher F1\textsubscript{mix} at a slightly higher mean routed time.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/thesis/cost_performance_frontier.pdf}
+\caption{Cost--performance frontier on the held-out test split. Each curve traces F1 on \texttt{mix\_required} versus mean routed execution time as the decision threshold sweeps. Stars mark the validation-selected operating point of each router. The black square (always-\emph{Naive}) and the black diamond (always-\emph{Mix}) are the two static baselines.}
+\label{fig:costFrontier}
+\end{figure}
+
+Table~\ref{tab:perQuestionType} reports a per-question-type breakdown on the test split. The 2WikiMultihopQA question types have very different routing distributions. The \texttt{comparison} slice is almost always \texttt{naive\_enough}, with only $3$ of $89$ test rows requiring \emph{Mix}. The \texttt{bridge\_comparison} slice sits around one third. The \texttt{compositional} slice is the one in which the routing decision matters most, with $33$ of $64$ test rows requiring \emph{Mix}. The \texttt{inference} slice has only one test row and is omitted from the per-class metrics. On the \texttt{compositional} slice the ModernBERT router improves AUPRC over TF-IDF (mean $0.846$ vs. $0.787$). On \texttt{bridge\_comparison} the two routers behave qualitatively differently. At the validation-selected threshold the TF-IDF router never predicts \emph{Mix} on this slice (recall $0$), while ModernBERT recovers some examples (mean recall $0.154$, mean F1 $0.245$). The AUPRC, however, is slightly lower for ModernBERT, which means TF-IDF ranks the few positive bridge\_comparison rows above its threshold but never crosses the threshold itself.
+
+\begin{table}[!ht]
+\centering
+\caption{Per-question-type breakdown on the test split. The \texttt{comparison} and \texttt{inference} slices have $\leq 3$ positives and are reported only for the share of \texttt{mix\_required}. ModernBERT values are the mean over three seeds.}
+\label{tab:perQuestionType}
+\begin{tabular}{l|rrrrrr}
+\textbf{Slice} & \textbf{n} & \textbf{n\textsubscript{mix}} & \textbf{Model} & \textbf{AUPRC} & \textbf{F1\textsubscript{mix}} & \textbf{Acc.} \\
+\hline
+comparison        &  89 &  3 & TF-IDF     & ---    & 0.000 & 0.966 \\
+                  &     &    & ModernBERT & ---    & 0.000 & 0.966 \\
+\hline
+compositional     &  64 & 33 & TF-IDF     & 0.787 & 0.743 & 0.719 \\
+                  &     &    & ModernBERT & 0.846 & 0.762 & 0.729 \\
+\hline
+bridge\_comparison&  39 & 13 & TF-IDF     & 0.646 & 0.000 & 0.667 \\
+                  &     &    & ModernBERT & 0.517 & 0.245 & 0.684 \\
+\hline
+inference         &   1 &  0 & ---        & ---   & ---   & 1.000 \\
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:perQt} visualizes the AUPRC comparison on the two non-degenerate slices.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/thesis/per_question_type_auprc.pdf}
+\caption{AUPRC on the \texttt{mix\_required} class, broken down by 2WikiMultihopQA question type on the held-out test split. Error bars on ModernBERT are the standard deviation across three training seeds. The \texttt{comparison} and \texttt{inference} slices have too few \texttt{mix\_required} test rows to give an informative AUPRC and are omitted.}
+\label{fig:perQt}
+\end{figure}
+
+\section{Discussion}
+\label{sec:implDiscussion}
+
+The headline result is that the retrieval-mode distinction between \emph{Naive} and \emph{Mix} is partly predictable from the query text alone. Both routers comfortably outperform the always-\emph{Naive} majority baseline on the minority class and reach operating points that are not on the straight line between the two static policies in Figure~\ref{fig:costFrontier}. The ModernBERT router is consistently better than the TF-IDF baseline on AUPRC, on balanced accuracy, and on recall of the minority class, with differences that are stable across three training seeds.
+
+The most informative slice is \texttt{compositional}. This is where the class distribution is genuinely balanced and where graph-enhanced retrieval is most often needed. On this slice ModernBERT achieves a mean AUPRC of $0.846$ against TF-IDF's $0.787$, despite the small training set, which suggests that the encoder picks up on more than the lexical patterns the bag-of-words classifier can exploit. The \texttt{bridge\_comparison} slice is harder. TF-IDF achieves higher AUPRC but never crosses its own validation-selected threshold, so it routes everything in this category to \emph{Naive} and the \texttt{mix\_required} recall is exactly zero. ModernBERT scores fewer queries in this slice as confidently positive but is at least willing to cross its threshold, which yields a non-trivial F1 there. Both behaviors are honest reflections of how the routers handle that slice, and neither is good. Improving routing on this slice is an obvious target for further work.
+
+There are limitations to the headline result. The held-out test set has 193 queries, which is enough to compute meaningful bootstrap intervals but not enough to resolve small differences between the routers. The AUROC intervals of TF-IDF ($[0.798, 0.917]$) and ModernBERT ($\approx [0.78, 0.92]$ for each seed) overlap, so the AUROC comparison cannot be called significant. The AUPRC and balanced-accuracy gaps are larger but still inside the bootstrap intervals, which is what should be expected on a $193$-row test set. The multi-seed standard deviation for ModernBERT is small ($0.005$ on AUPRC, $0.008$ on balanced accuracy), so the gains are at least stable across seeds, but a larger benchmark would be needed before stronger claims can be made.
+
+The cost picture is more clear-cut. The two static baselines bracket a mean routed time range of roughly $10.9$ to $21.4$ seconds per query. The learned routers select operating points around $13$ to $14$ seconds with non-trivial \texttt{mix\_required} F1, which corresponds to roughly $35$ to $40\,\%$ less mean routed time than always-\emph{Mix} at a much higher F1 on the minority class than always-\emph{Naive}. The routing decision itself is essentially free. A single forward pass through a $\sim$100\,M-parameter encoder, or a sparse logistic-regression evaluation, is negligible next to the seconds-scale retrieval cost it replaces. Section~\ref{sec:methodEvaluation} discussed why execution time was chosen as the cost metric rather than token usage; reporting a token-level cost would have required instrumenting LightRAG's internal language-model calls, which was outside the scope of this thesis.
+
+\cleardoublepage
+\chapter{Conclusions and future work}
+\label{ch:conclusionsAndFutureWork}
+
+This chapter summarizes the conclusions from the experiments (Section~\ref{sec:conclusions}), discusses the main limitations and natural avenues for future work (Section~\ref{sec:limitationsFutureWork}), and reflects on the broader context of the project (Section~\ref{sec:reflections}).
+
+\section{Conclusions}
+\label{sec:conclusions}
+
+This thesis studied whether the choice between LightRAG's cheap \emph{Naive} retrieval mode and its more expensive \emph{Mix} retrieval mode can be predicted from the query text alone, on the 2WikiMultihopQA benchmark, using a lightweight encoder-only classifier rather than a large language-model controller. Routing labels were derived by executing both retrieval modes on each benchmark question and using an \gls{llmjudge} to compare each mode's answer against the gold answer.
+
+On the held-out test split, the ModernBERT router improves on a TF-IDF logistic-regression baseline on \gls{auprc} ($0.732$ vs. $0.708$), balanced accuracy ($0.756$ vs. $0.727$), F1 on the minority \texttt{mix\_required} class ($0.645$ vs. $0.605$), and recall on the minority class ($0.605$ vs. $0.531$), while remaining within the bootstrap interval on AUROC. The multi-seed standard deviation of the ModernBERT router is small ($\leq 0.013$ on every reported metric), which makes the improvement stable rather than seed-specific. Both learned routers reach test-set operating points around $13$--$14$ seconds of mean routed execution time, compared with $10.9$ seconds for always-\emph{Naive} and $21.4$ seconds for always-\emph{Mix}, and lie above the straight line connecting the two static endpoints in the cost--performance frontier.
+
+The per-question-type breakdown localizes most of the routing signal in the \texttt{compositional} slice, where graph-enhanced retrieval is most often needed (51\,\% of the test slice) and where ModernBERT improves AUPRC over TF-IDF by roughly six points. The \texttt{comparison} slice is essentially decidable as \emph{Naive} and both routers correctly avoid \emph{Mix} on it. The \texttt{bridge\_comparison} slice is the weakest part of the result and is the natural target for further work.
+
+Returning to the research question, the distinction between vector-sufficient and graph-required queries is, in this setting, partly predictable from the query text alone. The gain over a classical baseline is small but stable, and the practical effect is non-trivial cost savings at a level of \texttt{mix\_required} recall that a static policy cannot match.
+
+\section{Limitations and future work}
+\label{sec:limitationsFutureWork}
+
+\subsection{Token-level cost}
+\label{sec:limitTokenCost}
+
+The cost metric reported throughout the thesis is end-to-end execution time per query. This was the cleanly measurable cost because both LightRAG modes were already timed at the per-query level. Token usage would be a natural alternative cost dimension and is what users pay for in production language-model APIs, but LightRAG's modes invoke an internal language model several times during retrieval (for graph traversal, context assembly, and entity expansion) and these internal calls were not instrumented in this work. A natural follow-up is to instrument LightRAG's internal calls and report both token cost and execution time as parallel cost dimensions, which would give a clearer picture of how much of the saving comes from generation-side tokens versus retrieval-side language-model calls.
+
+\subsection{Judge labels}
+\label{sec:limitJudgeLabels}
+
+Routing labels were produced by a single \gls{llmjudge} model with access to the gold answer. This is a reasonable but imperfect labeling protocol \cite{zheng2023judge}. The risk is that the judge systematically misclassifies particular kinds of correct answers, which would shift the routing labels in a way that the router learns to mimic. A natural follow-up is to label a sample of queries with a different judge model or with human annotators and measure inter-rater agreement on the routing label, both as a sanity check on the existing labels and as a more reliable evaluation subset.
+
+\subsection{Generalizability}
+\label{sec:limitGeneralizability}
+
+The experiments use one Hybrid \gls{rag} framework (LightRAG), two of its retrieval modes (\emph{Naive} and \emph{Mix}), and one public benchmark (2WikiMultihopQA). The held-out test set has $193$ rows, which is enough to compute bootstrap intervals but not enough to resolve small differences between routers. The conclusions therefore apply most directly to the studied setting, and applying the same methodology to other Hybrid \gls{rag} frameworks (for example GraphRAG or Hybrid retrieval modes in other systems) or to other multi-hop benchmarks (HotpotQA, MuSiQue) is a natural way to test how robust the routing signal is. Extending the routing labels to industrial corpora (for example Ericsson internal documentation) was considered but is blocked by the absence of per-query ground-truth answers in those corpora, which is what made the judge-labeling protocol possible on 2WikiMultihopQA in the first place.
+
+\subsection{Routing beyond the query}
+\label{sec:limitRouting}
+
+The router used in this thesis is query-only by construction. A router that also has access to some lightweight signal from the corpus or from a cheap first retrieval pass could in principle make a better decision, at the cost of a slightly more expensive control layer. A natural follow-up is to compare the query-only router against a hybrid scheme that first runs the cheap \emph{Naive} mode, inspects whether the retrieved chunks contain the entities referenced in the query, and then escalates to \emph{Mix} only when this signal looks weak. This would still keep the control layer cheap (one round of vector retrieval rather than an expensive graph traversal) but could materially improve the harder slices, in particular \texttt{bridge\_comparison}.
+
+\subsection{Calibration and abstention}
+\label{sec:limitCalibration}
+
+The router currently outputs a single thresholded decision. Routing under cost constraints is a natural setting for selective prediction \cite{geifman2017selective} and calibrated probabilities \cite{guo2017calibration}, where the router could abstain on low-confidence queries (for example by escalating to a more expensive but more reliable controller, or by running both retrieval modes and combining the answers). The calibration of the ModernBERT router's softmax outputs was not investigated in this work and is a natural piece of follow-up.
+
+\section{Reflections}
+\label{sec:reflections}
+
+This thesis is centered on making a Hybrid \gls{rag} system more resource-efficient. The most direct connection is to the \gls{UN} \gls{SDG} number 12 (responsible consumption and production). Graph-enhanced retrieval is significantly more compute-intensive than vector retrieval, and a router that avoids applying it to queries that do not need it directly reduces the energy and compute footprint of the system at inference time. There is also a softer connection to \gls{SDG} number 9 (industry, innovation, and infrastructure), in that adaptive routing is a building block for industrial \gls{rag} deployments such as the one motivating this work at Ericsson, where serving company-internal documentation at scale is a real operational concern.
+
+The work has some ethical aspects worth flagging. The routing labels are produced by an \gls{llmjudge} that has access to the gold answer. This is a methodologically reasonable but imperfect protocol, and the thesis is explicit about not treating these labels as ground truth. Building a system that decides on a per-query basis which retrieval path to use could in principle interact with downstream notions of answer quality in ways that are hard to anticipate. If the router systematically routes some kind of question to the cheaper path, that kind of question could end up consistently worse-served, even when the average behavior of the system improves. The per-question-type breakdown in Section~\ref{sec:implResults} is one way to surface this kind of differential behavior, and any future work that scales this approach to user-facing settings should keep similar per-segment analyses in view.
+
+Finally, the implementation code, the data-preparation pipeline, the training scripts, and the evaluation scripts used in this thesis are available at \url{\thesisCodeUrl}.
+
+\noindent\rule{\textwidth}{0.4mm}
+\engExpl{In the references, let Zotero or other tool fill this in for you. I suggest an extended version of the IEEE style, to include URLs, DOIs, ISBNs, etc., to make it easier for your reader to find them. This will make life easier for your opponents and examiner. \\IEEE Editorial Style Manual: \url{https://www.ieee.org/content/dam/ieee-org/ieee/web/org/conferences/style_references_manual.pdf}}
+\sweExpl{Låt Zotero eller annat verktyg fylla i det här för dig. Jag föreslår en utökad version av IEEE stil - att inkludera webbadresser, DOI, ISBN osv. - för att göra det lättare för läsaren att hitta dem. Detta kommer att göra livet lättare för dina opponenter och examinator.}
+
+\cleardoublepage
+% Print the bibliography (and make it appear in the table of contents)
+\renewcommand{\bibname}{References}
+
+
+\iftoggle{biblatex}{
+    %\typeout{Biblatex current language is \currentlang}
+    \printbibliography[heading=bibintoc]
+}{
+    \phantomsection  % make it include a hyperref - see https://tex.stackexchange.com/a/98995
+    \addcontentsline{toc}{chapter}{References}
+    \bibliography{references}
+}
+
+
+
+\warningExpl{If you do not have an appendix, do not include the \textbackslash cleardoublepage command below; otherwise, the last page number in the metadata will be one too large.}
+\cleardoublepage
+\appendix
+\renewcommand{\chaptermark}[1]{\markboth{Appendix \thechapter\relax:\thinspace\relax#1}{}}
+\chapter{Supporting materials}
+\label{sec:supportingMaterial}
+\generalExpl{Here is a place to add supporting material that can help others build upon your work. You can include files as attachments to the PDF file or indirectly via URLs. Alternatively, consider adding supporting material uploaded as separate files in DiVA.}
+
+% Attach the BibTeX for your references to make it easy for a reader to find and use them
+The BibTeX references used in this thesis are attached. \attachfile[description={references.bib}]{references.bib}
+
+% Attach source code file(s) or add a URL to the github or other repository
+Some source code relevant to this project can be found at \url{https://github.com/gqmaguirejr/E-learning} and \url{https://github.com/gqmaguirejr/Canvas-tools}.
+
+Your reader can access the attached (embedded) files using a PDF tool such as Adobe Acrobat Reader using the paperclip icon in the left menu, as shown in \Cref{fig:PDFreaderPaperclipExample} or by right-clicking on the push-pin icon in the PDF file and then using the menu to save the embedded file as shown in \Cref{fig:PDFreaderPushpinExample}.
+
+An argument for including supporting material in the PDF file is that it will be available to anyone who has a copy of the PDF file. As a result, they do not have to look elsewhere for this material. This comes at the cost of a larger PDF file. However, the embedded files are encoded into a compressed stream within the PDF file; thus, reducing the number of additional bytes. For example, the references.bib file that was used in this example is \SI{10617}{\byte} in size but only occupies \SI{4261}{\byte} in the PDF file.
+
+\warningExpl{DiVA is limited to $\approx$\SI{1}{\giga\byte} for each supporting file. If you have very large amounts of supporting material, you will probably want to use one of the data repositories. For additional help with this, contact KTH Library via 
+\href{mailto:researchdata@kth.se}{researchdata@kth.se}.\\As of Spring 2024, there are plans to migrate this supporting data from DiVA to a research data repository.
+}
+
+\begin{figure}[!ht]
+  \begin{center}
+    \includegraphics[width=0.50\textwidth]{README_notes/pdf-viewer-attached-files.png}
+  \end{center}
+  \caption{Adobe Acrobat Reader using the paperclip icon for the attached references.bib file}
+  \label{fig:PDFreaderPaperclipExample}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[!ht]
+  \begin{center}
+    \includegraphics[width=0.99\textwidth]{README_notes/Bib-save-embedded-example.png}
+  \end{center}
+  \caption{Adobe Acrobat Reader after right-clicking on the push-pin icon for the attached references.bib file}
+  \label{fig:PDFreaderPushpinExample}
+\end{figure}
+\FloatBarrier
+\cleardoublepage
+
+\chapter{Something Extra}
+\sweExpl{svensk: Extra Material som Bilaga}
+
+\section{Just for testing KTH colors}
+\iftoggle{digitaloutput}{
+    \textbf{You have selected to optimize for digital output}
+}{
+    \textbf{You have selected to optimize for print output}
+}
+
+\begin{itemize}[noitemsep]
+    \item Primary color
+    \begin{itemize}
+    \item \textcolor{kth-blue}{kth-blue \iftoggle{digitaloutput}{
+    actually Deep sea
+    }{}} {\color{kth-blue} \rule{0.3\linewidth}{1mm} }\\
+
+    \item \textcolor{kth-blue80}{kth-blue80} {\color{kth-blue80} \rule{0.3\linewidth}{1mm} }\\
+\end{itemize}
+
+\item  Secondary colors
+\begin{itemize}[noitemsep]
+    \item \textcolor{kth-lightblue}{kth-lightblue \iftoggle{digitaloutput}{
+    actually Stratosphere
+    }{}} {\color{kth-lightblue} \rule{0.3\linewidth}{1mm} }\\
+
+    \item \textcolor{kth-lightred}{kth-lightred \iftoggle{digitaloutput}{
+    actually Fluorescence}{}} {\color{kth-lightred} \rule{0.3\linewidth}{1mm} }\\
+
+    \item \textcolor{kth-lightred80}{kth-lightred80} {\color{kth-lightred80} \rule{0.3\linewidth}{1mm} }\\
+
+    \item \textcolor{kth-lightgreen}{kth-lightgreen \iftoggle{digitaloutput}{
+    actually Front-lawn}{}} {\color{kth-lightgreen} \rule{0.3\linewidth}{1mm} }\\
+
+    \item \textcolor{kth-coolgray}{kth-coolgray \iftoggle{digitaloutput}{
+    actually Office}{}} {\color{kth-coolgray} \rule{0.3\linewidth}{1mm} }\\
+
+    \item \textcolor{kth-coolgray80}{kth-coolgray80} {\color{kth-coolgray80} \rule{0.3\linewidth}{1mm} }
+\end{itemize}
+\end{itemize}
+
+\textcolor{black}{black} {\color{black} \rule{\linewidth}{1mm} }
+
+% Include an example of using nomenclature
+\ifnomenclature
+    \cleardoublepage
+    \chapter{Main equations}
+    \label{ch:NomenclatureExamples}
+    This appendix gives some examples of equations that are used throughout this thesis.
+    \section{A simple example}
+    The following example is adapted from Figure 1 of the documentation for the package nomencl (\url{https://ctan.org/pkg/nomencl}).
+    \begin{equation}\label{eq:mainEq}
+    a=\frac{N}{A}
+    \end{equation}
+    \nomenclature{$a$}{The number of angels per unit area\nomrefeq}%       %% include the equation number in the list
+    \nomenclature{$N$}{The number of angels per needle point\nomrefpage}%  %% include the page number in the list
+    \nomenclature{$A$}{The area of the needle point}%
+    The equation $\sigma = m a$%
+    \nomenclature{$\sigma$}{The total mass of angels per unit area\nomrefeqpage}%
+    \nomenclature{$m$}{The mass of one angel}
+follows easily from \Cref{eq:mainEq}.
+
+    \section{An even simpler example}
+    The formula for the diameter of a circle is shown in \Cref{eq:secondEq} area of a circle in \cref{eq:thirdEq}.
+    \begin{equation}\label{eq:secondEq}
+    D_{circle}=2\pi r
+    \end{equation}
+    \nomenclature{$D_{circle}$}{The diameter of a circle\nomrefeqpage}%
+    \nomenclature{$r$}{The radius of a circle\nomrefeqpage}%
+
+    \begin{equation}\label{eq:thirdEq}
+    A_{circle}=\pi r^2
+    \end{equation}
+    \nomenclature{$A_{circle}$}{The area of a circle\nomrefeqpage}%
+
+    Some more text that refers to \eqref{eq:thirdEq}.
+\fi  %% end of nomenclature example
+
+\cleardoublepage
+% Information for authors
+%\include{README_author}
+\subfile{README_author}
+
+\cleardoublepage
+% information about the template for everyone
+\input{README_notes/README_notes}
+
+\begin{comment}
+% If you actually want to have the full table of National Subject Categories (temporarily) include this appendix
+\subfile{README_notes/National_Subject_Categories}
+\cleardoublepage
+\end{comment}
+
+\begin{comment}
+% Information for examiners
+\ifxeorlua
+\cleardoublepage
+\input{README_notes/README_examiner_notes}
+\fi
+\end{comment}
+
+\begin{comment}
+% Information for administrators
+\ifxeorlua
+\cleardoublepage
+\input{README_notes/README_for_administrators.tex}
+\fi
+\end{comment}
+
+\begin{comment}
+% Information for Course Coordinators
+\ifxeorlua
+\cleardoublepage
+\input{README_notes/README_for_course_coordinators}
+\fi
+\end{comment}
+
+%% The following label is necessary for computing the last page number of the body of the report to include in the "For DIVA" information
+\label{pg:lastPageofMainmatter}
+
+\cleardoublepage
+\clearpage\thispagestyle{empty}\mbox{} % empty page with backcover on the other side
+\kthbackcover
+\fancyhead{}  % Do not use header on this extra page or pages
+\section*{€€€€ For DIVA €€€€}
+\lstset{numbers=none} %% remove any list line numbering
+\divainfo{pg:lastPageofPreface}{pg:lastPageofMainmatter}
+
+% If there is an acronyms.tex file,
+% add it to the end of the For DIVA information
+% so that it can be used with the abstracts
+% Note that the option "nolol" stops it from being listed in the List of Listings
+
+% The following bit of ugliness is because of the problems PDFLaTeX has handling a non-breaking hyphen
+% unless it is converted to UTF-8 encoding.
+% If you do not use such characters in your acronyms, this could be simplified.
+\ifxeorlua
+\IfFileExists{lib/acronyms.tex}{
+\section*{acronyms.tex}
+\lstinputlisting[language={[LaTeX]TeX}, nolol, basicstyle=\ttfamily\color{black},
+commentstyle=\color{black}, backgroundcolor=\color{white}]{lib/acronyms.tex}
+}
+{}
+\else
+\IfFileExists{lib/acronyms-for-pdflatex.tex}{
+\section*{acronyms.tex}
+\lstinputlisting[language={[LaTeX]TeX}, nolol, basicstyle=\ttfamily\color{black},
+commentstyle=\color{black}, backgroundcolor=\color{white}]{lib/acronyms-for-pdflatex.tex}
+}
+{}
+\fi
+
+
+\end{document}

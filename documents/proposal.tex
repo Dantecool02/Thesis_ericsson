@@ -1,0 +1,192 @@
+\documentclass[11pt, a4paper]{article}
+
+%========================================================================================
+% PREAMBLE (Strictly from Project 7)
+%========================================================================================
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{enumitem} % For better list control
+\usepackage{tikz}
+\usepackage{titlesec} % Retained to ensure section spacing is clean
+\usetikzlibrary{positioning, arrows.meta, fit, backgrounds, calc}
+
+% Standard font encoding
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% Set page margins
+\geometry{a4paper, margin=1in}
+
+% Define a clean header and footer
+\pagestyle{fancy}
+\fancyhf{} % Clear all header and footer fields
+\fancyhead[L]{Master's Thesis Proposal: Adaptive Hybrid RAG}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Hyperlink setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+}
+
+\begin{document}
+
+%========================================================================================
+% TITLE BLOCK
+%========================================================================================
+\title{
+    \textbf{Adaptive Hybrid RAG: Optimizing the Efficiency-Accuracy Trade-off via Learned Query Routing} \\
+    \vspace{0.5em}
+    \large Master's Thesis Proposal
+}
+
+\author{
+    Dante Wesslund \\
+    dantew@kth.se}
+
+
+\date{December 2025}
+
+\maketitle
+
+% The crisp horizontal line and spacing you liked
+\hrule
+\vspace{1cm}
+
+%========================================================================================
+% CONTENT
+%========================================================================================
+
+\section{Background \& Problem Statement}
+
+Retrieval-Augmented Generation (RAG) has become the standard for grounding Large Language Models in private data. However, traditional RAG systems relying solely on vector similarity suffer from fundamental limitations. They often lose coherence between retrieved chunks and struggle with global reasoning tasks, such as comparing attributes across an entire dataset (e.g., "find the heaviest radio unit"), because vector search retrieves local fragments rather than structured relationships. 
+
+To address these deficits, Graph RAG systems such as LightRAG have emerged, outperforming baselines on multi-hop reasoning by combining semantic search with knowledge graph traversals. LightRAG offers distinct retrieval modes, ranging from a vector-only \emph{Naive} approach (low cost) to a comprehensive \emph{Mix} strategy (high accuracy, high cost) that blends vector and graph retrieval.
+
+This trade-off is particularly critical for organizations like Ericsson, which maintain vast repositories of private technical documentation. These internal datasets are not present in public LLM training data, necessitating RAG for automation of internal tasks. While accuracy is paramount, the computational cost of graph traversals scale poorly when applied to millions of internal documents.
+
+Current implementations suffer from static execution. Frameworks often rely on manual mode selection, defaulting to the computationally expensive \emph{Mix} mode for every request. This creates significant redundancy, as simple queries do not require the overhead of graph traversal.
+
+This project proposes an Adaptive Routing Layer that uses supervised learning to predict the ``Minimum Viable Retrieval Mode.'' Supported by recent research on model routing (Hu et al., 2024) and efficient architectures (Benayas-Sicilia et al., 2024), this thesis aims to optimize the critical trade-off between token cost (efficiency) and response F1 score (accuracy).
+
+\section{Research Question \& Hypothesis}
+
+\textbf{Research Question:} How does a learned routing strategy, calibrated by confidence thresholds, affect the efficiency-accuracy trade-off in Hybrid RAG systems compared to static execution modes? Specifically:
+\begin{enumerate}[label=\roman*.]
+    \item Does a complexity-based router retain the reasoning performance, measured by F1 score, of the static hybrid baseline?
+    \item What is the marginal reduction in token cost achievable before retrieval accuracy significantly degrades?
+\end{enumerate}
+
+\textbf{Hypothesis:} We hypothesize that retrieval complexity is not arbitrary but correlates with detectable linguistic markers, such as logical connectors, entity density, and multi-hop structure. Since Transformer-based encoders are proven to capture such syntactic dependencies, a specialized classifier can effectively predict the ``Minimum Viable Retrieval Mode''.
+
+We predict that by fine-tuning the classification decision boundary, the system can improve efficiency without sacrificing performance compared to static baselines. Specifically, we hypothesize that query complexity is a reliable indicator of retrieval necessity, allowing a router to filter a significant portion of queries to the cheaper vector mode while maintaining an answer F1 score comparable to the expensive hybrid baseline.
+
+\section{Research Method}
+
+The research employs a quantitative experimental design divided into three phases: data synthesis, supervised training, and offline evaluation.
+
+\begin{enumerate}[leftmargin=*, label=\textbf{\arabic*.}]
+    \item \textbf{Data Synthesis (Ground Truth Generation)} \\
+    To overcome the lack of routing labels in public benchmarks, a supervised dataset will be generated using the HotpotQA benchmark.
+    \begin{itemize}[label=--]
+        \item \emph{Dual-Mode Execution:} A subset of queries will be executed against a controlled LightRAG index in both \emph{Naive} (vector) and \emph{Mix} (graph+vector) modes. The generated answer and token cost for each execution will be recorded.
+        \item \emph{Labeling via LLM-as-a-Judge:} To address the inflexibility of n-gram metrics, a SOTA LLM such as GPT-5 will evaluate the semantic sufficiency of the \emph{Naive} answer. If the vector-only answer is judged sufficient, the query is labeled as \emph{Naive}; otherwise, if the hybrid mode provides a correct answer, it is labeled as \emph{Mix}.
+        \item \emph{Validation:} As a quality control measure, the Judge's decisions will be benchmarked against standard F1 and Exact Match scores on a held-out subset to measure alignment with traditional metrics.
+    \end{itemize}
+
+    \item \textbf{Supervised Training} \\
+    A lightweight transformer encoder, such as ModernBERT-base, will be fine-tuned on the labeled dataset. The model will be trained to output a probability score $P(\text{Graph Required} | x)$, optimizing for high recall on complex queries to prevent accuracy loss.
+    \begin{itemize}[label=--]
+        \item \emph{Baseline Comparison:} To justify the architectural complexity of a Transformer, the router's performance will be benchmarked against simple baseline classifiers, such as an LSTM classifier, to demonstrate the necessity of deep semantic understanding for this routing task.
+    \end{itemize}
+
+    \item \textbf{Offline Evaluation \& Sensitivity Analysis} \\
+    The router's performance will be evaluated on a held-out test set using an \emph{offline simulation} approach to ensure reproducibility.
+    \begin{itemize}[label=--]
+        \item \emph{Threshold Sweep:} We will vary the decision threshold $\tau \in [0, 1]$. For each $\tau$, the system's performance will be simulated by selecting the pre-computed retrieval outcome (Naive or Mix) dictated by the router's prediction.
+        \item \emph{Metric:} We will construct a Cost-Accuracy Trade-off Curve. The primary success metric will be the Area Under the Curve (AUC).
+    \end{itemize}
+\end{enumerate}
+%========================================================================================
+% ADMINISTRATIVE
+%========================================================================================
+
+
+\section{Administrative}
+
+\textbf{Student Background} \\
+Enrolled in the MSc Machine Learning program at KTH.
+\begin{itemize}[label=--]
+    \item \emph{Coursework:} Deep Learning, Probabilistic ML, GenAI.
+    \item \emph{Experience:} GenAI Research Intern at Ericsson (GraphRAG systems/Agentic Search); BSc Thesis (Comparative Analysis of Gradient Boosting Decision Trees and Deep Neural Networks for Tabular Data).
+    \item \emph{Skills:} Python, PyTorch, Hugging Face, Docker, Kubernetes.
+\end{itemize}
+
+\textbf{Supervision}
+\begin{itemize}[label=--]
+    \item \emph{Company (Ericsson):} Peng Zhang (Solutions Architect). Work performed at company with weekly supervision.
+    \item \emph{Academic (KTH):} Suggested Supervisor: Arvid Eriksson (Confirmed interest). Examiner: Pawel Herman.
+\end{itemize}
+
+\textbf{Resources}
+\begin{itemize}[label=--]
+    \item \emph{Compute (External)} OpenAI API (GPT-5) for LightRAG indexing and query processing, leveraging LightRAG's native integration with the OpenAI library. This API key is provided by Ericsson.
+    \item \emph{Compute (Internal)} Internal Ericsson GPU resources (NVIDIA A100/T4) dedicated to fine-tuning the router model.
+    \item \emph{Data/Software:} HotPotQA dataset, MultiHop-RAG benchmark, LightRAG, PyTorch, Transformers.
+\end{itemize}
+
+\section{Eligibility}
+
+\textbf{Eligibility} \\
+The student fulfills the special eligibility requirements (``särskild behörighet'') for the Master's Thesis course:
+\begin{itemize}[label=--]
+    \item \emph{Advanced Level Credits:} The student has completed over 60 ECTS credits at the advanced level, including courses directly relevant to the thesis topic such as DD2424 (Deep Learning), DD2434 (Machine Learning, Advanced Course), DD2437 (Artificial Neural Networks), and SF2943 (Time Series Analysis).
+    \item \emph{Scientific Methodology:} The requirement for a course in scientific theory and research methodology is fulfilled by the completed course DA2205.
+    \item \emph{Program Requirements:} As a student in the Master of Science in Engineering (Civilingenjör) program, all courses required for the Bachelor's degree (Kandidatexamen) have been completed.
+\end{itemize}
+
+\textbf{Study Planning} \\
+There are no remaining compulsory courses that conflict with the thesis work. The thesis constitutes the final element of the education.
+
+\newpage
+% ==========================================
+% REFERENCES
+% ==========================================
+
+\begin{thebibliography}{9}
+
+\bibitem{hu2024routerbench}
+Hu, Q., et al. (2024). 
+``RouterBench: A Benchmark for Multi-LLM Routing System.'' 
+\textit{arXiv preprint arXiv:2403.12031}. \\
+\url{https://arxiv.org/abs/2403.12031}
+
+\bibitem{benayas2024encoder}
+Benayas, A., et al. (2024). 
+``A comparative analysis of encoder only and decoder only models in intent classification and sentiment analysis: navigating the trade-offs in model size and performance'' 
+\textit{Lang Resources \& Evaluation 59, 2007–2030 (2025)}. \\
+\url{ https://doi.org/10.1007/s10579-024-09796-y}
+
+\bibitem{lightrag2024}
+Guo, Z., et al. (2024). 
+``LightRAG: Simple and Fast Retrieval-Augmented Generation.'' 
+\textit{arXiv preprint arXiv:2410.05779}. \\
+\url{https://arxiv.org/abs/2410.05779}
+
+\bibitem{hotpotqa2018}
+Yang, Z., et al. (2018). 
+``HotpotQA: A Dataset for Diverse, Explainable Multi-hop Question Answering.'' 
+\textit{Proceedings of EMNLP 2018}. \\
+\url{https://hotpotqa.github.io/}
+
+\end{thebibliography}
+
+
+
+\end{document}
+

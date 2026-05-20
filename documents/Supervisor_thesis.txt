@@ -1,0 +1,1658 @@
+        Degree Project in Computer Science and Engineering
+        Second cycle, 30 credits
+
+
+
+
+        Adversarial training for diagnosis
+        based on the electrocardiogram
+        Making deep learning analysis of the electrocardiogram
+        more robust
+
+        ARVID ERIKSSON
+
+
+
+
+Stockholm, Sweden, 2024
+Adversarial training for diagnosis
+based on the electrocardiogram
+
+Making deep learning analysis of the
+electrocardiogram more robust
+
+
+
+ARVID ERIKSSON
+
+
+
+
+Degree Programme in Computer Science and Engineering
+Date: June 13, 2024
+
+Supervisors: Antonio H. Ribeiro, Joakim Jaldén
+Examiner: Erik Fransén
+  School of Electrical Engineering and Computer Science
+Host company: Uppsala University
+Swedish title: Motstridig träning för diagnostisering av elektrokardiogram
+Swedish subtitle: Ett sätt att göra djupinlärningsanalyser av elektrokardiogram
+mer robusta
+© 2024 Arvid Eriksson
+                                                                       Abstract | i
+
+
+
+
+Abstract
+Automated electrocardiogram (ECG) analysis using deep neural networks has
+seen promising results in recent years in various fields such as arrhythmia
+diagnosis and mortality prediction through age proxies. However, these deep
+learning models are susceptible to small indistinguishable perturbations that
+change the model prediction. These models also perform significantly worse
+when faced with domain shifts when applied to new data distributions not
+previously trained on.
+    This thesis investigates how training on worst-case artificial samples
+through adversarial training can help generate models that can readily
+be adapted through fine-tuning to new datasets. Investigations are done
+by conducting robustness and transferability experiments using adversarial
+training on three different tasks in ECG analysis: atrial fibrillation diagnosis,
+sex classification, and age prediction.
+    These experiments show that adversarial training creates models that
+generalize better and can be more eﬀiciently adapted to new datasets with
+higher performance than non-adversarially trained models. This work thus
+paves the way for models that perform better on new datasets thus requiring
+less data for fine-tuning. This enables the use of high-performing models in
+settings where data is more scarce, thus enabling ECG analysis tools suitable
+in developing countries and smaller hospitals.
+    The experiments also show that adversarial training improves the
+robustness of the trained models and that this robustness is retained to a smaller
+degree when transferred to new settings. This yields models that can withstand
+smaller directed perturbations without significantly changing their prediction.
+Thus this work also enables more consistent models, which in turn yields
+models that are more trustworthy.
+
+Keywords
+Deep learning, Adversarial training, Electrocardiogram
+ii | Abstract
+                                                          Sammanfattning | iii
+
+
+
+
+Sammanfattning
+Analys av elektrokardiogram (EKG) med hjälp av djupinlärning har sett stora
+framsteg senaste åren, bland annat vid diagnostik av hjärtarytmi, förutsägande
+av ålder utifrån EKG samt dödlighetsanalyser via åldersregressioner. Dessa
+modeller är dock känsliga till algoritmer som introducerar mycket små
+omärkbara förändringar i indatan som får modellen att ge ett så inkorrekt svar
+som möjligt. Dessutom preseterar dessutom dessa modeller betydligt sämre
+när de appliceras i nya miljöer som de inte tränats på.
+    Denna masteruppsats avser därmed undersöka hur träning på artificiell
+indata genererad genom adversarial attacks, så kallad motstridig träning
+(eng. adversarial training), kan skapa nya modeller som är så pass allmänna
+att de motstår både adversarial attacks och effektivt kan appliceras i nya
+miljöer via finjustering av modellparametrarna. Detta görs genom robusthets-
+och överförbarhetsexperiment som använder sig av motstridig träning i
+tre tillämpningsområden för djuplärning inom EKG-analys: diagnos av
+förmaksflimmer, könsklassificering och åldersregression.
+    Experimenten visar att motstridig träning skapar modeller som genera-
+liserar bättre och som kan anpassas till nya dataset och där prestera bättre
+än motsvarande vanliga djupinlärningsmodeller. Detta masterarbete främjar
+därför modeller som presterar bättre på nya dataset och därmed kräver mindre
+data för finjustering. Detta bidrar därmed till högpresterande modeller i
+miljöer där data är begränsad. Detta kan i sin tur vara användbart i analys
+av EKG i utvecklingsländer eller mindre sjukhus där data är betydligt mer
+svårtillgänglig.
+    Experimenten visar att motstridig träning kraftigt reducerar känsligheten
+gentemot små, avsiktliga förändringar och därmed skapar robustare modeller
+och att de även är robustare efter finjustering. Detta skapar modeller som
+därmed kan motstå små förändringar i indatan utan motsvarande stora
+förändringar i utdatan. Detta arbete visar därmed hur mer konsekventa
+modeller kan skapas, vilket i sin tur leder till ökad tillit.
+
+Nyckelord
+Djupinlärning, Motstridig träning, Elektrokardiogram
+iv | Sammanfattning
+                                                         Acknowledgments | v
+
+
+
+
+Acknowledgments
+I would like to thank Antonio H. Ribeiro for his tireless effort in supervising
+this thesis.
+
+Stockholm, June 2024
+Arvid Eriksson
+vi | Acknowledgments
+                                                                 Contents | vii
+
+
+
+
+Contents
+
+1   Introduction                                                             1
+    1.1 Background . . . . . . . . . . . . . . . . . . . . . . . . . . .     1
+    1.2 Problem . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    2
+         1.2.1 Research question . . . . . . . . . . . . . . . . . . . .     2
+    1.3 Purpose . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    3
+    1.4 Goals . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    3
+    1.5 Research Methodology . . . . . . . . . . . . . . . . . . . . .       3
+    1.6 Delimitations . . . . . . . . . . . . . . . . . . . . . . . . . .    4
+
+2   Background                                                             5
+    2.1 Deep learning . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+        2.1.1 Deep learning for the electrocardiogram . . . . . . . . 6
+    2.2 Adversarial attacks . . . . . . . . . . . . . . . . . . . . . . . 7
+        2.2.1 Measuring robustness . . . . . . . . . . . . . . . . . 8
+    2.3 Improving robustness . . . . . . . . . . . . . . . . . . . . . . 9
+    2.4 Adversarial training . . . . . . . . . . . . . . . . . . . . . . . 9
+    2.5 Related work . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+
+3   Methods                                                                  11
+    3.1 Data . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   11
+        3.1.1 CODE . . . . . . . . . . . . . . . . . . . . . . . . . .       11
+        3.1.2 PTB-XL . . . . . . . . . . . . . . . . . . . . . . . .         12
+        3.1.3 Preprocessing . . . . . . . . . . . . . . . . . . . . . .      12
+    3.2 Adversarial attacks . . . . . . . . . . . . . . . . . . . . . . .    12
+        3.2.1 Fast Gradient Signed Method . . . . . . . . . . . . .          13
+        3.2.2 Projected gradient descent . . . . . . . . . . . . . . .       13
+        3.2.3 Adversarial training . . . . . . . . . . . . . . . . . . .     14
+    3.3 Deep learning architectures . . . . . . . . . . . . . . . . . . .    15
+        3.3.1 Convolutional layers . . . . . . . . . . . . . . . . . .       15
+viii | Contents
+
+
+
+
+          3.3.2   Model architecture . . . . . . . . . . . . . . . . . . . 16
+
+4 Implementation                                                            19
+  4.1 Model training . . . . . . . . . . . . . . . . . . . . . . . . .      19
+       4.1.1 Adversarial training . . . . . . . . . . . . . . . . . . .     19
+  4.2 Robustness experiment . . . . . . . . . . . . . . . . . . . . .       20
+  4.3 Transferability experiment . . . . . . . . . . . . . . . . . . .      20
+  4.4 Results . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   21
+  4.5 Discussion . . . . . . . . . . . . . . . . . . . . . . . . . . . .    22
+
+5 Conclusions and future work                                               27
+  5.1 Conclusions . . . . . . . . . . . . . . . . . . . . . . . . . . .     27
+  5.2 Limitations and future work . . . . . . . . . . . . . . . . . .       28
+      5.2.1 Computational cost . . . . . . . . . . . . . . . . . . .        28
+      5.2.2 Generalizability . . . . . . . . . . . . . . . . . . . . .      28
+      5.2.3 Clinical relevance . . . . . . . . . . . . . . . . . . . .      29
+  5.3 Reflections . . . . . . . . . . . . . . . . . . . . . . . . . . .     29
+
+References                                                                  31
+                                                            List of Figures | ix
+
+
+
+
+List of Figures
+
+ 2.1   An artificial neural network with a single hidden layer,
+       courtesy of Colin M.L. Burnett. . . . . . . . . . . . . . . . .        6
+ 2.2   An example of an electrocardiogram from the PTB-XL dataset
+       [16]. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    7
+ 2.3   Comparison of normal ECG and corresponding adversarial
+       example with a perturbation size of ε = 0.01. A normally
+       trained model predicts with Prob > 0.99 that the ECG is
+       normal while for the adversarially modified ECG, the model
+       predicts atrial fibrillation with Prob > 0.99. . . . . . . . . . .     8
+
+ 3.1   Simplified scheme of adversarial training for predicting atrial
+       fibrillation. . . . . . . . . . . . . . . . . . . . . . . . . . . .   14
+ 3.2   Example of a one-dimensional convolutional layer without a
+       bias. The kernel (orange) contains the trainable parameters. . .      15
+ 3.3   The residual convolutional neural network model architecture
+       used in this thesis, replacing the ReLU layers with GELU.
+       (Creative Commons Attribution 4.0 International License,
+       http://creativecommons.org/licenses/by/4.0/) [1] . . . . . . . .      16
+ 3.4   Comparison of the ReLU and GELU activation functions. . . .           17
+
+ 4.1   Robust performance classifying atrial fibrillation on PTB-XL
+       for baseline (base) and two adversarially trained models with
+       εmax = 0.05 (adv. 5e-2) and εmax = 0.01 (adv. 1e-2) respectively. 23
+ 4.2   Robust performance classifying sex on PTB-XL for baseline
+       (base) and two adversarially trained models with εmax = 0.05
+       (adv. 5e-2) and εmax = 0.01 (adv. 1e-2) respectively. . . . . . . 24
+ 4.3   Robust performance predicting age on PTB-XL for baseline
+       (base) and two adversarially trained models with εmax = 0.05
+       (adv. 5e-2) and εmax = 0.01 (adv. 1e-2) respectively. . . . . . . 24
+x | List of Figures
+
+
+
+
+    4.4   Robust performance on CODE classifying atrial fibrillation
+          for baseline and the three fine-tuned models in Table 4.1. The
+          error bars show 95% percentile intervals using 500-iteration
+          bootstrap. . . . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+    4.5   Performance on CODE classifying sex for fine-tuned baseline
+          and the two adversarial models in Table 4.2 for different sizes
+          of the training set of CODE. All models were fine-tuned for
+          10 epochs. . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+                                                           List of Tables | xi
+
+
+
+
+List of Tables
+
+ 3.1   Summary of the datasets. The entries indicate the presence of
+       atrial fibrillation (AF) and distributions of sex and age. . . . . 12
+
+ 4.1   Clean performance of various models classifying atrial
+       fibrillation on the CODE dataset measured by area under the
+       precision-recall curve (AUPRC). Under different configura-
+       tions of training in PTB-XL training and fine-tuning on CODE
+       for 10 epochs. . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+ 4.2   Clean performance of various models classifying sex on the
+       CODE dataset measured by area under the receiver operating
+       characteristic curve (AUROC). Under different configurations
+       of training in PTB-XL training and fine-tuning on CODE for
+       10 epochs. . . . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+ 4.3   Clean performance of various models predicting age on the
+       CODE dataset measured by mean absolute error. Under
+       different configurations of training in PTB-XL training and
+       fine-tuning on CODE for 10 epochs. . . . . . . . . . . . . . . 25
+xii | List of Tables
+                                 List of acronyms and abbreviations | xiii
+
+
+
+
+List of acronyms and abbreviations
+
+APGD    Auto-PGD
+AUPRC   area under the precision-recall curve
+AUROC   area under the receiver operating characteristic curve
+
+CNN     convolutional neural network
+
+ECG     electrocardiogram
+
+FGSM    Fast Gradient Signed Method
+
+PGD     projected gradient descent
+
+SDG     Sustainable Development Goal
+
+UN      United Nations
+xiv | List of acronyms and abbreviations
+                                                                  Introduction | 1
+
+
+
+
+Chapter 1
+
+Introduction
+
+This chapter describes a shorter background for the relevance of this thesis
+(Section 1.1), the problem statement and research question (Section 1.2), the
+purpose of the thesis (Section 1.3), its concrete goals (Section 1.4), its general
+research methodological approach (Section 1.5), and its delimitations (Section
+1.6).
+
+
+1.1      Background
+Cardiovascular diseases account for one-third of the deaths worldwide and
+the electrocardiogram (ECG) is a major tool in their diagnoses. Deep neural
+networks have recently achieved striking success in diverse tasks such as image
+analysis and natural language processing, and there are great expectations
+when it comes to how this technology may improve health care and clinical
+practice. The last few years saw this technology present promising results
+in the interpretation of the ECGs for cardiovascular diagnosis and stratifying
+mortality risks and there are high expectations that these tools could enable
+the early and accurate detection of cardiac diseases [1, 2].
+    Due to the many interacting components and a large number of parameters,
+deep neural network models have low robustness meaning classification
+accuracy, and other key metrics, can often heavily decrease when small
+perturbations on the input are applied [3]. Models for medical applications
+need to work in scenarios that are potentially different than they were trained
+on are sought after. This is especially key as there are many different ECG
+datasets available internationally, where tools developed in one context might
+be relevant in others.
+    Adversarial training [4] is an effective approach for training deep learning
+2 | Introduction
+
+
+
+
+models that are more robust to perturbations. Mathematically, adversarial
+training is formulated as a min-max problem, searching for the best solution
+to the worst-case attacks. It considers the situation where the training samples
+have been modified by an adversary. Since training samples are adversarially
+perturbed it is expected that the model will be more robust when faced with
+new perturbed samples, as well as generally noisy samples.
+    An important consequence of adversarial training is that the adversarially
+trained model tends to produce better representations of the data which
+generally improves transferability [5]. In a medical setting, this is especially
+important as exact data distribution will differ between different settings,
+such as between different hospitals. Adversarial training could thus help
+provide models that better represent data, such as ECG samples, and show
+larger generalization capability such that a model can easily be applied across
+different settings. Such a model would then help save resources as new settings
+and thus domain shifts would not require the training of new models.
+
+
+1.2      Problem
+The problem approached in this thesis is the adversarial vulnerability in state-
+of-the-art ECG deep learning models. The intention of this thesis is to promote
+more robust deep learning models through adversarial training and create
+models that generalize better, especially when transferred to new settings.
+
+1.2.1 Research question
+What effect do adversarial attacks and training have on relevant performance
+metrics of deep learning models used for different types of 12-lead ECG
+analysis, specifically diagnosing atrial fibrillation, classifying sex, and
+predicting age?
+   The research question is further split into the following sub-questions:
+
+    • How vulnerable to performance decreases are convolutional neural
+      network (CNN) ECG diagnosis deep learning models from adversarial
+      attacks, specifically gradient-based attacks such as Auto-PGD (APGD)?
+
+    • How will adversarial training using APGD of CNN ECG models impact
+      this performance vulnerability?
+
+    • How will adversarial training affect the transferability of state-of-the-
+      art ECG models to other ECG datasets that the models have not been
+                                                                Introduction | 3
+
+
+
+
+      trained on?
+
+
+1.3     Purpose
+The purpose of this project is to advance the field of deep learning analysis
+of ECGs. This will in turn help further sustainable health, give medical
+doctors tools for diagnosis assistance, and promote trust and robustness of
+used models. The higher robustness and generalization capabilities of these
+models is also a purpose in itself as it will help with access to healthcare for
+all as large models can more easily be adapted to new datasets.
+
+
+1.4     Goals
+The research question is broken down into the following concrete goals:
+
+    • Measure the effects of adversarial attacks using APGD on state-of-
+      the-art ECGs diagnosis models on key metrics such as area under the
+      receiver operating characteristic curve (AUROC) and area under the
+      precision-recall curve (AUPRC).
+
+    • Measure how adversarial training of state-of-the-art ECG deep learning
+      models improves their robustness to adversarial attacks.
+
+    • Measure how adversarial training affects the transferability of state-of-
+      the-art ECG deep learning models to new datasets.
+
+
+1.5     Research Methodology
+This thesis will conduct a general empirical study by using public datasets for
+model training and evaluation, as is common in deep learning. The evaluation
+will be done using test data from both the same datasets and different datasets
+than the ones trained on. The effects of adversarial attacks and training on
+the different generated models will thus be evaluated by obtaining metrics,
+such as AUROC, AUPRC, and mean absolute error from the predictions of
+the models on the test data. This will give an accurate estimate of the effects
+of adversarial attacks on the different models and allow us to estimate the
+effects of adversarial training. Bootstrapping will also be utilized to acquire
+an estimate of the confidence intervals of these metrics. Comparisons of the
+4 | Introduction
+
+
+
+
+different models’ performance will then be used to confidently answer the
+research question.
+
+
+1.6      Delimitations
+The scope of this thesis is adversarial training and how it affects performance
+metrics such as AUROC and AUPRC with and without adversarial attacks.
+Transferability to new datasets will also be investigated. The experiments
+will only utilize CNN model architectures. Other related topics such as
+investigating other types of models suitable for ECG data analysis or the
+interpretability of the models will not be considered. Implementation of the
+resulting model in practice, for example in a real-life medical setting, is also
+not in the scope of the project. The performance under random noise will
+also not be investigated as this has no clinical relevance due to already used
+high-performing noise removal techniques [6].
+    Furthermore, this thesis will only investigate white-box adversarial attacks
+where full knowledge of the model parameters is known. This is due to the
+scope of this thesis being the robustness aspect of adversarial attacks rather
+than the cybersecurity aspect of securing the model from a potential adversary.
+Adversarial training will also be the sole defense method investigated, other
+defense methods such as defensive distillation will not be considered as they
+have been shown to generally perform worse in most applications [7].
+                                                                 Background | 5
+
+
+
+
+Chapter 2
+
+Background
+
+This chapter describes the current state-of-the-art in deep learning for ECG
+analysis (Section 2.1). It also describes adversarial attacks (Section 2.2),
+how improving robustness can be done (Section 2.3), and the corresponding
+defense method adversarial training (Section 2.4). Key related work are also
+described here (Section 2.5).
+
+
+2.1      Deep learning
+In the past decade machine learning, and especially deep learning, has seen
+massive growth due to its performance gains in various fields. It has been
+used in data-driven decision-making in fields such as healthcare, finance,
+marketing, and education with great success and is beginning to take a central
+role in society [8].
+    Deep learning in turn consists of artificial neural networks which are
+compositions of functions applied to sets of computational nodes given some
+parameters. These functions are applied set-wise where such a set is called a
+layer and where the output of a layer is the input for the next layer. See Figure
+2.1 for an example artificial neural network where each layer is the result of
+a function, usually a composition of a non-linear and linear function, applied
+on the previous layer.
+    Deep learning, which is generally seen as artificial neural networks
+with multiple layers, comprises many different model architectures that are
+useful for different scenarios. These architectures give a framework for the
+relationships between each layer and what types of functions are used. For
+example, the transformer architecture [9] is very eﬀicient in natural language
+processing while the convolutional neural network architecture is eﬀicient in
+6 | Background
+
+
+
+
+Figure 2.1: An artificial neural network with a single hidden layer, courtesy
+of Colin M.L. Burnett.
+
+
+image analysis [10].
+
+2.1.1 Deep learning for the electrocardiogram
+Artificial intelligence in general and deep learning especially has seen great
+success in the automated analysis of the ECG [11]. Deep learning has, for
+example, been shown to be able to with great accuracy detect left ventricular
+dysfunction [12], atrial fibrillation [1], and hypertrophic cardiomyopathy [13]
+as well as predict other features such as clinical age, which in turn can be a
+predictor for general health [14]. This makes deep learning models promising
+tools for medical professionals and an important topic for further advancement
+of ECG analysis.
+    The reason for deep learning’s eﬀiciency in the analysis of the ECG can
+be attributed to both an abundance of data and suitable model architectures.
+Since the ECG is a common recording there are several public datasets for
+such recordings, some of which are available publicly with more than 100 000
+unique samples [15, 16]. The amount of data is a key factor for the performance
+of deep learning models and this relatively high amount of data therefore yields
+high-performing models. Despite this, some diseases are rare and do not
+have enough support in actual data to generalize well with and thus require
+additional methods for regularization.
+    As model architecture is also vital for the performance of the models
+another attributing factor is the recent use of convolutional neural networks
+                                                                 Background | 7
+
+
+
+
+Figure 2.2: An example of an electrocardiogram from the PTB-XL dataset
+[16].
+
+
+using residual connections. Convolutional neural networks, which is a
+type of deep learning architecture, is a state-of-the-art architecture used in
+deep learning ECG analysis [11]. The suitability of this architecture can
+be motivated by its translational invariance property which, much like in
+computer vision, allows the model to find patterns in the data regardless of
+where in the sequence it is located. This means that the model often will
+be able to capture important features, such as rapid and irregular beatings
+signifying atrial fibrillation, independent of at which exact time in the ECG
+these patterns can be observed.
+
+
+2.2      Adversarial attacks
+While deep learning models have shown striking performance in various
+number of areas they often also suffer from being sensitive to small
+perturbations, especially adversarially generated perturbations [17]. These
+adversarially generated perturbations, or adversarial attacks, are constructed
+by modifying the input of a model by maximizing the model error under some
+small perturbation threshold ε which acts as an upper limit of the perturbation.
+These thresholds are usually so small that they are indistinguishable by a
+human from real data. Common examples of this are seen in computer vision,
+where an image of a certain class has its pixels modified by a tiny amount to
+generate a nearly identical image that the model confidently sees as an entirely
+different class. For ECGs, such attacks can instead be seen as tiny changes
+in the signal, often with some type of smoothing to make the perturbations
+indiscernible from the original [3].
+    Adversarial attacks can generally be defined as a set of algorithms that seek
+to, given some knowledge of a model, create an indiscernible change in the
+data that makes the model misclassify the data. These algorithms can further
+8 | Background
+
+
+
+
+                                      Original
+                                      Adversarial
+
+
+
+
+Figure 2.3: Comparison of normal ECG and corresponding adversarial
+example with a perturbation size of ε = 0.01. A normally trained model
+predicts with Prob > 0.99 that the ECG is normal while for the adversarially
+modified ECG, the model predicts atrial fibrillation with Prob > 0.99.
+
+
+be divided into black-box and white-box algorithms which assume limited or
+full knowledge of the model respectively. This thesis focuses on the robustness
+aspect of adversarial training rather than the cybersecurity aspect and thus
+white-box algorithms will only be considered.
+     A common adversarial white-box attack is Fast Gradient Signed Method
+(FGSM) and its corresponding extension projected gradient descent (PGD),
+both described in detail in Section 3.2. These have seen wide use in the field of
+adversarial attacks due to their simplicity and eﬀiciency in finding adversarial
+examples under some maximum perturbation ε [7]. See Figure 2.3 for an
+adversarial example generated from an ECG.
+
+2.2.1 Measuring robustness
+As robustness to adversarial attacks often wants to be compared between
+models suitable metrics for measuring robustness are needed. Large studies
+have researched different metrics for robustness and their relevance for
+adversarial attacks [18]. Some such metrics search an entire region around
+each sample to find an accurate worst-case scenario, however, such methods
+are extremely costly. A good compromise between finding a worst-case
+scenario and being computationally feasible is to use the accuracy for
+adversarial samples generated by PGD for some range ε on test datasets from
+the same distribution as the one trained on [7]. However, this metric also
+depends on the parameters of the PGD which tend to differ in the literature,
+making comparisons diﬀicult. Efforts have been made to move to versions
+with perturbation radius ε as the only parameter however these are only
+recently being adapted through APGD [19].
+                                                                   Background | 9
+
+
+
+
+2.3      Improving robustness
+Many attempts at improving robustness, loosely defined as consistency
+between small changes in model input and corresponding output, have been
+made in the literature in recent years. Some of these methods include detecting
+and eliminating small changes in the input [20], weakening the impact of
+changes in the input through different types of data transformation [21], and
+optimizing the model architecture itself to be robust [22]. However, most of
+these have quickly been shown to only be robust under certain scenarios and
+not as general as first thought [23].
+    The currently most consistent methods for making models robust are
+instead focused on strengthening the model itself, often through exposure to
+new types of data. The most prevalent among these is data augmentation,
+which has seen a huge impact for regularization and robustness in
+especially computer vision [24]. These techniques generally revolve around
+manipulating existing data with realistic alterations in order to create more
+inputs and thus help with the regularization of the model. An eﬀicient
+and widely used such technique for robustness is adversarial training, where
+training is done using samples augmented by adversarial attacks. [25].
+
+
+2.4      Adversarial training
+Adversarial training is generally considered to be the most effective defense
+against adversarial attacks [25, 26, 27] and consists of including samples
+perturbed by adversarial attacks during training. Adversarial training thus tries
+to create a robust model that can classify the worst perturbed samples correctly.
+     In practice, adversarial training consists of adversarially perturbing the
+input samples during training. An example is adding FGSM to the loss
+function during training, although this has been shown to sometimes lead to
+a failure mode called catastrophic overfitting [28]. While training using PGD
+is slower by a factor equal to the number of steps used, it is still seen as state-
+of-the-art in adversarial training due to its effect on robustness [7]. However,
+a problem with PGD is the need for hyperparameter tuning since PGD takes
+arguments such as the number of steps, step size, and projection size. There
+have been attempts to solve this such as using a parameter-free adaptive tuning
+of the hyperparameters through APGD as introduced in [19].
+10 | Background
+
+
+
+
+2.5      Related work
+Ribeiro et al. [1] shows how residual convolutional neural networks can be
+utilized for multi-label classification of 12-lead ECGs in order to diagnose
+several abnormalities such as atrial fibrillation and first-degree atrioventricular
+block. The work also produces several repositories containing code which is
+reused in this thesis, mostly for creating similar models.
+     Han et al. [3] provide an overview of how adversarial attacks can be
+applied to deep learning in ECG analysis. The work shows that deep learning
+models for ECG analysis are in general susceptible to adversarial attacks
+but that most adversarial attacks will create unnatural sequences that can be
+identified as artificial by a medical professional. They therefore also apply
+Gaussian smoothing operations on the adversarial examples which retain the
+examples’ adversarial qualities while making the examples indistinguishable
+from their corresponding true samples. They therefore provide a clear
+framework for generating adversarial samples for ECG data.
+     The concept of adversarial training for ECG analysis has been studied
+before in [29, 30, 31] under various scopes. Hossain et al. [29] investigate
+using a Conditional Generative Adversarial Network for adversarial training,
+while Shao et al. [30] attempt combining defensive distillation with
+adversarial training with promising results. Ma and Liang [31] analyze
+how adversarial training and some other training regimes provide robustness
+to adversarial and random noise and implement this using a CNN capable
+of variable input length. These papers, however, limit their experiments
+to training and testing on the same dataset and make no transferability
+experiments. They also base their experiments of robustness on PGD with
+different hyperparameters. Further advancement in the field could thus
+be using the parameter-free APGD as well as analyzing the transferability
+implications of adversarial training. Other techniques for robustness for
+ECG models have also been attempted, mainly general data augmentation
+as described by [32]. These augmentations show a slight increase in the
+performance of the final model.
+                                                                  Methods | 11
+
+
+
+
+Chapter 3
+
+Methods
+
+This chapter describes the methods and data used in this thesis. Section 3.1
+describes the datasets used in the experiments and how it is preprocessed.
+Section 3.2 describes how adversarial attacks are implemented and how they
+are integrated using adversarial training. Section 3.3 describes the deep
+learning architecture used in this thesis.
+
+
+3.1     Data
+This thesis uses two ECG datasets in its experiments: the CODE dataset [15]
+and PTB-XL dataset [16].
+
+3.1.1 CODE
+The Clinical Outcomes in Digital Electrocardiography (CODE) dataset was
+developed with the database of digital ECG exams of the telehealth network of
+Minas Gerais and a detailed description of the cohort can be obtained at [15].
+    The data set was collected between 2010 and 2017 from 811 counties in the
+state of Minas Gerais, Brazil, and consists of 2 322 513 12-lead ECG records
+from 1 676 384 different patients. A subset of 15% of this data set, CODE-
+15%, is available online [33] and is the variant used for this paper, containing
+345 779 samples. This variant will be referred to as CODE for the remainder
+of this thesis. Ages under 18 are omitted for age prediction.
+12 | Methods
+
+
+
+
+3.1.2 PTB-XL
+PTB-XL [16] is a dataset consisting of 21 799 12-lead ECG records collected
+between 1989 and 1996 from 18 869 different patients using devices from
+Schiller AG. It covers a larger range of diagnostic statements than the CODE
+dataset, with additional types of arrhythmias and diagnostics annotated. Some
+samples lack notation for age, however, and are omitted in experiments
+predicting the patient’s age. Ages under 18 are also omitted for age prediction.
+
+Table 3.1: Summary of the datasets. The entries indicate the presence of atrial
+fibrillation (AF) and distributions of sex and age.
+
+                      CODE (n = 345 779)        PTB-XL (n = 21 837)
+        AF            7 033 (2.0%)              1 514 (6.9%)
+        Male          139 203 (40.3%)           11 354 (52.1%)
+        Female        206 576 (59.7%)           10 445 (47.9%)
+        Ages 18-25    33 096 (9.6%)             838 (3.8%)
+        Ages 26-40    67 129 (19.4%)            2 105 (9.7%)
+        Ages 41-60    100 783 (29.2%)           7 193 (33.0%)
+        Ages 61-80    112 636 (32.6%)           9 137 (41.9%)
+        Ages ≥81      28 155 (8.1%)             2 100 (9.6%)
+
+
+
+3.1.3 Preprocessing
+The ECG signals have been resampled such that all ECGs have the same
+sampling frequency of 400 Hz. Each input ECG has 4 096 time samples for
+each of the 12 standard ECG leads. Original signals of a shorter time span
+have been extended through zero-padding. The samples are also preprocessed
+through a baseline high-pass filter and a power line notch filter. The class
+label comprises binary scalar variables corresponding to positive or negative
+diagnoses for the classification tasks and the predicted age for the regression
+task.
+
+
+3.2     Adversarial attacks
+In adversarial attacks, an adversary changes the input to the model to maximize
+the prediction error. It is formulated as a maximization problem, where the
+                                                                   Methods | 13
+
+
+
+
+perturbation δ that will be added is computed through the problem
+
+                            arg max L(θ, x + δ, y)
+                               δ∈S
+
+
+where S = {δ : ∥δ∥p ≤ ε}, ε is the perturbation radius, and L(θ, x, y)
+is the model loss using model parameters θ for an input sample x and its
+corresponding true label y.
+    This section describes FGSM and its extension and state-of-the-art
+adversarial attack PGD.
+
+3.2.1 Fast Gradient Signed Method
+The FGSM is an adversarial attack that seeks to maximize the loss by taking
+a small step, ε, along the gradient of the loss function L:
+
+                       xadv = x + ε sgn(∇x L(θ, x, y))                      (3.1)
+
+where x is the input, y is the true label, and θ is the model parameters.
+
+3.2.2 Projected gradient descent
+PGD is a generalization of FGSM where an arbitrary number of steps can be
+taken instead of FGSM’s single step. This is done by iteratively taking steps
+in the gradient of the loss originating from the previous step:
+
+                  xt+1 = Πx+S (xt + α sgn(∇x L(θ, xt , y)))                 (3.2)
+
+where α is the step size and Π is the projection operator.
+    An important note here is that since a new loss is calculated each iteration,
+the final adversarial sample will be costly to generate, having the number of
+gradient calculations scaling linearly with the number of steps. Doing this
+for many samples will therefore have a high computational overhead. This is
+extremely expensive in computer vision, but the cost is manageable with ECGs
+due to the lower dimensionality.
+    In this thesis, APGD is used as an improved version of PGD as described
+in [19] which makes the step size adaptively scheduled during iterations in
+an explore-exploit-like fashion. APGD therefore removes the need to tune
+the parameter α and therefore only relies on the number of iterations and the
+boundary S, which in turn only relies on ε.
+14 | Methods
+
+
+
+
+                                                   Backprop
+
+
+                                                                 Normal
+                                                   Model
+                                                                  AFib
+
+                          Generate
+                       adversarial noise
+
+
+
+
+Figure 3.1: Simplified scheme of adversarial training for predicting atrial
+fibrillation.
+
+
+3.2.3 Adversarial training
+Adversarial training can be formulated as a min-max problem where the
+training procedure seeks to find the best solution for the worst-case attacks:
+                                   [                     ]
+                     min E(x,y)∼D max L(θ, x + δ, y)                       (3.3)
+                       θ                   δ∈S
+
+where (x, y) ∼ D is the training data sampled from the dataset D and S is
+the set of allowed perturbations. S is usually dependent on some ε such that
+S = {δ : ∥δ∥p ≤ ε} where p = 2, representing the euclidean norm, or p = ∞,
+representing the max-norm, are both common choices.
+    As an estimation of the min-max problem in Equation 3.3, adversarial
+training is performed by integrating samples generated by adversarial attacks
+during training. As suggested in [31] the perturbations should ideally be
+introduced later in the training to avoid early divergence of the model. The
+perturbation threshold ε of the perturbations can also be scheduled to gradually
+increase over time to further avoid rapid divergence when the perturbations are
+introduced. These aspects are integrated during the experiments of this thesis
+as described in Section 4.1.1. A simplified scheme of adversarial training can
+be seen in Figure 3.1
+                                                                   Methods | 15
+
+
+
+
+3.3      Deep learning architectures
+As this thesis seeks to improve the robustness and transferability of state-of-
+the-art residual CNNs a detailed description of their main properties will be
+described here.
+
+3.3.1 Convolutional layers
+Convolutional neural networks are a subset of artificial neural networks
+suitable for ECG analysis where some of the functions applied to layers
+perform convolutions. These convolutions generally take the form of filters
+that slide over an image or a time series and create an output that is the input
+multiplied by the kernel as it slides over the input. See Figure 3.2 for a one-
+dimensional example similar to the case for an ECG. There are usually multiple
+kernels, which yield multi-dimensional output which is then aggregated.
+
+
+
+
+Figure 3.2: Example of a one-dimensional convolutional layer without a bias.
+The kernel (orange) contains the trainable parameters.
+
+    As kernel parameters are the only weights being modified in the layer, and
+as this kernel is generally small, there is a significant reduction in the number
+of parameters being optimized compared to a fully connected layer. In Figure
+3.2 a corresponding fully connected layer with the same number of input and
+output nodes would have 8 × 6 = 48 weights compared to the 3 used in the
+convolutional case. This reduction in parameters leads to faster training while
+introducing a certain bias to the model where spatial features are sought after,
+thus making the model ideal for computer vision and time series analysis where
+a pattern at an unknown location in the sequence is sought after, as for ECG
+16 | Methods
+
+
+
+
+analysis. These layers are generally also combined with pooling layers, which
+help aggregate stacked layers, and residual connections, which speed up the
+training of the model by introducing skip-connections which skip select layers.
+
+3.3.2 Model architecture
+The model architecture used in this thesis is the residual CNN proposed
+in [1] due to its good performance for ECG classification and regression.
+This architecture consists of stacked residual blocks which in turn consist
+of convolutional layers and residual connections coupled with common
+deep learning techniques such as batch normalization and dropout. The
+model’s final layers consist of a normal linear (dense) layer followed by a
+sigmoidal activation in the case of classification which thus outputs an estimate
+probability for the class being positive. See Figure 3.3 for a detailed schema
+of the architecture. The architecture used in this thesis is slightly modified,
+however, by replacing all ReLU activation functions with Gaussian Error
+Linear Units, GELUs, as these have been shown to increase the robustness of
+adversarial training [34]. The GELU activation is similar to ReLU but allows
+for some negative values and a smoother transition for outputs from positive to
+negative inputs. For a comparison of the two activation functions, see Figure
+3.4.
+
+
+
+
+               Conv BN ReLU    ResBlk ResBlk ... ResBlk ResBlk     Dense
+
+
+
+
+                               Max     1x1
+                              Pooling Conv
+
+
+                      Conv BN ReLU Dropout     Conv         BN ReLU Dropout
+
+
+
+
+Figure 3.3:       The residual convolutional neural network model
+architecture used in this thesis, replacing the ReLU layers with
+GELU. (Creative Commons Attribution 4.0 International License,
+http://creativecommons.org/licenses/by/4.0/) [1]
+                                                        Methods | 17
+
+
+
+
+                       3
+                             ReLU
+                             GELU
+
+                       2
+
+
+
+              f (x)    1
+
+
+
+                       0
+
+
+
+                      −1
+                       −3   −2   −1   0   1   2   3
+                                      x
+
+
+
+Figure 3.4: Comparison of the ReLU and GELU activation functions.
+18 | Methods
+                                                            Implementation | 19
+
+
+
+
+Chapter 4
+
+Implementation
+
+This chapter details the experiments done in this thesis and the implementation
+of these. This includes details regarding training such as model training and
+loss functions (Section 4.1), details of the adversarial robustness experiments
+(Section 4.2), and details of the transferability experiments (Section 4.3). This
+chapter also contains the results of the experiments (Section 4.4) and the
+discussion regarding these (Section 4.5).
+
+
+4.1      Model training
+Models were trained on ECG samples for three different tasks: atrial
+fibrillation classification, sex classification, and age prediction. All models
+used the same architecture as shown in Figure 3.3 with the age prediction
+regression models omitting the final sigmoid layer.
+    Models were trained using the AdamW optimizer using the recommended
+optimizer parameters β1 = 0.9, β2 = 0.999, ϵ = 1 × 10−8 , λ = 0.01 with
+a learning rate of γ = 1 × 10−3 [35]. A batch size of 32 was also used in
+accordance with [1]. The model parameters were optimized using binary-cross
+entropy loss for the classification tasks and using mean squared error for the
+age prediction.
+
+4.1.1 Adversarial training
+Some models were also adversarially trained. This adversarial training was
+performed by training on adversarially modified training samples. Adversarial
+training was only initialized after an initial warm-up period where the model
+was trained normally.
+20 | Implementation
+
+
+
+
+    Similar to [31] the loss during adversarial training was the average
+between the standard and adversarial loss where the adversarial loss is
+defined as L(xadv , y) where xadv is the corresponding adversarial example
+generated through 10-iteration APGD [19] with random initialization within
+the perturbation radius ε under the ℓ∞ norm. A scaling of the adversarial radius
+ε using an exponential schedule is also employed using parameters εmin and
+εmax which represent the minimum and maximum epsilon respectively during
+scheduling. This lets the model converge before introducing heavily perturbed
+adversarial examples.
+
+
+4.2     Robustness experiment
+Three PTB-XL models were trained for each of the three tasks (nine models
+in total) using an 80/10/10 training, validation, and test split. All model
+cases were trained for 20 epochs. For each task, two out of the three models
+were adversarially trained. These used a warm-up period of 10 epochs with a
+common εmin = 1×10−3 and εmax = 1×10−2 and εmax = 5×10−2 respectively
+and thus a 10 epoch period of adversarial training. The last model for each task
+was trained without adversarial training as a baseline. See the left-hand side
+of Tables 4.1 to 4.3 for an overview of these training details.
+    The robust performance of these was then evaluated by measuring the
+performance on the test set under 10-APGD adversarial attacks for various
+ε. For atrial fibrillation the performance is measured using AUPRC, as ROC
+curves can be optimistic for unbalanced datasets [36], AUROC is used for sex
+classification, and mean absolute error is used for age prediction.
+
+
+4.3     Transferability experiment
+The models trained in the initial robustness experiments were then fine-tuned
+on CODE. The fine-tuned models were trained using 10% of the data and tested
+using 10%, using learning rate γ = 1 × 10−4 . The low amount of training data
+was used to simulate a fine-tuning environment where data is more scarce.
+For atrial fibrillation, a baseline was also normally trained on 90% of the
+data. The performance of the models for each task was then compared, using
+a 500-iteration bootstrap and presenting the value and interquartile ranges of
+the metric.
+    For the atrial fibrillation classification models the robustness experiment
+in Section 4.2 is also done for the fine-tuned models and the CODE baseline
+                                                               Implementation | 21
+
+
+
+
+model. An attempt at fine-tuning using smaller data sizes was also performed
+for sex classification in order to compare the performance on even smaller data
+sizes.
+
+
+4.4      Results
+Figures 4.1 to 4.3 display the results of the robustness experiments. Each
+figure shows a comparison of three models, a baseline which is normally
+trained and the two fine-tuned models using εmax = 0.05 and εmax = 0.01
+respectively. Note the consistent performance of the adversarial models up
+until the maximum ε they were trained on and the rapid decrease for larger ε.
+Also, note the immediate drop in performance for the non-adversarially trained
+models.
+    Tables 4.1 to 4.3 show the results of the transferability experiments as
+the clean performance, i.e. non-perturbed, on the target dataset. The tables
+show details including training size, length, and time for the original dataset
+trained on and, if fine-tuning was done, the corresponding data size fine-tuned
+on and for what size. As all fine-tuning is done for 10 epochs this column
+has been omitted. Note the very similar performance of the models for sex
+classification and the larger differences for age prediction and atrial fibrillation
+classification. The interquartile ranges seem to indicate significant differences
+in the latter cases. Also, observe that for atrial fibrillation one of the fine-tuned
+adversarially trained models outperforms a non-adversarially trained model
+trained for a much higher amount of iterations and more data on the target
+dataset.
+    Figure 4.4 shows the robust performance of the fine-tuned models
+predicting atrial fibrillation. The models here are the same models as the ones
+shown in Table 4.1, displaying a 95% percentile interval using bootstrap. This
+shows a clear higher performance of the adversarial models for all ε and is
+most significant around ε = 0.005.
+    Figure 4.5 displays the performance comparison for different data sizes
+fine-tuned when classifying sex. The left-most points are the ones displayed in
+Table 4.2, while the other points show similarly fine-tuned models but instead
+using 1% and 0.1% of the dataset for training respectively. No large difference
+between the models can be observed, but both adversarial models have a higher
+performance when trained on the smallest dataset (where n = 346).
+22 | Implementation
+
+
+
+
+4.5      Discussion
+The results in Figures 4.1 to 4.3 clearly show the impact of adversarial training
+on the robustness of the model. Adversarial training with a higher εmax seems
+to yield a higher accuracy for higher εmax in exchange for lower clean accuracy
+and for very low εmax . This same behavior can be seen for all three tasks. It is
+also interesting to note that the adversarially trained model using εmax = 0.01
+for the classification of atrial fibrillation surpasses the clean performance of
+the base model, this is also in line with [31] which does similar experiments
+for predicting atrial fibrillation. The results are also in accordance with the
+robustness accuracy trade-off as described in [37], where a higher εmax yields
+a more robust model but lower clean accuracy.
+    Tables 4.1 to 4.3 show that the adversarially trained models seem to be
+performing better when fine-tuned when compared to their clean performance
+on PTB-XL (as seen in Figures 4.1 to 4.3). However, the differences in
+performance between the models seem to vary between tasks. For example,
+classifying atrial fibrillation (Table 4.1) shows a large performance boost for
+the εmax = 0.01 adversarially trained model compared to the normally trained
+and fine-tuned models. Meanwhile, for classifying sex the fine-tuned models
+show practically identical performance.
+    A potential reason for the discrepancy between tasks is how the data is
+balanced for the different tasks. For atrial fibrillation, there are much fewer
+positive samples than negative ones in both datasets while sex has a similar
+magnitude in both classes. The latter would thus yield many examples of both
+negative and positive samples and thus let the fine-tuned models converge
+faster to a common model, while the atrial fibrillation relies more on the
+generalization capabilities of the original models. Figure 4.5 strengthens this
+somewhat by showing that the adversarial models seem to perform slightly
+better when extremely limited data amounts are available. Though additional
+experiments are needed to establish the significance of this effect.
+    Another reason for the differences in performance between the tasks could
+be the presence of noisy labels for atrial fibrillation. Sex and age are rarely
+mislabelled in the data while the presence or absence of atrial fibrillation can
+be misdiagnosed, thus leading to incorrect labels that can severely misdirect
+the model. Many medical conditions can also be diﬀicult to classify binarily,
+for example, a patient could have only occasional atrial fibrillation which can
+make general diagnosis diﬀicult from a single ECG.
+    As seen in Figure 4.4 the robust performance of the fine-tuned adversarial
+models is significantly higher than the corresponding base models thus also
+                                                                           Implementation | 23
+
+
+
+
+                            1.0
+                                                                                base
+                                                                                adv. 5e-2
+                            0.8
+                                                                                adv. 1e-2
+
+
+                            0.6
+
+                    AUPRC
+                            0.4
+
+
+                            0.2
+
+
+                            0.0
+                                  0   0.001   0.005    0.01      0.05     0.1         0.5
+                                                         ε
+
+
+            Figure 4.1: Robust performance classifying atrial fibrillation on PTB-XL for
+            baseline (base) and two adversarially trained models with εmax = 0.05 (adv.
+            5e-2) and εmax = 0.01 (adv. 1e-2) respectively.
+
+
+            signaling that robustness is somewhat transferred when fine-tuning, even when
+            fine-tuning is done through normal training. As expected, since the fine-tuning
+            is done normally and not adversarially, the comparison between Figure 4.4
+            and Figure 4.1 clearly shows that the robust performance is still significantly
+            worse after fine-tuning. This hints at a relationship between fine-tuning and
+            robustness where fine-tuning’s smaller adjustments of the model parameters
+            transfer some of the original model’s robustness to the new dataset.
+
+            Table 4.1: Clean performance of various models classifying atrial fibrillation
+            on the CODE dataset measured by AUPRC. Under different configurations of
+            training in PTB-XL training and fine-tuning on CODE for 10 epochs.
+
+                Training, lr=1e-3                               Fine-tuning, lr=1e-4
+                                                                                            AUPRC
+Dataset   Epochs Size       Adv. train            t (min)     Dataset Size      t (min)
+CODE      10     311196 no                        99          -        -        -           0.685 (0.675-0.700)
+PTB-XL    20     17418      no                    15          CODE     34583 10             0.685 (0.673-0.699)
+PTB-XL    20     17418      yes, εmax = 0.01      40          CODE     34583 10             0.732 (0.721-0.746)
+PTB-XL    20     17418      yes, εmax = 0.05      40          CODE     34583 10             0.684 (0.674-0.698)
+24 | Implementation
+
+
+
+
+                              1.0
+                                                                                base
+                                                                                adv. 5e-2
+                              0.8
+                                                                                adv. 1e-2
+
+
+                              0.6
+
+        AUROC
+                              0.4
+
+
+                              0.2
+
+
+                              0.0
+                                    0    0.001      0.005   0.01   0.05   0.1         0.5
+                                                              ε
+
+
+Figure 4.2: Robust performance classifying sex on PTB-XL for baseline (base)
+and two adversarially trained models with εmax = 0.05 (adv. 5e-2) and εmax =
+0.01 (adv. 1e-2) respectively.
+
+
+
+
+                                        base
+                                        adv. 5e-2
+                                        adv. 1e-2
+
+
+
+
+        Mean Absolute Error
+
+
+
+                              101
+
+
+                                    0    0.001      0.005   0.01   0.05   0.1         0.5
+                                                              ε
+
+
+Figure 4.3: Robust performance predicting age on PTB-XL for baseline (base)
+and two adversarially trained models with εmax = 0.05 (adv. 5e-2) and εmax =
+0.01 (adv. 1e-2) respectively.
+                                                                                  Implementation | 25
+
+
+
+
+             Table 4.2: Clean performance of various models classifying sex on the CODE
+             dataset measured by AUROC. Under different configurations of training in
+             PTB-XL training and fine-tuning on CODE for 10 epochs.
+
+                    Training, lr=1e-3                            Fine-tuning, lr=1e-4
+                                                                                                 AUROC
+Dataset    Epochs     Size     Adv. train          t (min)     Dataset Size      t (min)
+PTB-XL     20         17418 no                     15          CODE     34583 10                 0.8814 (0.8802-0.8826)
+PTB-XL     20         17418 yes, εmax = 0.01       41          CODE     34583 10                 0.8809 (0.8796-0.8822)
+PTB-XL     20         17418 yes, εmax = 0.05       40          CODE     34583 10                 0.8808 (0.8796-0.8819)
+
+
+
+             Table 4.3: Clean performance of various models predicting age on the CODE
+             dataset measured by mean absolute error. Under different configurations of
+             training in PTB-XL training and fine-tuning on CODE for 10 epochs.
+
+                     Training, lr=1e-3                                Fine-tuning, lr=1e-4
+                                                                                                   MAE (years)
+ Dataset    Epochs     Size     Adv. train           t (min)        Dataset Size      t (min)
+ PTB-XL     20         17418 no                      15             CODE     34583 10              10.33 (10.30-10.36)
+ PTB-XL     20         17418 yes, εmax = 0.01        39             CODE     34583 10              10.15 (10.12-10.18)
+ PTB-XL     20         17418 yes, εmax = 0.05        41             CODE     34583 10              9.98 (9.96-10.02)
+
+
+
+                                1.0
+                                                                               base fine-tuned
+                                                                               adv. 5e-2
+                                0.8
+                                                                               adv. 1e-2
+                                                                               base CODE
+                                0.6
+
+                        AUPRC
+                                0.4
+
+
+                                0.2
+
+
+                                0.0
+                                      0   0.001   0.005      0.01       0.05     0.1       0.5
+                                                               ε
+
+
+             Figure 4.4: Robust performance on CODE classifying atrial fibrillation for
+             baseline and the three fine-tuned models in Table 4.1. The error bars show
+             95% percentile intervals using 500-iteration bootstrap.
+26 | Implementation
+
+
+
+
+                0.90
+                                                          base fine-tuned
+                                                          adv. 5e-2
+                0.85                                      adv. 1e-2
+
+
+
+
+        AUROC
+                0.80
+
+
+
+                0.75
+
+
+
+                0.70
+                       10%                  1%                       0.1%
+                                       Training size
+
+
+Figure 4.5: Performance on CODE classifying sex for fine-tuned baseline and
+the two adversarial models in Table 4.2 for different sizes of the training set of
+CODE. All models were fine-tuned for 10 epochs.
+                                              Conclusions and future work | 27
+
+
+
+
+Chapter 5
+
+Conclusions and future work
+
+This chapter describes the general conclusions from the experiments done in
+this thesis (Section 5.1). Furthermore, it discusses limitations and future work
+(Section 5.2) and sustainability and ethical reflections (Section 5.3).
+
+
+5.1     Conclusions
+This thesis shows that standard deep learning models trained to classify
+and regress from ECG samples are vulnerable to adversarial attacks and
+that performance drops rapidly with even very small perturbations. This
+shows a weakness in existing state-of-the-art models as it indicates a low
+consistency when practically identical samples can be classified differently
+and is a vulnerability against potential adversaries that wish to manipulate the
+models.
+    When comparing to other results such as [31] the behavior of APGD seems
+to be much alike that of normal PGD, while also being slightly better at finding
+worse adversarial examples. The introduction of APGD also allows for easier
+reproducibility of this work and comparisons.
+    The results also show that ECG deep learning models can be made robust
+using adversarial training, which yields an almost consistent performance
+up until the maximum ε that the adversarial training has used for training.
+However, the performance drops rapidly for larger ε than that, showing that
+adversarial training only generalizes well within the perturbation threshold.
+Another challenge is that the training itself has a high computational cost.
+    Fine-tuning adversarially trained models also seems to have a higher
+performance on the new dataset than corresponding non-adversarially trained
+models, especially when comparing the difference to the performance on the
+28 | Conclusions and future work
+
+
+
+
+pre-trained dataset. However, this claim seems to vary between tasks and data
+distributions, and investigating how the differences between the tasks and data
+distributions impact the transferability is a potential avenue for future work.
+    The results also indicate that fine-tuning using adversarially trained models
+yields a slight increase in performance compared to non-adversarially trained
+models while also retaining some robustness to adversarial attacks. This
+suggests that the representations made from adversarially trained models are
+more suitable for fine-tuning as this yields both increased robustness and
+performance in the domain transferred to.
+
+
+5.2      Limitations and future work
+The main limitations in this thesis are due to computational costs and a limited
+number of experiments. Further work should thus ideally promote methods
+alleviating these challenges and suggested avenues for future research will be
+made here.
+
+5.2.1 Computational cost
+Adversarially training models using several iterations of PGD on large
+numbers of data can be very expensive as the computational time during
+training increases linearly with the number of iterations. This is a limitation
+as models suitable for real-life data need to be trained for longer durations
+to achieve higher performance. This indicates the need for future work to
+investigate faster forms of adversarial training such as using FastAT [28]
+or GradAlign [38]. The computational cost of the experiments has also
+been limiting the amount of models available for the experiments. Statistical
+analysis using cross-validation would have been valuable, but as these further
+multiply training times they were outside the realm of feasibility. The
+number of tasks and datasets investigated also had to be limited due to the
+computational cost.
+
+5.2.2 Generalizability
+The experiments in this thesis have been limited to certain setups using
+specific models and datasets. As these are limited the generalizability of the
+claims made here is uncertain, especially those regarding the transferability of
+adversarially trained models. To further establish these claims larger studies
+using more datasets should be conducted, to see if the claims generalize
+                                              Conclusions and future work | 29
+
+
+
+
+beyond CODE and PTB-XL. Furthermore studying the use of more general
+models suitable for transfer learning could also be relevant, for example,
+studying how the multi-label model proposed in [1] is affected by adversarial
+training in terms of transferability and transfer learning to new tasks. This
+would also confirm the findings of [5] that adversarial training improves
+transfer learning.
+    One could also see adversarial training as a type of data augmentation
+using the worst possible augments. Therefore it could also be relevant to
+study that relationship and comparing to data augmentation methods for
+ECGs such as [32]. Another approach could be to randomly integrate
+adversarial examples, much like how data augmentation often depends on
+random additions, to see whether the robustness and transferability of the
+model improve.
+
+5.2.3 Clinical relevance
+Ultimately this work could bring large benefits in clinical settings, especially
+in developing countries or for smaller hospitals where data sizes are small.
+For this to be done, however, one needs to further test these models in real-life
+settings, preferably using adversarially trained versions of general multi-label
+models such as the one presented in [1]. Furthermore, in a real-life setting, a
+model should ideally be able to adapt to new incoming data affected by shifts
+in the distribution caused by changes such as new equipment or routines. This
+work helps alleviate this issue but does not solve it as performance on new data
+distributions without fine-tuning is still low.
+
+
+5.3      Reflections
+As this thesis is centered around developing tech to be used in healthcare it
+mainly contributes to the United Nations (UN) Sustainable Development Goal
+(SDG) number 3, Ensure healthy lives and promote well-being for all at all
+ages. The SDG targets 3.4, reducing premature mortality, and 3.8, access to
+universal healthcare, are both especially relevant. This thesis contributes to
+3.4 by introducing methods that can assist in predicting early diseases through
+ECGs. It also contributes to 3.8 by introducing a method for creating general
+models that can allow high performance on new data. This can be key in
+developing countries where data might be limited and can thus allow for a
+cheap way of diagnosing key diseases especially if coupled with cheaper ECG
+tools such as wearables [39].
+30 | Conclusions and future work
+
+
+
+
+    This thesis also contributes to cybersecurity as it provides a clear method
+for making deep learning models resistant to adversarial attacks, which can
+be generated with malicious intent. This could help prevent scenarios such
+as insurance fraud where an adversary could generate ECG samples using
+adversarial attacks that would incorrectly diagnose the person. The relevance
+of this today is, however, extremely limited but could be more relevant in the
+future as automatic diagnosing becomes more prevalent. This can be seen as
+a weak link to SDG target 16.3, promoting the rule of law.
+    This thesis also helps alleviate some ethical concerns with machine
+learning in medical settings. Mainly, as this thesis partly seeks to make
+deep learning models analyzing ECGs robust it helps establish trust with its
+users as the model will make consistent predictions around some perturbation
+radius ε. Also, creating more general models by using adversarial training
+will presumably reduce biases toward dataset-specific features that could be
+discriminatory in a clinical setting. For example, if a certain ethnicity, gender,
+or age is overrepresented in the training data of a model then those biases
+will carry over when applied in a clinical setting. More general models will,
+however, inherently reduce these biases as they are more general.
+    The above are also with risks, however. Deep learning models are not
+perfect and often yield mistakes. Implementing those without supervision in
+a real-life setting can therefore be dangerous, even if this work increases trust
+in the models. A risk is therefore too rapid advancement of the field where
+real lives can be at risk due to too early adaption without preceding clinical
+studies.
+                                                            References | 31
+
+
+
+
+References
+
+[1] A. H. Ribeiro, M. H. Ribeiro, G. M. M. Paixão, D. M. Oliveira, P. R.
+    Gomes, J. A. Canazart, M. P. S. Ferreira, C. R. Andersson, P. W.
+    Macfarlane, W. Meira Jr., T. B. Schön, and A. L. P. Ribeiro, “Automatic
+    diagnosis of the 12-lead ECG using a deep neural network,” Nature
+    Communications, vol. 11, no. 1, p. 1760, 2020. doi: 10.1038/s41467-
+    020-15432-4 [Pages ix, 1, 6, 10, 16, 19, and 29.]
+
+[2] L. Lu, T. Zhu, A. H. Ribeiro, L. Clifton, E. Zhao, J. Zhou, A. L. P.
+    Ribeiro, Y.-T. Zhang, and D. A. Clifton, “Decoding 2.3 million ECGs:
+    Interpretable deep learning for advancing cardiovascular diagnosis and
+    mortality risk stratification,” European Heart Journal - Digital Health,
+    p. ztae014, 2024. doi: 10.1093/ehjdh/ztae014 [Page 1.]
+
+[3] X. Han, Y. Hu, L. Foschini, L. Chinitz, L. Jankelson, and R. Ranganath,
+    “Deep learning models for electrocardiograms are susceptible to
+    adversarial attack,” Nature Medicine, vol. 26, no. 3, pp. 360–363, 2020.
+    doi: 10.1038/s41591-020-0791-x [Pages 1, 7, and 10.]
+
+[4] A. Madry, A. Makelov, L. Schmidt, D. Tsipras, and A. Vladu,
+    “Towards Deep Learning Models Resistant to Adversarial Attacks,”
+    2018. [Online]. Available: https://openreview.net/forum?id=rJzIBfZAb
+    [Page 1.]
+
+[5] Z. Deng, L. Zhang, K. Vodrahalli, K. Kawaguchi, and J. Y. Zou, “Ad-
+    versarial Training Helps Transfer Learning via Better Representations,”
+    in Advances in Neural Information Processing Systems, vol. 34. Curran
+    Associates, Inc., 2021, pp. 25 179–25 191. [Pages 2 and 29.]
+
+[6] S. Chatterjee, R. S. Thakur, R. N. Yadav, L. Gupta, and D. K.
+    Raghuvanshi, “Review of noise removal techniques in ECG signals,” IET
+    Signal Processing, vol. 14, no. 9, pp. 569–590, 2020. doi: 10.1049/iet-
+    spr.2020.0104 [Page 4.]
+32 | References
+
+
+
+
+ [7] T. Bai, J. Luo, J. Zhao, B. Wen, and Q. Wang, “Recent Advances
+     in Adversarial Training for Adversarial Robustness,” in Twenty-
+     Ninth International Joint Conference on Artificial Intelligence, vol. 5,
+     2021. doi: 10.24963/ijcai.2021/591. ISSN 1045-0823 pp. 4312–4321.
+     [Pages 4, 8, and 9.]
+
+ [8] M. I. Jordan and T. M. Mitchell, “Machine learning: Trends,
+     perspectives, and prospects,” Science, vol. 349, no. 6245, pp.
+     255–260, 2015. doi: 10.1126/science.aaa8415. [Online]. Available:
+     https://www.science.org/doi/abs/10.1126/science.aaa8415 [Page 5.]
+
+ [9] A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez,
+     Ł. ukasz Kaiser, and I. Polosukhin, “Attention is All you Need,” in
+     Advances in Neural Information Processing Systems, vol. 30. Curran
+     Associates, Inc., 2017. [Page 5.]
+
+[10] K. He, X. Zhang, S. Ren, and J. Sun, “Deep residual learning for image
+     recognition,” 2015. [Page 6.]
+
+[11] K. C. Siontis, P. A. Noseworthy, Z. I. Attia, and P. A. Friedman,
+     “Artificial intelligence-enhanced electrocardiography in cardiovascular
+     disease management,” Nature Reviews Cardiology, vol. 18, no. 7, pp.
+     465–478, 2021. doi: 10.1038/s41569-020-00503-2 [Pages 6 and 7.]
+
+[12] D. Adedinsewo, R. E. Carter, Z. Attia, P. Johnson, A. H. Kashou,
+     J. L. Dugan, M. Albus, J. M. Sheele, F. Bellolio, P. A. Friedman,
+     F. Lopez-Jimenez, and P. A. Noseworthy, “Artificial Intelligence-
+     Enabled ECG Algorithm to Identify Patients With Left Ventricular
+     Systolic Dysfunction Presenting to the Emergency Department With
+     Dyspnea,” Circulation: Arrhythmia and Electrophysiology, vol. 13,
+     no. 8, p. e008437, 2020. doi: 10.1161/CIRCEP.120.008437 [Page 6.]
+
+[13] W.-Y. Ko, K. C. Siontis, Z. I. Attia, R. E. Carter, S. Kapa, S. R. Ommen,
+     S. J. Demuth, M. J. Ackerman, B. J. Gersh, A. M. Arruda-Olson,
+     J. B. Geske, S. J. Asirvatham, F. Lopez-Jimenez, R. A. Nishimura,
+     P. A. Friedman, and P. A. Noseworthy, “Detection of Hypertrophic
+     Cardiomyopathy Using a Convolutional Neural Network-Enabled
+     Electrocardiogram,” Journal of the American College of Cardiology,
+     vol. 75, no. 7, pp. 722–733, 2020. doi: 10.1016/j.jacc.2019.12.030
+     [Page 6.]
+                                                              References | 33
+
+
+
+
+[14] E. M. Lima, A. H. Ribeiro, G. M. M. Paixão, M. H. Ribeiro, M. M.
+     Pinto-Filho, P. R. Gomes, D. M. Oliveira, E. C. Sabino, B. B. Duncan,
+     L. Giatti, S. M. Barreto, W. Meira Jr, T. B. Schön, and A. L. P. Ribeiro,
+     “Deep neural network-estimated electrocardiographic age as a mortality
+     predictor,” Nature Communications, vol. 12, no. 1, p. 5117, 2021. doi:
+     10.1038/s41467-021-25351-7 [Page 6.]
+
+[15] A. H. Ribeiro, M. H. Ribeiro, G. M. Paixão, D. M. Oliveira, P. R. Gomes,
+     J. A. Canazart, M. P. Ferreira, C. R. Andersson, P. W. Macfarlane, W. M.
+     Jr., T. B. Schön, and A. L. P. Ribeiro, “CODE dataset,” 2021. [Pages 6
+     and 11.]
+
+[16] P. Wagner, N. Strodthoff, R.-D. Bousseljot, W. Samek, and T. Schaeffter,
+     “PTB-XL, a large publicly available electrocardiography dataset.”
+     [Pages ix, 6, 7, 11, and 12.]
+
+[17] N. Carlini and D. Wagner, “Towards Evaluating the Robustness of Neural
+     Networks,” in 2017 IEEE Symposium on Security and Privacy (SP),
+     2017. doi: 10.1109/SP.2017.49. ISSN 2375-1207 pp. 39–57. [Page 7.]
+
+[18] D. Su, H. Zhang, H. Chen, J. Yi, P.-Y. Chen, and Y. Gao, “Is Robustness
+     the Cost of Accuracy? – A Comprehensive Study on the Robustness
+     of 18 Deep Image Classification Models,” in Computer Vision – ECCV
+     2018, V. Ferrari, M. Hebert, C. Sminchisescu, and Y. Weiss, Eds.
+     Cham: Springer International Publishing, 2018. doi: 10.1007/978-3-
+     030-01258-8_39. ISBN 978-3-030-01258-8 pp. 644–661. [Page 8.]
+
+[19] F. Croce and M. Hein, “Reliable evaluation of adversarial robustness with
+     an ensemble of diverse parameter-free attacks,” in Proceedings of the
+     37th International Conference on Machine Learning, ser. ICML’20, vol.
+     119. JMLR.org, 2020, pp. 2206–2216. [Pages 8, 9, 13, and 20.]
+
+[20] J. H. Metzen, T. Genewein, V. Fischer, and B. Bischoff, “On Detecting
+     Adversarial Perturbations,” 2017. [Page 9.]
+
+[21] Q. Wang, W. Guo, K. Zhang, A. G. Ororbia II, X. Xing, X. Liu, and C. L.
+     Giles, “Learning Adversary-Resistant Deep Neural Networks,” 2017.
+     [Page 9.]
+
+[22] S. Kotyan and D. V. Vargas, “Evolving Robust Neural Architectures to
+     Defend from Adversarial Attacks,” 2020. [Page 9.]
+34 | References
+
+
+
+
+[23] N. Carlini, A. Athalye, N. Papernot, W. Brendel, J. Rauber, D. Tsipras,
+     I. Goodfellow, A. Madry, and A. Kurakin, “On Evaluating Adversarial
+     Robustness,” 2019. [Page 9.]
+
+[24] A. Mumuni and F. Mumuni, “Data augmentation: A comprehensive
+     survey of modern approaches,” Array, vol. 16, p. 100258, 2022. doi:
+     10.1016/j.array.2022.100258 [Page 9.]
+
+[25] L. Schott, J. Rauber, M. Bethge, and W. Brendel, “Towards the
+     first adversarially robust neural network model on MNIST,” arXiv:
+     Computer Vision and Pattern Recognition, 2018. [Online]. Available:
+     https://www.semanticscholar.org/paper/Towards-the-first-adversarial
+     ly-robust-neural-model-Schott-Rauber/fd7789de401811fd8692466b8d
+     49230e7184655f [Page 9.]
+
+[26] T. Pang, X. Yang, Y. Dong, H. Su, and J. Zhu, “Bag of Tricks
+     for Adversarial Training,” in International Conference on Learning
+     Representations, 2020. [Page 9.]
+
+[27] P. Maini, E. Wong, and Z. Kolter, “Adversarial Robustness Against the
+     Union of Multiple Perturbation Models,” in Proceedings of the 37th
+     International Conference on Machine Learning. PMLR, 2020. ISSN
+     2640-3498 pp. 6640–6650. [Page 9.]
+
+[28] E. Wong, L. Rice, and J. Z. Kolter, “Fast is better than free:
+     Revisiting adversarial training,” in International Conference on
+     Learning Representations, 2019. [Pages 9 and 28.]
+
+[29] K. F. Hossain, S. A. Kamran, A. Tavakkoli, and X. Ma, “ECG-
+     ATK-GAN: Robustness Against Adversarial Attacks on ECGs Using
+     Conditional Generative Adversarial Networks,” in Applications of
+     Medical Artificial Intelligence: First International Workshop, AMAI
+     2022, Held in Conjunction with MICCAI 2022, Singapore, September
+     18, 2022, Proceedings.      Berlin, Heidelberg: Springer-Verlag, 2022.
+     doi: 10.1007/978-3-031-17721-7_8. ISBN 978-3-031-17720-0 pp. 68–
+     78. [Page 10.]
+
+[30] J. Shao, S. Geng, Z. Fu, W. Xu, T. Liu, and S. Hong, “CardioDefense:
+     Defending against adversarial attack in ECG classification with
+     adversarial distillation training,” Biomedical Signal Processing and
+     Control, vol. 91, p. 105922, 2024. doi: 10.1016/j.bspc.2023.105922
+     [Page 10.]
+                                                              References | 35
+
+
+
+
+[31] L. Ma and L. Liang, “Enhance CNN Robustness Against Noises for
+     Classification of 12-Lead ECG with Variable Length,” in 2020 19th
+     IEEE International Conference on Machine Learning and Applications
+     (ICMLA), 2020. doi: 10.1109/ICMLA51294.2020.00137 pp. 839–846.
+     [Pages 10, 14, 20, 22, and 27.]
+
+[32] A. Raghu, D. Shanmugam, E. Pomerantsev, J. Guttag, and C. M. Stultz,
+     “Data Augmentation for Electrocardiograms,” in Proceedings of the
+     Conference on Health, Inference, and Learning, 2022. ISSN 2640-3498
+     pp. 282–310. [Pages 10 and 29.]
+
+[33] A. H. Ribeiro, G. M. Paixao, E. M. Lima, M. Horta Ribeiro,
+     M. M. Pinto Filho, P. R. Gomes, D. M. Oliveira, W. Meira Jr,
+     T. B. Schon, and A. L. P. Ribeiro, “CODE-15%: a large scale
+     annotated dataset of 12-lead ECGs,” 2021. [Online]. Available:
+     https://doi.org/10.5281/zenodo.4916206 [Page 11.]
+
+[34] V. Singla, S. Singla, S. Feizi, and D. Jacobs, “Low Curvature Activations
+     Reduce Overfitting in Adversarial Training,” in Proceedings of the
+     IEEE/CVF International Conference on Computer Vision, 2021, pp.
+     16 423–16 433. [Page 16.]
+
+[35] I. Loshchilov and F. Hutter, “Decoupled Weight Decay Regularization,”
+     in International Conference on Learning Representations, 2018.
+     [Page 19.]
+
+[36] J. Davis and M. Goadrich, “The relationship between Precision-Recall
+     and ROC curves,” in Proceedings of the 23rd International Conference
+     on Machine Learning, ser. ICML ’06. New York, NY, USA: Association
+     for Computing Machinery, 2006. doi: 10.1145/1143844.1143874. ISBN
+     978-1-59593-383-6 pp. 233–240. [Page 20.]
+
+[37] H. Zhang, Y. Yu, J. Jiao, E. Xing, L. E. Ghaoui, and M. Jordan,
+     “Theoretically Principled Trade-off between Robustness and Accuracy,”
+     in Proceedings of the 36th International Conference on Machine
+     Learning, 2019. ISSN 2640-3498 pp. 7472–7482. [Page 22.]
+
+[38] M. Andriushchenko and N. Flammarion, “Understanding and Improving
+     Fast Adversarial Training,” in Advances in Neural Information
+     Processing Systems, vol. 33. Curran Associates, Inc., 2020, pp. 16 048–
+     16 059. [Page 28.]
+36 | References
+
+
+
+
+[39] K. Bayoumy, M. Gaber, A. Elshafeey, O. Mhaimeed, E. H. Dineen, F. A.
+     Marvel, S. S. Martin, E. D. Muse, M. P. Turakhia, K. G. Tarakji, and
+     M. B. Elshazly, “Smart wearable devices in cardiovascular care: Where
+     we are and how to move forward,” Nature Reviews Cardiology, vol. 18,
+     no. 8, pp. 581–599, 2021. doi: 10.1038/s41569-021-00522-7 [Page 29.]
+TRITA-EECS-EX-2024:437
+
+www.kth.se
+

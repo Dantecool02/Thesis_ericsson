@@ -210,9 +210,8 @@ __marimo__/
 data/raw/
 data/index/
 
-# Local data and document working directories
+# Local data working directory
 data/
-documents/
 
 # Local Claude state
 .claude/

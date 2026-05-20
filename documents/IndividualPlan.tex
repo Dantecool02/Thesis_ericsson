@@ -1,0 +1,306 @@
+\documentclass[11pt, a4paper]{article}
+
+%========================================================================================
+% PREAMBLE (Strictly from Project 7)
+%========================================================================================
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{enumitem} % For better list control
+\usepackage{tikz}
+\usepackage{pgfgantt}
+\usepackage{array} % For simple tables in the time plan
+\usepackage{titlesec} % Retained to ensure section spacing is clean
+\usetikzlibrary{positioning, arrows.meta, fit, backgrounds, calc}
+
+% Standard font encoding
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% Set page margins
+\geometry{a4paper, margin=1in}
+\setlength{\headheight}{14pt}
+
+% Define a clean header and footer
+\pagestyle{fancy}
+\fancyhf{} % Clear all header and footer fields
+\fancyhead[L]{Master's Thesis Individual plan: Adaptive Hybrid RAG}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Hyperlink setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+}
+
+\begin{document}
+
+%========================================================================================
+% TITLE BLOCK
+%========================================================================================
+\title{
+    \textbf{Adaptive Hybrid RAG: Optimizing the Efficiency-Accuracy Trade-off via Learned Query Routing} \\
+    \vspace{0.5em}
+    \large Individual plan
+}
+
+\author{
+    Dante Wesslund \\
+    dantew@kth.se}
+
+
+\date{March 2026}
+
+\maketitle
+
+% The crisp horizontal line and spacing you liked
+\hrule
+\vspace{1cm}
+
+%========================================================================================
+% CONTENT
+%========================================================================================
+
+\section{Project Information}
+
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright\arraybackslash}p{4.4cm} >{\raggedright\arraybackslash}p{10cm}}
+\textbf{Preliminary title} & Adaptive Hybrid RAG: Optimizing the Efficiency-Accuracy Trade-off via Learned Query Routing \\
+\textbf{Student} & Dante Wesslund, dantew@kth.se \\
+\textbf{Examiner at KTH} & Pawel Herman, paherman@kth.se  \\
+\textbf{Supervisor at KTH} & Arvid Eriksson, arveri@kth.se \\
+\textbf{External supervisor} & Peng Zhang, Ericsson \\
+\textbf{Current date} & March 2026 \\
+\textbf{Keywords} & Retrieval-Augmented Generation, Graph RAG, query routing, LightRAG, 2WikiMultihopQA, LLM-as-a-Judge \\
+\end{tabular}
+
+\section{Background \& Objective}
+
+Retrieval-Augmented Generation (RAG) has become a standard way to ground large language models in private or changing data \cite{gao2023ragsurvey}. However, vector-only retrieval often struggles when the answer depends on linking facts across documents or comparing distributed attributes. Recent graph-based systems such as GraphRAG and LightRAG show that structured retrieval can make such questions more tractable by explicitly modeling entities, relations, and higher-level document structure \cite{edge2024graphrag,lightrag2024}. At the same time, adaptive retrieval work such as Self-RAG and Adaptive-RAG argues that not every query should trigger the same retrieval behavior, since indiscriminate retrieval or always using the most sophisticated strategy can introduce unnecessary computational overhead \cite{asai2023selfrag,jeong2024adaptiverag}. This creates a broader scientific and practical problem: expensive retrieval should ideally be used only when it is actually needed.
+
+Ericsson works with large internal technical repositories where information is fragmented across documents and cannot be assumed to exist in public model pretraining. In such settings, graph-enhanced retrieval can improve answer quality, but using it for every query is inefficient. The company interest is therefore to support high-quality question answering while avoiding unnecessary token and inference cost.
+
+An important knowledge gap remains between these two research directions. Existing graph-based RAG work motivates richer retrieval, and adaptive retrieval work motivates selective computation, but it is still unclear whether the specific choice between cheap vector retrieval and more expensive graph-enhanced retrieval can itself be delegated to a lightweight task-specific classifier. If the routing decision requires a large general-purpose model, then some of the expected efficiency gain is lost already at the control layer. This makes retrieval-mode selection an interesting research problem rather than only an implementation detail \cite{hu2024routerbench,benayas2024encoder}.
+
+The objective of the project is therefore to design and evaluate a learned routing layer that decides whether cheap vector retrieval is sufficient or whether more expensive graph-enhanced retrieval is required. The desired outcome is not only a working routing policy, but also empirical evidence about whether retrieval-mode selection can be learned as a narrow text classification problem, and whether such a model can reduce unnecessary token cost while preserving access to graph-enhanced retrieval for queries that truly require it.
+
+The project requires knowledge of machine learning, transformer-based text classification, retrieval-augmented generation, and experimental evaluation. Prior familiarity with Python, PyTorch, Hugging Face, and applied GenAI systems is especially relevant for implementing the router and the surrounding evaluation pipeline.
+
+\section{Research Question \& Method}
+
+\subsection{Question} Within a fixed Hybrid RAG setting, how predictable is the distinction between queries for which vector retrieval is sufficient and queries for which graph-enhanced retrieval is required, based on the query text alone?
+
+\subsection{Objectives}
+\begin{itemize}[label=--]
+    \item Implement a reproducible pipeline for executing LightRAG in both \emph{Naive} and \emph{Mix} modes and logging answer outputs and cost-related metadata.
+    \item Construct a supervised routing dataset by labeling queries with the minimum viable retrieval mode.
+    \item Fine-tune an encoder-only classifier to predict whether graph-enhanced retrieval is required from the query text alone.
+    \item Evaluate the resulting router first as a held-out label-prediction model and second as a routing policy through offline simulation.
+\end{itemize}
+
+\emph{Tasks and challenges.}
+\begin{itemize}[label=--]
+    \item \emph{Task 1: Corpus preparation and indexing.} Build and maintain a reproducible 2WikiMultihopQA indexing pipeline in LightRAG. The main challenge is incremental indexing and the heavy compute necessary for graph creation.
+    \item \emph{Task 2: Routing label generation.} Execute both retrieval modes and use LLM-as-a-Judge to decide whether vector retrieval was sufficient or whether graph-enhanced retrieval was required. Queries where both modes fail or the judgment is unclear will be excluded from router training. The main challenges are judge reliability, label noise, and class balance \cite{zheng2023judge}.
+    \item \emph{Task 3: Router training.} Fine-tune a lightweight encoder such as ModernBERT-base \cite{warner2024modernbert} and compare it to a simpler baseline such as TF-IDF with logistic regression. The main challenge is to learn a meaningful decision boundary.
+    \item \emph{Task 4: Evaluation.} Evaluate the router first on held-out routing labels and then through thresholded offline simulation. The main challenge is to keep the primary evaluation focused on whether the router learns the judged routing pattern, while still showing the practical implications of the learned decision boundary. In the offline simulation, each threshold must map cleanly to both held-out label performance and cumulative token cost so that the resulting operating points can be compared.
+\end{itemize}
+
+\subsection{Method} The primary benchmark will be 2WikiMultihopQA, which provides gold questions, answers, and supporting evidence \cite{ho2020twowiki}. Each query will be executed in LightRAG's \emph{Naive} and \emph{Mix} modes. An LLM Judge will compare both outputs against the benchmark answer and support facts, decide whether vector retrieval was already sufficient or whether graph-enhanced retrieval was required, and mark unclear or unsuccessful cases for exclusion from router training. This uses LLM-as-a-Judge as a scalable but imperfect labeling mechanism, rather than as an unquestioned source of truth \cite{zheng2023judge}. The resulting dataset will be split into train, validation, and test subsets after a pilot phase, with attention to both 2Wiki question types and the observed routing-label distribution. A lightweight encoder-only router will then be fine-tuned and compared to static baselines and a simple classical baseline. The primary evaluation will measure how well the router predicts held-out routing labels. A secondary evaluation will use held-out offline simulation together with the precomputed token usage of both retrieval modes to analyze how different thresholds trade label-prediction performance against token cost. This method is appropriate because it lets the thesis isolate the routing problem while keeping the retrieval environment fixed \cite{hu2024routerbench,jeong2024adaptiverag,benayas2024encoder}.
+
+\subsection{Ethics} The main benchmark is public and therefore does not raise major privacy concerns in the core experimental setup. If an Ericsson extension is added later, confidentiality, access control, and careful handling of internal technical material become essential. A second ethical consideration is methodological: because the routing labels are assigned with LLM-as-a-Judge, the work must acknowledge the risk of noisy or biased labels and treat unclear cases conservatively rather than forcing them into the training data \cite{zheng2023judge}. This project therefore aims to use the judge as a controlled labeling mechanism rather than as an authority on open-ended answer quality.
+
+\subsection{Sustainability} The project is directly motivated by computational sustainability. If graph-enhanced retrieval is applied to every query, token usage and inference cost increase unnecessarily for queries that could have been handled by vector retrieval alone. A successful router would therefore reduce redundant retrieval and generation cost while preserving access to the stronger retrieval mode when it is actually needed. In that sense, the thesis investigates whether adaptive routing can make Hybrid RAG systems more resource-efficient without turning the routing step itself into another expensive model call.
+
+\subsection{Limitations} The router uses the query text only. The thesis evaluates the routing decision within LightRAG, where the abstract distinction is operationalized as \emph{Naive} versus \emph{Mix}. The primary benchmark is 2WikiMultihopQA, Ericsson data is treated as an optional extension rather than a core dependency.
+
+\subsection{Risks} The main risks are noisy judge labels, an imbalanced final label distribution, and practical limits on API cost or throughput. These risks will be handled through a pilot phase, incremental data generation, exclusion of unclear cases from router training, and keeping Ericsson data optional rather than central to the scientific contribution.
+
+\section{Evaluation \& News Value}
+
+\subsection{Evaluation} The research question will be considered adequately answered if the project shows, on held-out data, that the distinction between vector-sufficient and graph-required queries is predictable from the query text with consistent reliability. The primary evaluation will therefore focus on held-out label-prediction metrics such as precision, recall, and F1, which directly measure whether the learned router captures the judged routing distinction. As a secondary evaluation, the router's predicted probabilities will be turned into thresholded routing policies, and each threshold will be analyzed in terms of the total and average token cost it would imply compared with static baselines such as always \emph{Naive} and always \emph{Mix}.
+
+\subsection{Expected scientific results} The expected scientific contribution is empirical evidence about how predictable the distinction between vector-sufficient and graph-required queries is from query text alone in a fixed Hybrid RAG setting. In relation to prior work on adaptive retrieval, model routing, and efficient text classification \cite{jeong2024adaptiverag,hu2024routerbench,benayas2024encoder}, the thesis contributes a more narrowly defined study of retrieval-mode selection as a supervised prediction problem. The expected result is therefore not merely a working router, but a clearer account of whether this routing distinction can be learned with useful reliability by a lightweight task-specific classifier, and how that predictability relates to the token-cost savings targeted by adaptive retrieval.
+
+\subsection{Innovation and news value} Prior work such as Self-RAG and Adaptive-RAG has shown the value of adaptive retrieval, while RouterBench has framed routing more broadly as an important systems problem \cite{asai2023selfrag,jeong2024adaptiverag,hu2024routerbench}. However, these works do not specifically study retrieval-mode selection inside a fixed Hybrid RAG system as a narrow supervised prediction task between vector retrieval and graph-enhanced retrieval. The novelty of this thesis is therefore to position that choice, operationalized through LightRAG's \emph{Naive} and \emph{Mix} modes, as a specialized routing problem that may be solvable by a lightweight fine-tuned classifier rather than by a larger proprietary or decoder-based controller \cite{lightrag2024,benayas2024encoder,warner2024modernbert}. The broader relevance is that this could reduce unnecessary compute in adaptive RAG systems while preserving access to graph-enhanced retrieval for the subset of queries that truly require it.
+
+\section{Pre-Study}
+
+The pre-study focuses on hybrid and graph-based retrieval, multi-hop benchmark choice, adaptive retrieval and routing, encoder-only text classifiers, and LLM-as-a-Judge as a labeling mechanism. These topics are covered in the separate pre-study document, which functions as the literature-study basis for the degree project. The state of the art will therefore be built from both a literature review and a small exploratory engineering pilot on 2WikiMultihopQA. Preliminarily important references include LightRAG \cite{lightrag2024}, 2WikiMultihopQA \cite{ho2020twowiki}, RouterBench \cite{hu2024routerbench}, Adaptive-RAG \cite{jeong2024adaptiverag}, and ModernBERT \cite{warner2024modernbert}.
+
+\section{Conditions \& Schedule}
+
+\subsection{Resources needed.}
+\begin{itemize}[label=--]
+    \item Access to GPU resources for fine-tuning and experimentation.
+    \item Access to an LLM API for LightRAG indexing, query processing, and LLM-as-a-Judge labeling.
+    \item Access to LightRAG, PyTorch, and the Hugging Face Transformers ecosystem.
+    \item Unrestricted access to 2WikiMultihopQA. Potential access to internal Ericsson data will be clarified separately with the company supervisor.
+\end{itemize}
+
+\subsection{External supervisor involvement.} The work is performed in cooperation with Ericsson. The external supervisor is expected to provide domain feedback, discuss the practical motivation for adaptive routing, and participate in regular supervision meetings. Academic supervision at KTH will guide the scientific framing, methodology, and final evaluation design.
+
+\subsection{Project timeline.} The following schedule is an initial plan and will be refined together with the supervisors.
+
+\begin{center}
+\begin{ganttchart}[
+    x unit=1.16cm,
+    y unit title=0.38cm,
+    y unit chart=0.64cm,
+    vgrid,
+    hgrid,
+    bar height=0.6,
+    group height=0.7,
+    milestone height=0.6,
+    milestone top shift=0.15,
+    title label font=\footnotesize\bfseries,
+    bar label font=\scriptsize,
+    group label font=\scriptsize\bfseries,
+    milestone label font=\scriptsize,
+    bar label node/.append style={align=right,text width=5.8cm},
+    group label node/.append style={align=right,text width=5.8cm},
+    milestone label node/.append style={align=right,text width=5.8cm},
+    title/.append style={fill=gray!15},
+    group/.append style={fill=gray!35},
+    bar/.append style={fill=gray!55},
+    milestone/.append style={fill=black},
+    link/.style={-Latex, line width=0.55pt, draw=black!75}
+]{1}{8}
+\gantttitle{March}{2}
+\gantttitle{April}{2}
+\gantttitle{May}{2}
+\gantttitle{June}{2} \\
+
+\ganttgroup{Planning}{1}{2} \\
+\ganttbar[name=plan]{Plan and pre-study}{1}{2} \\
+\ganttmilestone[name=plan_done]{Scope fixed}{2} \\
+
+\ganttgroup{Data pipeline}{2}{4} \\
+\ganttbar[name=index]{Index 2Wiki corpus}{2}{3} \\
+\ganttbar[name=labels]{Generate routing labels}{3}{4} \\
+\ganttmilestone[name=data_ready]{Dataset ready}{4} \\
+
+\ganttgroup{Modeling}{5}{8} \\
+\ganttbar[name=train]{Train router}{5}{6} \\
+\ganttbar[name=eval]{Policy evaluation}{6}{7} \\
+\ganttbar[name=write]{Writing and revision}{5}{8} \\
+\ganttmilestone[name=eval_done]{Evaluation complete}{7} \\
+\ganttmilestone[name=final]{Submit and present}{8}
+
+\ganttlink{plan}{index}
+\ganttlink{index}{labels}
+\ganttlink{labels}{train}
+\ganttlink{train}{eval}
+\ganttlink{labels}{write}
+\ganttlink{eval}{final}
+\end{ganttchart}
+\end{center}
+
+\begin{center}
+\footnotesize
+\textbf{Legend:}\hspace{0.6em}
+\begin{tikzpicture}[baseline=-0.6ex]
+\fill[gray!55] (0,0) rectangle (0.45,0.18);
+\end{tikzpicture}
+\hspace{0.25em}task
+\hspace{1.2em}
+\begin{tikzpicture}[baseline=-0.6ex]
+\fill[gray!35] (0,0) rectangle (0.45,0.18);
+\end{tikzpicture}
+\hspace{0.25em}task group
+\hspace{1.2em}
+\begin{tikzpicture}[baseline=-0.6ex]
+\fill[black] (0.22,0.18) -- (0.44,0.09) -- (0.22,0) -- (0,0.09) -- cycle;
+\end{tikzpicture}
+\hspace{0.25em}milestone
+\hspace{1.2em}
+\begin{tikzpicture}[baseline=-0.55ex, >=Latex]
+\draw[-Latex, line width=0.55pt, draw=black!75] (0,0.09) -- (0.52,0.09);
+\end{tikzpicture}
+\hspace{0.25em}dependency
+\end{center}
+
+\section{Use of Generative AI}
+
+Generative AI has been used as a discussion partner when drafting and revising the individual plan, especially for improving structure, wording, and the formulation of the research question. All project decisions, technical claims, and final formulations have been manually reviewed and aligned with the course instructions, the thesis implementation, and supervisor feedback.
+%========================================================================================
+% ADMINISTRATIVE
+%========================================================================================
+
+
+\newpage
+% ==========================================
+% REFERENCES
+% ==========================================
+
+\begin{thebibliography}{9}
+
+\bibitem{gao2023ragsurvey}
+Gao, Y., Xiong, Y., Gao, X., Jia, K., Pan, J., Bi, Y., Dai, Y., Sun, J., Wang, M., \& Wang, H. (2023).
+``Retrieval-Augmented Generation for Large Language Models: A Survey.''
+\textit{arXiv preprint arXiv:2312.10997}. \\
+\url{https://arxiv.org/abs/2312.10997}
+
+\bibitem{hu2024routerbench}
+Hu, Q., et al. (2024). 
+``RouterBench: A Benchmark for Multi-LLM Routing System.'' 
+\textit{arXiv preprint arXiv:2403.12031}. \\
+\url{https://arxiv.org/abs/2403.12031}
+
+\bibitem{asai2023selfrag}
+Asai, A., Wu, Z., Wang, Y., Sil, A., \& Hajishirzi, H. (2023).
+``Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection.''
+\textit{arXiv preprint arXiv:2310.11511}. \\
+\url{https://arxiv.org/abs/2310.11511}
+
+\bibitem{zheng2023judge}
+Zheng, L., Chiang, W.-L., Sheng, Y., Zhuang, S., Wu, Z., Zhuang, Y., Lin, Z., Li, Z., Li, D., Xing, E. P., Zhang, H., Gonzalez, J. E., \& Stoica, I. (2023).
+``Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena.''
+\textit{arXiv preprint arXiv:2306.05685}. \\
+\url{https://arxiv.org/abs/2306.05685}
+
+\bibitem{jeong2024adaptiverag}
+Jeong, S., Baek, J., Cho, S., Hwang, S. J., \& Park, J. C. (2024). 
+``Adaptive-RAG: Learning to Adapt Retrieval-Augmented Large Language Models through Question Complexity.'' 
+\textit{Proceedings of NAACL 2024}. \\
+\url{https://arxiv.org/abs/2403.14403}
+
+\bibitem{benayas2024encoder}
+Benayas, A., Sicilia, M.A., \& Mora-Cantallops, M. (2025).
+``A comparative analysis of encoder only and decoder only models in intent classification and sentiment analysis: navigating the trade-offs in model size and performance.''
+\textit{Lang Resources \& Evaluation 59, 2007--2030 (2025)}. \\
+\url{https://doi.org/10.1007/s10579-024-09796-y}
+
+\bibitem{warner2024modernbert}
+Warner, B., et al. (2024). 
+``Smarter, Better, Faster, Longer: A Modern Bidirectional Encoder for Fast, Memory Efficient, and Long Context Finetuning and Inference'' 
+\textit{arXiv preprint arXiv:2412.13663}. \\
+\url{https://arxiv.org/abs/2412.13663}
+
+\bibitem{lightrag2024}
+Guo, Z., et al. (2024). 
+``LightRAG: Simple and Fast Retrieval-Augmented Generation.'' 
+\textit{arXiv preprint arXiv:2410.05779}. \\
+\url{https://arxiv.org/abs/2410.05779}
+
+\bibitem{edge2024graphrag}
+Edge, D., Trinh, H., Cheng, N., Bradley, J., Chao, A., Mody, A., Truitt, S., Metropolitansky, D., Ness, R. O., \& Larson, J. (2024).
+``From Local to Global: A Graph RAG Approach to Query-Focused Summarization.''
+\textit{arXiv preprint arXiv:2404.16130}. \\
+\url{https://arxiv.org/abs/2404.16130}
+
+\bibitem{ho2020twowiki}
+Ho, X., et al. (2020). 
+``Constructing A Multi-hop QA Dataset for Comprehensive Evaluation of Reasoning Steps.'' 
+\textit{Proceedings of COLING 2020}. \\
+\url{https://aclanthology.org/2020.coling-main.580/}
+
+\end{thebibliography}
+
+
+
+\end{document}
