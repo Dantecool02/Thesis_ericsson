@@ -215,3 +215,29 @@ data/
 
 # Local Claude state
 .claude/
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.glo
+*.gls
+*.glg
+*.ist
+*.lof
+*.lot
+*.out
+*.toc
+*.xdy
+*.ilg
+*.acn
+*.acr
+*.alg
+*.atfi
+*.tdn
+*.tld
+*.tlg
+*.mw
+*.synctex.gz
