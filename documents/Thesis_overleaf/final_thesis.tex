@@ -967,7 +967,7 @@ Before the binary dataset is analyzed by split, Table~\ref{tab:datasetFlow} summ
 
 \begin{table}[!ht]
 \begin{center}
-\caption{Label-flow summary from raw benchmark samples to the final binary routing dataset. The binary router is trained only on \texttt{naive\_enough} and \texttt{mix\_required} rows. The \texttt{mix\_required} label is operational and means \emph{Mix}-beneficial under the judged LightRAG setup.}
+\caption{Label-flow summary from raw benchmark samples to the final binary routing dataset. \textbf{Stage} names a step in the pipeline (preprocessing, dual-mode execution, judge labeling, and final-dataset filtering). \textbf{Count} is the number of queries that pass that stage. The three indented rows under ``Judge produced usable label'' decompose the $2\,000$ judged queries into the three judge classes (\texttt{naive\_enough}, \texttt{mix\_required}, and \texttt{none\_enough}). The binary router is trained only on \texttt{naive\_enough} and \texttt{mix\_required} rows; \texttt{none\_enough} rows are excluded. The \texttt{mix\_required} label is operational and means \emph{Mix}-beneficial under the judged LightRAG setup.}
 \label{tab:datasetFlow}
 \begin{tabular}{l|r}
 \textbf{Stage} & \textbf{Count} \\
@@ -991,7 +991,7 @@ Table~\ref{tab:datasetSummary} summarizes the routing dataset by split and 2Wiki
 
 \begin{table}[!ht]
 \begin{center}
-\caption{Routing dataset summary by split and 2WikiMultihopQA question type. Each cell shows the total number of judged binary examples followed by the count of those examples that are labeled \texttt{mix\_required}.}
+\caption{Routing dataset summary by split and 2WikiMultihopQA question type. \textbf{Split} names the dataset partition produced by the joint stratified split (train, validation, test, and the overall total). \textbf{Total} is the total number of judged binary examples in that split. The four right-hand columns name the four 2WikiMultihopQA question types: \texttt{comparison} (two facts compared directly), \texttt{compositional} (a chained look-up such as ``spouse of the director of $X$''), \texttt{bridge comp.}\ (a comparison whose entities are reached by an intermediate hop), and \texttt{inference} (an answer that requires combining several facts). Each per-type cell shows the total number of examples of that question type in the split followed in parentheses by the number of those examples that are labeled \texttt{mix\_required}.}
 \label{tab:datasetSummary}
 \footnotesize
 \setlength{\tabcolsep}{3pt}
@@ -1187,7 +1187,7 @@ The type-only diagnostic baseline is strong, which confirms that benchmark quest
 
 \begin{table}[!ht]
 \centering
-\caption{Routing-label classification performance on the held-out test split. \texttt{P\textsubscript{mix}}, \texttt{R\textsubscript{mix}}, and \texttt{F1\textsubscript{mix}} denote precision, recall, and F1 on the \texttt{mix\_required} class. Accuracy values are routing-label accuracies, not final answer accuracies. For the constant-score static baselines, \gls{auroc} equals $0.500$ and \gls{auprc} equals the test-set \texttt{mix\_required} base rate of $0.254$. The type-only diagnostic baseline is non-deployable because it uses 2WikiMultihopQA metadata rather than only query text. For TF-IDF, bracketed values are $95\,\%$ bootstrap intervals over $1\,000$ test-set resamples. For ModernBERT, values are reported as mean $\pm$ standard deviation across three training seeds.}
+\caption{Routing-label classification performance on the held-out test split. \textbf{AUPRC} (area under the precision--recall curve) is the threshold-independent ranking quality on the \texttt{mix\_required} class and is the primary metric on this imbalanced split. \textbf{AUROC} (area under the ROC curve) is the same ranking quality measured against the false-positive rate. \textbf{Bal.\ rt.-lbl acc.} is balanced routing-label accuracy, the average of recall on \texttt{mix\_required} and recall on \texttt{naive\_enough}; it corrects for the class imbalance, while \textbf{Rt.-lbl acc.} is the unweighted fraction of test queries on which the policy agrees with the judge-derived routing label. \textbf{P\textsubscript{mix}}, \textbf{R\textsubscript{mix}}, and \textbf{F1\textsubscript{mix}} denote precision, recall, and F1 on the \texttt{mix\_required} class at the validation-selected threshold. All accuracy values are routing-label accuracies and are distinct from final answer accuracy. For the constant-score static baselines, \gls{auroc} equals $0.500$ and \gls{auprc} equals the test-set \texttt{mix\_required} base rate of $0.254$. The type-only diagnostic baseline is non-deployable because it uses 2WikiMultihopQA metadata rather than only query text. For TF-IDF, bracketed values are $95\,\%$ bootstrap intervals over $1\,000$ test-set resamples. For ModernBERT, values are reported as mean $\pm$ standard deviation across three training seeds.}
 \label{tab:classificationResults}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{l|ccccccc}
@@ -1204,7 +1204,7 @@ ModernBERT & $0.769 \pm 0.015$ & $0.908 \pm 0.011$ & $0.798 \pm 0.012$ & $0.701 
 
 \begin{table}[!ht]
 \centering
-\caption{Offline routed-cost and policy diagnostics on the held-out test split. Mean tokens are estimated from per-mode token means measured on the instrumented \(N = 150\) query subset (Section~\ref{sec:methodDualMode}). The token saving column reports the reduction in mean tokens relative to the always-\emph{Mix} baseline. Under-routing means routing a \texttt{mix\_required} query to \emph{Naive}. Over-routing means routing a \texttt{naive\_enough} query to \emph{Mix}. Under-routing is the error type most directly associated with answer-quality risk, while over-routing is primarily a cost error. ModernBERT values are the mean over three training seeds $\pm$ standard deviation.}
+\caption{Offline routed-cost and policy diagnostics on the held-out test split. \textbf{Route-to-\emph{Mix} fr.} is the fraction of test queries that the policy sends to \emph{Mix}. \textbf{Mean time (s)} is the mean per-query execution time under the policy, computed as in Equation~\ref{eq:averageRoutedTime} using the per-query \emph{Naive} and \emph{Mix} times of whichever mode the policy selects. \textbf{Mean tokens} is the estimated mean per-query model-token usage under the policy, computed as in Equation~\ref{eq:averageRoutedTokens} using the per-mode token means $\bar{u}^N$ and $\bar{u}^M$ measured on the instrumented $N = 150$ subset (Section~\ref{sec:methodDualMode}). \textbf{Token saving} is the relative reduction in mean tokens compared with always-\emph{Mix}, that is $(17{,}857 - \text{mean tokens})/17{,}857$. \textbf{Under-rout.} (under-routing rate) is the fraction of test queries with true label \texttt{mix\_required} that the policy routes to \emph{Naive}, and \textbf{Over-rout.} (over-routing rate) is the fraction of test queries with true label \texttt{naive\_enough} that the policy routes to \emph{Mix}. Under-routing is the error type most directly associated with answer-quality risk; over-routing is primarily a cost error. ModernBERT values are the mean over three training seeds $\pm$ standard deviation.}
 \label{tab:routedCostResults}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{l|cccccc}
@@ -1266,7 +1266,7 @@ Table~\ref{tab:perQuestionType} reports a per-question-type breakdown on the tes
 
 \begin{table}[!ht]
 \centering
-\caption{Per-question-type breakdown on the test split. \texttt{P\textsubscript{mix}}, \texttt{R\textsubscript{mix}}, and \texttt{F1\textsubscript{mix}} denote precision, recall, and F1 on the \texttt{mix\_required} class. \Gls{auprc} values on the \texttt{comparison} and \texttt{inference} slices are computed on too few \texttt{mix\_required} positives to be informative and should be read as a description of these particular test rows rather than as a stable estimate. ModernBERT values are the mean over three seeds.}
+\caption{Per-question-type breakdown on the test split. Each row reports the metrics for one 2WikiMultihopQA question type. \textbf{Slice} is the question-type label assigned by the benchmark. \textbf{n} is the number of test queries in the slice and \textbf{n\textsubscript{mix}} is the number of those that are labeled \texttt{mix\_required} by the judge. \textbf{Model} is the router whose predictions are scored on the slice. \textbf{AUPRC} is the area under the precision--recall curve on the \texttt{mix\_required} class within the slice and is computed only from the rows that fall in this slice. \textbf{P\textsubscript{mix}}, \textbf{R\textsubscript{mix}}, and \textbf{F1\textsubscript{mix}} denote precision, recall, and F1 on the \texttt{mix\_required} class within the slice, evaluated at each router's validation-selected threshold. \textbf{Acc.} is the fraction of slice queries on which the router agrees with the judge-derived routing label. The \texttt{comparison} and \texttt{inference} slices contain too few \texttt{mix\_required} positives ($2$ and $1$ respectively) to give informative \gls{auprc} or F1 values, so those entries describe the particular test rows and should not be read as stable estimates. ModernBERT values are the mean over three seeds.}
 \label{tab:perQuestionType}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{l|rrrrrrrr}
@@ -1301,13 +1301,9 @@ Figure~\ref{fig:perQt} visualizes the \gls{auprc} comparison on the two non-dege
 
 The retrieval-mode distinction between \emph{Naive} and \emph{Mix} is partly predictable from the query text alone. Both learned routers outperform the always-\emph{Naive} baseline on the minority class and reach operating points in Figure~\ref{fig:costFrontier} that no static policy at comparable cost can match. The ModernBERT router achieves higher point estimates than \gls{tfidf} on \gls{auprc}, balanced routing-label accuracy, F1 on the minority class, and routing-label accuracy, and these gains are stable across three training seeds.
 
-\subsection*{Routing errors: answer risk versus cost waste}
-
 The two routing error types have different practical weight. A false negative routes a \emph{Mix}-beneficial query to \emph{Naive} and so risks an answer-quality regression on a query where \emph{Mix} was judged necessary. A false positive routes a \emph{Naive}-sufficient query to \emph{Mix} and only wastes compute, because \emph{Naive} was already judged sufficient. This asymmetry explains why always-\emph{Mix} scores poorly on routing-label accuracy without necessarily producing worse final answers, and it also explains the gap between \gls{tfidf} and ModernBERT in Table~\ref{tab:routedCostResults}: \gls{tfidf} has higher recall and lower under-routing, so it misses fewer \emph{Mix}-beneficial queries; ModernBERT has higher precision and lower over-routing, so it issues fewer unnecessary \emph{Mix} calls.
 
 Routing-label performance and routed cost must therefore be interpreted together. The selected ModernBERT operating point behaves selectively, saving more compute at the cost of accepting somewhat more under-routing risk. The \gls{tfidf} operating point behaves conservatively in the opposite direction. Neither extreme is universally correct: which is preferable depends on the relative cost of an unnecessary \emph{Mix} call against an answer-quality regression in a given deployment.
-
-\subsection*{Per-question-type behavior and question-type structure}
 
 The \texttt{compositional} slice is the most informative one because the class distribution is balanced and \emph{Mix} is judged beneficial on most of its queries. On this slice ModernBERT achieves a mean \gls{auprc} of $0.839$ against $0.814$ for \gls{tfidf} and lifts F1 on \texttt{mix\_required} from $0.753$ to $0.799$. The gain on \texttt{compositional} despite the small training set indicates that the encoder picks up on more than the surface lexical patterns a \gls{tfidf} classifier can exploit. The \texttt{bridge\_comparison} slice is harder for both routers and is the natural target for follow-up work; on this slice \gls{tfidf} reaches a slightly higher \gls{auprc} ($0.418$) and F1 ($0.316$) by routing more queries to \emph{Mix}, while ModernBERT keeps higher precision and higher slice accuracy at the cost of missing more \emph{Mix}-beneficial queries.
 
@@ -1315,25 +1311,17 @@ The type-only diagnostic baseline shows that a substantial part of the routing s
 
 The router should therefore be understood as predicting an operational label. It picks up patterns in how questions are phrased that correlate with whether \emph{Mix} is judged beneficial under this LightRAG setup and this benchmark distribution. The type-only diagnostic baseline serves as a ceiling on what coarse benchmark structure alone can deliver. Anything ModernBERT adds beyond that ceiling reflects what the encoder learns from phrasing; anything it does not exceed reflects benchmark structure more than a deeper property of the queries.
 
-\subsection*{Benchmark slices versus real deployments}
-
 The per-question-type breakdown and the type-only diagnostic baseline both rely on 2WikiMultihopQA's question-type metadata. In a real deployment that metadata does not exist; users send free-form queries and the routing layer sees only the query text. The benchmark slices are useful as a diagnostic device because they show which subpopulations the router handles well and which it does not, and they help separate signal that comes from coarse structural cues (such as whether the question is a compositional multi-hop lookup) from signal that comes from finer phrasing. They are not a deployment recipe; the learned routers approximate the same structure from the query text alone, which is the only input available outside the benchmark.
 
 The same framing helps interpret the \texttt{compositional}-versus-\texttt{bridge\_comparison} contrast. The fact that ModernBERT is strong on \texttt{compositional} and weaker on \texttt{bridge\_comparison} indicates which phrasings the encoder has learned to recognize on this benchmark, and does not extend to a claim that \texttt{compositional} queries are easier to route in production. Within this benchmark, the \texttt{compositional} slice contains more rows and the rows share a more consistent surface form.
-
-\subsection*{Routing-label accuracy versus final answer accuracy}
 
 This thesis reports routing-label performance and routed cost, and it does not independently re-judge the final answer selected by each routed policy. The offline simulation chooses between precomputed \emph{Naive} and \emph{Mix} outputs, and the primary stored supervision is the routing label. Routing-label accuracy is therefore a distinct quantity from final answer accuracy. Always-\emph{Mix} is label-incorrect on \emph{Naive}-sufficient rows because it uses more retrieval than necessary, although the underlying \emph{Mix} answer on those rows can still be correct. A direct policy-answer-accuracy comparison would require retained per-mode correctness indicators for every query, or an additional judging pass over each policy's selected answer.
 
 The metrics that are reported are still useful for adaptive routing. Routing-label F1 measures whether the router selects the minimum judged sufficient mode. Mean routed time and estimated token usage measure the cost of doing so. The under-routing and over-routing rates separate answer-risk errors from cost-waste errors. Together they describe how often the router agrees with the judge and how expensive that agreement is.
 
-\subsection*{Statistical caveats}
-
 The held-out test set has $193$ queries. This is large enough to compute meaningful bootstrap intervals and too small to resolve small differences between the routers with confidence. The \gls{tfidf} bootstrap \gls{auroc} interval ($[0.836, 0.936]$) contains the ModernBERT mean \gls{auroc} of $0.908$, so the \gls{auroc} comparison is not significant on this test set. The \gls{auprc} and balanced-routing-label-accuracy gaps are larger and still lie inside the bootstrap intervals, as expected on a $193$-row test set. The multi-seed standard deviation for ModernBERT is small on the aggregate routing-label metrics ($\leq 0.017$ on \gls{auprc}, \gls{auroc}, balanced routing-label accuracy, F1, and routing-label accuracy), so the gains are at least stable across seeds. Per-class precision and recall vary more across seeds (standard deviations of $0.057$ and $0.042$), which is what one would expect when each seed selects its own decision threshold on a $193$-row test set. A larger benchmark would be needed before stronger claims can be made.
 
-\subsection*{Cost picture in time versus tokens}
-
-The cost picture is sharper in model tokens than in execution time. The two static baselines bracket a mean routed range of $10.95$ to $24.42$ seconds per query in execution time, and $3{,}458$ to $17{,}857$ tokens per query in model-token usage. The learned routers select operating points around $15$ to $17$ seconds per query (a $30$--$39\,\%$ reduction relative to always-\emph{Mix}) and $7{,}100$ to $8{,}500$ tokens per query (a $52$--$60\,\%$ reduction relative to always-\emph{Mix}), at non-trivial \texttt{mix\_required} F1. Tokens move further than time because \emph{Mix} adds one extra LLM call per query and a substantially larger assembled context \cite{lightrag2024,microsoft2024graphragcosts}, while execution time is partly absorbed by network latency that does not scale with token volume. The routing decision itself contributes essentially zero LLM tokens because neither router calls a generative model, and only milliseconds of compute time, which is negligible against retrieval cost on either dimension.
+Finally, the cost picture is sharper in model tokens than in execution time. The two static baselines bracket a mean routed range of $10.95$ to $24.42$ seconds per query in execution time, and $3{,}458$ to $17{,}857$ tokens per query in model-token usage. The learned routers select operating points around $15$ to $17$ seconds per query (a $30$--$39\,\%$ reduction relative to always-\emph{Mix}) and $7{,}100$ to $8{,}500$ tokens per query (a $52$--$60\,\%$ reduction relative to always-\emph{Mix}), at non-trivial \texttt{mix\_required} F1. Tokens move further than time because \emph{Mix} adds one extra LLM call per query and a substantially larger assembled context \cite{lightrag2024,microsoft2024graphragcosts}, while execution time is partly absorbed by network latency that does not scale with token volume. The routing decision itself contributes essentially zero LLM tokens because neither router calls a generative model, and only milliseconds of compute time, which is negligible against retrieval cost on either dimension.
 
 \cleardoublepage
 \chapter{Conclusions and future work}
@@ -1441,7 +1429,7 @@ This appendix lists the configuration used to produce the routing labels, train 
 
 \begin{table}[!ht]
 \centering
-\caption{LightRAG, data, and judge configuration used in this thesis. The same generator model and embedding model are used during indexing and at query time. All Gemini calls use a temperature of $0.0$.}
+\caption{LightRAG, data, and judge configuration used in this thesis. Each row names one configurable component of the pipeline and gives the exact value used in all reported experiments. \textbf{Item} is the name of the component (model checkpoint, framework version, retrieval parameter, or instrumentation choice); \textbf{Value} is the literal value passed to the corresponding API or library. The same generator model and embedding model are used during indexing and at query time. All Gemini calls use a temperature of $0.0$.}
 \label{tab:lightragDataJudgeConfig}
 \begin{tabularx}{\textwidth}{p{0.34\textwidth}|X}
 \textbf{Item} & \textbf{Value} \\
@@ -1465,7 +1453,7 @@ Judge prompt location & Section~\ref{app:judgePrompt} \\
 
 \begin{table}[!ht]
 \centering
-\caption{Router training configuration used in this thesis.}
+\caption{Router training configuration used in this thesis. Each row names one router hyperparameter or training-pipeline setting and gives the exact value used in all reported experiments. \textbf{Item} is the name of the hyperparameter or setting; \textbf{Value} is the value passed to scikit-learn (for the \gls{tfidf} baseline) or Hugging Face Transformers (for the ModernBERT router). All three ModernBERT seeds use the values listed here; only the random seed differs across the three runs.}
 \label{tab:routerTrainingConfig}
 \begin{tabularx}{\textwidth}{p{0.34\textwidth}|X}
 \textbf{Item} & \textbf{Value} \\
@@ -1493,7 +1481,7 @@ The eight pipeline stages used in this thesis map one-to-one onto scripts in the
 
 \begin{table}[!ht]
 \centering
-\caption{Pipeline stages and the script that implements each stage. All paths are relative to the repository root.}
+\caption{Pipeline stages and the script that implements each stage. \textbf{Stage} names a logical step of the data and modelling pipeline (sample preparation, indexing, dual-mode execution, token instrumentation, judging, dataset construction, router training, evaluation, or figure generation). \textbf{Script} is the path of the Python file in the public code repository (Appendix~\ref{sec:supportingMaterial}) that implements the stage; all paths are relative to the repository root. Running the scripts in the order shown reproduces the data, routers, and figures used in this thesis from the raw 2WikiMultihopQA download.}
 \label{tab:pipelineScripts}
 \begin{tabularx}{\textwidth}{p{0.36\textwidth}|X}
 \textbf{Stage} & \textbf{Script} \\
