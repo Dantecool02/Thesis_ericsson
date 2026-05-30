@@ -1185,14 +1185,11 @@ ModernBERT achieves higher point estimates than \gls{tfidf} on every aggregate r
 
 The type-only diagnostic baseline is strong, which confirms that benchmark question type explains part of the routing signal. Its role is diagnostic only, because this baseline uses metadata that is unavailable in real deployments. ModernBERT achieves higher point estimates than the metadata rule on F1 ($0.699$ vs.\ $0.667$), precision ($0.701$ vs.\ $0.585$), and routing-label accuracy ($0.846$ vs.\ $0.803$), and it does so from query text alone. \gls{tfidf} matches the diagnostic baseline's \emph{Mix} recall ($0.776$) but at lower precision and lower overall accuracy. The cost dimension follows the precision pattern: \gls{tfidf} routes at $8{,}531$ mean tokens per query, ModernBERT at $7{,}138$, and always-\emph{Mix} at $17{,}857$, which translates into token savings of $52\,\%$ and $60\,\%$ relative to the expensive baseline.
 
-\clearpage
-\begin{landscape}
-\begin{table}[p]
+\begin{table}[!ht]
 \centering
-\scriptsize
-\setlength{\tabcolsep}{2pt}
 \caption{Routing-label classification performance on the held-out test split. \texttt{P\textsubscript{mix}}, \texttt{R\textsubscript{mix}}, and \texttt{F1\textsubscript{mix}} denote precision, recall, and F1 on the \texttt{mix\_required} class. Accuracy values are routing-label accuracies, not final answer accuracies. For the constant-score static baselines, \gls{auroc} equals $0.500$ and \gls{auprc} equals the test-set \texttt{mix\_required} base rate of $0.254$. The type-only diagnostic baseline is non-deployable because it uses 2WikiMultihopQA metadata rather than only query text. For TF-IDF, bracketed values are $95\,\%$ bootstrap intervals over $1\,000$ test-set resamples. For ModernBERT, values are reported as mean $\pm$ standard deviation across three training seeds.}
 \label{tab:classificationResults}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{l|ccccccc}
 \textbf{Policy} & \textbf{AUPRC} & \textbf{AUROC} & \textbf{Bal.\ rt.-lbl acc.} & \textbf{P\textsubscript{mix}} & \textbf{R\textsubscript{mix}} & \textbf{F1\textsubscript{mix}} & \textbf{Rt.-lbl acc.} \\
 \hline
@@ -1202,17 +1199,14 @@ Type-only diagnostic & --- & --- & 0.794 & 0.585 & 0.776 & 0.667 & 0.803 \\
 TF-IDF & 0.742 [0.610, 0.853] & 0.892 [0.836, 0.936] & 0.784 & 0.559 & 0.776 & 0.650 [0.547, 0.740] & 0.788 [0.731, 0.845] \\
 ModernBERT & $0.769 \pm 0.015$ & $0.908 \pm 0.011$ & $0.798 \pm 0.012$ & $0.701 \pm 0.057$ & $0.701 \pm 0.042$ & $0.699 \pm 0.017$ & $0.846 \pm 0.016$ \\
 \end{tabular}%
+}
 \end{table}
-\end{landscape}
 
-\clearpage
-\begin{landscape}
-\begin{table}[p]
+\begin{table}[!ht]
 \centering
-\small
-\setlength{\tabcolsep}{4pt}
 \caption{Offline routed-cost and policy diagnostics on the held-out test split. Mean tokens are estimated from per-mode token means measured on the instrumented \(N = 150\) query subset (Section~\ref{sec:methodDualMode}). The token saving column reports the reduction in mean tokens relative to the always-\emph{Mix} baseline. Under-routing means routing a \texttt{mix\_required} query to \emph{Naive}. Over-routing means routing a \texttt{naive\_enough} query to \emph{Mix}. Under-routing is the error type most directly associated with answer-quality risk, while over-routing is primarily a cost error. ModernBERT values are the mean over three training seeds $\pm$ standard deviation.}
 \label{tab:routedCostResults}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{l|cccccc}
 \textbf{Policy} & \textbf{Route-to-\emph{Mix} fr.} & \textbf{Mean time (s)} & \textbf{Mean tokens} & \textbf{Token saving} & \textbf{Under-rout.} & \textbf{Over-rout.} \\
 \hline
@@ -1222,9 +1216,8 @@ Type-only diagnostic & 0.337 & 15.59 & 8\,308 & 53.5\,\% & 0.057 & 0.140 \\
 TF-IDF & 0.352 & 16.98 & 8\,531 & 52.2\,\% & 0.057 & 0.155 \\
 ModernBERT & $0.256 \pm 0.027$ & $14.92 \pm 0.69$ & 7\,138 & 60.0\,\% & $0.076 \pm 0.009$ & $0.078 \pm 0.019$ \\
 \end{tabular}%
+}
 \end{table}
-\end{landscape}
-\clearpage
 
 Figure~\ref{fig:prCurveTest} shows the test-set precision--recall curves on the \texttt{mix\_required} class for the \gls{tfidf} baseline and the three ModernBERT seeds. The base rate (the test-set fraction of \texttt{mix\_required}) is shown as a horizontal dashed line. The ModernBERT curves sit above the \gls{tfidf} curve over most of the recall range, which matches the higher \gls{auprc} values in Table~\ref{tab:classificationResults}. The \gls{auroc} curves in Figure~\ref{fig:rocCurveTest} are closer together because \gls{auroc} is less sensitive to performance on the minority class.
 
@@ -1271,14 +1264,11 @@ Figure~\ref{fig:costFrontier} combines the two preceding views into a routing-la
 
 Table~\ref{tab:perQuestionType} reports a per-question-type breakdown on the test split. The four 2WikiMultihopQA question types carry very different fractions of \emph{Mix}-beneficial queries on this split: $2$ out of $90$ for \texttt{comparison}, $8$ out of $33$ for \texttt{bridge\_comparison}, $38$ out of $65$ for \texttt{compositional}, and $1$ out of $5$ for \texttt{inference}. The \texttt{compositional} slice is the one in which the routing decision matters most. The \texttt{inference} slice has too few rows to support stable estimates, so its per-class metrics are reported for completeness only. On \texttt{compositional}, ModernBERT achieves higher point estimates than \gls{tfidf} on both \gls{auprc} (mean $0.839$ vs.\ $0.814$) and F1 on \texttt{mix\_required} (mean $0.799$ vs.\ $0.753$). On \texttt{bridge\_comparison} the two routers trade strengths: \gls{tfidf} routes more queries to \emph{Mix} on this slice and reaches higher recall ($0.375$ vs.\ $0.167$), slightly higher \gls{auprc} ($0.418$ vs.\ $0.363$), and slightly higher F1 ($0.316$ vs.\ $0.211$), while ModernBERT keeps higher precision ($0.345$ vs.\ $0.273$) and higher overall slice accuracy ($0.707$ vs.\ $0.606$).
 
-\clearpage
-\begin{landscape}
-\begin{table}[p]
+\begin{table}[!ht]
 \centering
-\footnotesize
-\setlength{\tabcolsep}{4pt}
 \caption{Per-question-type breakdown on the test split. \texttt{P\textsubscript{mix}}, \texttt{R\textsubscript{mix}}, and \texttt{F1\textsubscript{mix}} denote precision, recall, and F1 on the \texttt{mix\_required} class. \Gls{auprc} values on the \texttt{comparison} and \texttt{inference} slices are computed on too few \texttt{mix\_required} positives to be informative and should be read as a description of these particular test rows rather than as a stable estimate. ModernBERT values are the mean over three seeds.}
 \label{tab:perQuestionType}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{l|rrrrrrrr}
 \textbf{Slice} & \textbf{n} & \textbf{n\textsubscript{mix}} & \textbf{Model} & \textbf{AUPRC} & \textbf{P\textsubscript{mix}} & \textbf{R\textsubscript{mix}} & \textbf{F1\textsubscript{mix}} & \textbf{Acc.} \\
 \hline
@@ -1293,9 +1283,9 @@ bridge\_comparison&  33 &  8 & TF-IDF     & 0.418 & 0.273 & 0.375 & 0.316 & 0.60
 \hline
 inference         &   5 &  1 & TF-IDF     & 0.333 & 0.000 & 0.000 & 0.000 & 0.400 \\
                   &     &    & ModernBERT & 0.833 & 0.000 & 0.000 & 0.000 & 0.733 \\
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
-\end{landscape}
 
 Figure~\ref{fig:perQt} visualizes the \gls{auprc} comparison on the two non-degenerate slices.
 
@@ -1356,19 +1346,15 @@ This chapter summarizes the conclusions from the experiments (Section~\ref{sec:c
 
 This thesis studied whether the choice between LightRAG's cheap \emph{Naive} retrieval mode and its more expensive \emph{Mix} retrieval mode can be predicted from the query text alone, on the 2WikiMultihopQA benchmark, using a lightweight encoder-only classifier instead of a large language-model controller. Routing labels were derived by running both retrieval modes on each benchmark question and asking an \gls{llmjudge} \cite{zheng2023judge} to compare each mode's answer against the gold answer. The label \texttt{mix\_required} is operational: it captures whether \emph{Mix} was judged correct when \emph{Naive} was not under the chosen LightRAG configuration and judge prompt, and it does not isolate which component of \emph{Mix} drove the improvement.
 
-The research question asks, within a fixed Hybrid \gls{rag} setting, how well a lightweight query-only classifier predicts a judge-derived routing label for the minimum sufficient retrieval mode, and how using that classifier as an offline routing policy affects routed cost relative to static \emph{Naive} and \emph{Mix} baselines. The remainder of this section answers the three sub-questions in turn and then states what the answers add up to.
+The research question asks, within a fixed Hybrid \gls{rag} setting, how well a lightweight query-only classifier predicts a judge-derived routing label for the minimum sufficient retrieval mode, and how using that classifier as an offline routing policy affects routed cost relative to static \emph{Naive} and \emph{Mix} baselines. The remainder of this section answers the three sub-questions in turn.
 
-\paragraph{Sub-question 1: classifier accuracy on the routing label.}
-On the held-out test split of $193$ queries, the ModernBERT router achieves higher point estimates than the \gls{tfidf} baseline on every aggregate routing-label metric: \gls{auprc} ($0.769$ vs.\ $0.742$), balanced routing-label accuracy ($0.798$ vs.\ $0.784$), F1 on the minority \texttt{mix\_required} class ($0.699$ vs.\ $0.650$), and routing-label accuracy ($0.846$ vs.\ $0.788$). The \gls{auroc} gap is inside the bootstrap interval and is therefore not significant. The multi-seed standard deviation of the ModernBERT router is small on the aggregate routing-label metrics ($\leq 0.017$ on \gls{auprc}, \gls{auroc}, balanced routing-label accuracy, F1, and routing-label accuracy), which indicates that the gains are stable across initialization seeds. The two routers also place themselves at opposite ends of the precision-recall trade-off on the \texttt{mix\_required} class: \gls{tfidf} has lower under-routing ($0.057$ vs.\ $0.076 \pm 0.009$), and ModernBERT has lower over-routing ($0.078 \pm 0.019$ vs.\ $0.155$).
+The first sub-question concerns classifier accuracy on the routing label. On the held-out test split of $193$ queries, the ModernBERT router achieves higher point estimates than the \gls{tfidf} baseline on every aggregate routing-label metric: \gls{auprc} ($0.769$ vs.\ $0.742$), balanced routing-label accuracy ($0.798$ vs.\ $0.784$), F1 on the minority \texttt{mix\_required} class ($0.699$ vs.\ $0.650$), and routing-label accuracy ($0.846$ vs.\ $0.788$). The \gls{auroc} gap is inside the bootstrap interval and is therefore not significant. The multi-seed standard deviation of the ModernBERT router is small on the aggregate routing-label metrics ($\leq 0.017$ on \gls{auprc}, \gls{auroc}, balanced routing-label accuracy, F1, and routing-label accuracy), which indicates that the gains are stable across initialization seeds. The two routers also place themselves at opposite ends of the precision-recall trade-off on the \texttt{mix\_required} class: \gls{tfidf} has lower under-routing ($0.057$ vs.\ $0.076 \pm 0.009$), and ModernBERT has lower over-routing ($0.078 \pm 0.019$ vs.\ $0.155$).
 
-\paragraph{Sub-question 2: routed cost relative to static baselines.}
-Both learned routers reach test-set operating points around $15$ to $17$ seconds of mean routed execution time, compared with $10.95$ seconds for always-\emph{Naive} and $24.42$ seconds for always-\emph{Mix}, and achieve higher routing-label F1 than either static policy at substantially lower mean routed time than always-\emph{Mix}. Measured in model tokens, they route at roughly $7{,}100$ to $8{,}500$ tokens per query, compared with $3{,}458$ for always-\emph{Naive} and $17{,}857$ for always-\emph{Mix}. The selected ModernBERT operating point reduces estimated routed token cost by $60\,\%$ relative to always-\emph{Mix}, and the selected \gls{tfidf} operating point by $52\,\%$. The routing decision itself adds negligible cost on either dimension because neither router calls a generative model.
+The second sub-question concerns routed cost relative to static baselines. Both learned routers reach test-set operating points around $15$ to $17$ seconds of mean routed execution time, compared with $10.95$ seconds for always-\emph{Naive} and $24.42$ seconds for always-\emph{Mix}, and achieve higher routing-label F1 than either static policy at substantially lower mean routed time than always-\emph{Mix}. Measured in model tokens, they route at roughly $7{,}100$ to $8{,}500$ tokens per query, compared with $3{,}458$ for always-\emph{Naive} and $17{,}857$ for always-\emph{Mix}. The selected ModernBERT operating point reduces estimated routed token cost by $60\,\%$ relative to always-\emph{Mix}, and the selected \gls{tfidf} operating point by $52\,\%$. The routing decision itself adds negligible cost on either dimension because neither router calls a generative model.
 
-\paragraph{Sub-question 3: how much of the signal is benchmark structure.}
-The type-only diagnostic baseline, which predicts \emph{Mix} for \texttt{compositional} questions and \emph{Naive} otherwise, already reaches an F1 of $0.667$, a balanced routing-label accuracy of $0.794$, and a routing-label accuracy of $0.803$. This means that a substantial part of the routing signal in 2WikiMultihopQA is explained by the question-type metadata alone. ModernBERT improves on this metadata rule on F1, precision, and routing-label accuracy from query text alone, which is the only input available in a real deployment where benchmark metadata does not exist. Most of the remaining signal localizes in the \texttt{compositional} slice, where ModernBERT achieves a roughly two-and-a-half-point higher \gls{auprc} than \gls{tfidf}. The \texttt{bridge\_comparison} slice is the weakest part of the result and is a natural target for further work.
+The third sub-question asks how much of the routing signal is explained by benchmark structure alone. The type-only diagnostic baseline, which predicts \emph{Mix} for \texttt{compositional} questions and \emph{Naive} otherwise, already reaches an F1 of $0.667$, a balanced routing-label accuracy of $0.794$, and a routing-label accuracy of $0.803$. A substantial part of the routing signal in 2WikiMultihopQA is therefore explained by the question-type metadata. ModernBERT improves on this metadata rule on F1, precision, and routing-label accuracy from query text alone, which is the only input available in a real deployment where benchmark metadata does not exist. Most of the remaining signal localizes in the \texttt{compositional} slice, where ModernBERT achieves a roughly two-and-a-half-point higher \gls{auprc} than \gls{tfidf}. The \texttt{bridge\_comparison} slice is the weakest part of the result and is a natural target for further work.
 
-\paragraph{Putting the three answers together.}
-The \emph{Naive}-sufficient versus \emph{Mix}-beneficial distinction is partly predictable from query text alone in this setting, and a lightweight encoder classifier extracts more of that predictability than a TF-IDF logistic-regression baseline or a coarse question-type metadata rule. The reported accuracy values are routing-label accuracies, and they are distinct from independently measured final answer accuracies. Within that scope, the result supports learned query routing as a promising cost-control layer for Hybrid \gls{rag}: the router can often identify when the expensive path is unnecessary, and it therefore reduces routed cost without always defaulting to the most expensive retrieval mode.
+Taken together, the three answers indicate that the \emph{Naive}-sufficient versus \emph{Mix}-beneficial distinction is partly predictable from query text alone in this setting, and that a lightweight encoder classifier extracts more of that predictability than a \gls{tfidf} logistic-regression baseline or a coarse question-type metadata rule. The reported accuracy values are routing-label accuracies, and they are distinct from independently measured final answer accuracies. Within that scope, the result supports learned query routing as a promising cost-control layer for Hybrid \gls{rag}: the router can often identify when the expensive path is unnecessary, and it therefore reduces routed cost without always defaulting to the most expensive retrieval mode.
 
 \section{Limitations and future work}
 \label{sec:limitationsFutureWork}
