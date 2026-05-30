@@ -972,7 +972,6 @@ Before the binary dataset is analyzed by split, Table~\ref{tab:datasetFlow} summ
 \begin{tabular}{l|r}
 \textbf{Stage} & \textbf{Count} \\
 \hline
-Sampled 2WikiMultihopQA queryable samples & 2\,279 \\
 Queries successfully run with both \emph{Naive} and \emph{Mix} & 2\,000 \\
 Judge produced usable label & 2\,000 \\
 \quad \texttt{naive\_enough} & 959 \\
@@ -1020,7 +1019,7 @@ The baseline router is a logistic regression trained on \gls{tfidf} features of 
 \label{eq:tfidfScore}
 s_\phi(q_i) = \sigma(\mathbf{w}^\top \mathbf{x}_i + b),
 \qquad
-\sigma(z) = \frac{1}{1 + \exp(-z)},
+\sigma(z) = \frac{1}{1 + e^{-z}},
 \end{equation}
 where the weight vector \(\mathbf{w} \in \mathbb{R}^{V}\) and bias \(b \in \mathbb{R}\) are learned by minimizing the $L_2$-regularized binary cross-entropy loss with balanced class weights, so that the minority \texttt{mix\_required} class is not ignored.
 
@@ -1041,7 +1040,7 @@ where logit \(z_{i,0}\) corresponds to \texttt{naive\_enough} and \(z_{i,1}\) to
 \label{eq:modernBertSoftmax}
 s_\phi(q_i)
 =
-\frac{\exp(z_{i,1})}{\exp(z_{i,0}) + \exp(z_{i,1})}.
+\frac{e^{z_{i,1}}}{e^{z_{i,0}} + e^{z_{i,1}}}.
 \end{equation}
 Equivalently, the same probability can be written using a single logit and the sigmoid function, $s_\phi(q_i) = \sigma(z_{i,1} - z_{i,0})$. The two-logit parameterization used here matches the default Hugging Face classification-head format for binary classification with \texttt{num\_labels=2}.
 
@@ -1502,7 +1501,7 @@ Generate the figures used in this thesis & \texttt{src/router/thesis\_figures.py
 \section{Judge prompt}
 \label{app:judgePrompt}
 
-The judge receives the question, the gold answer, the \emph{Naive} answer, and the \emph{Mix} answer in a JSON payload, and is asked to return exactly one of the three class labels \texttt{naive\_enough}, \texttt{mix\_required}, or \texttt{none\_enough}. The system prompt is reproduced verbatim below.
+The judge receives the question, the gold answer, the \emph{Naive} answer, and the \emph{Mix} answer in a JSON payload, and is asked to return exactly one of the three class labels \texttt{naive\_enough}, \texttt{mix\_required}, or \texttt{none\_enough}. The system prompt is reproduced verbatim below; the label semantics that the judge enforces are added below the verbatim prompt as inline annotations and are not part of the prompt itself.
 
 \begin{lstlisting}[basicstyle=\ttfamily\small,breaklines=true,columns=fullflexible]
 You are a strict evaluator for a retrieval-routing dataset.
@@ -1511,9 +1510,14 @@ Allowed labels:
 - naive_enough
 - mix_required
 - none_enough
-\end{lstlisting}
 
-The label is assigned as follows. \texttt{naive\_enough} means the \emph{Naive} answer matches the gold answer. \texttt{mix\_required} means the \emph{Naive} answer does not match the gold answer but the \emph{Mix} answer does. \texttt{none\_enough} means neither answer matches the gold answer and the row is excluded from the binary routing dataset.
+# Label semantics (annotation, not part of the prompt):
+# naive_enough  -> the Naive answer matches the gold answer
+# mix_required  -> the Naive answer does not match the gold answer
+#                  but the Mix answer does
+# none_enough   -> neither answer matches the gold answer;
+#                  these rows are excluded from the binary routing dataset
+\end{lstlisting}
 
 \cleardoublepage
 
