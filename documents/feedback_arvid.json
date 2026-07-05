@@ -1,0 +1,822 @@
+[
+  {
+    "id": 1,
+    "page": 1,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "Adaptive Hybrid RAG",
+    "comment": "Titeln är redan ganska kort, så du kan likväl skriva ut RAG istället för förkortning",
+    "status": "done",
+    "resolution": "Title spelled out: 'Adaptive Hybrid Retrieval-Augmented Generation' (override in working copy)"
+  },
+  {
+    "id": 2,
+    "page": 3,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "kostnads-",
+    "comment": "cost =/= kostnad i detta fallet, kanske bör stå beräkningskostnad? annars förknippas kostnad med pengar",
+    "status": "done",
+    "resolution": "Subtitle EN->'Computational Cost-Performance'; SV->'beräkningskostnads-prestanda'. Swedish alttitle 'RAG' kept."
+  },
+  {
+    "id": 3,
+    "page": 5,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "the gold answer.",
+    "comment": "gold answer? inte hört detta tidigare",
+    "status": "done",
+    "resolution": "Glossed 'gold answer' at first body use (line ~893); kept standard term elsewhere"
+  },
+  {
+    "id": 4,
+    "page": 5,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "(0.769 vs. 0.742), balanced routing-label accuracy (0.798 vs. 0.784), and F1 on the minority class (0.699 vs. 0.650",
+    "comment": "kontroversiellt att ha med exakta siffror i abstract, då de är mätvärden som påverkas av metod och slump. bättre att skriva typ \"we observe a...\" \"significant performacne increase\" eller \"minor increase in performance\" etc. etc.",
+    "status": "done",
+    "resolution": "Removed exact classification numbers from EN abstract (kept in results tables)"
+  },
+  {
+    "id": 5,
+    "page": 5,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "differences that are stable across three training seeds.",
+    "comment": "detta förstärker det jag skrev tidigare då det gör det diffust vad siffrorna hänvisar till (medelvärdet på de tre seedsen?)",
+    "status": "done",
+    "resolution": "Framed abstract metrics as point estimates; noted small vs test-set uncertainty"
+  },
+  {
+    "id": 6,
+    "page": 5,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "The ModernBERT router reduces mean routed execution time by 39 % and estimated mean routed model-token usage by 60 % relative to the always-Mix baseline.",
+    "comment": "hade varit najs att också explicit skriva hur mycket prestandan går ner (typ while still providing the same answer as mixed 97% of the time så man tydligt ser trade-offen)\r\rsidenote så gillar jag att se siffrorna här då det visar att routern gör det nästan dubbelt så snabbt, men återigen kan det vara kontroversiellt.\r\rom jag skulle ändra något så är det siffrorna ovan men behålla dem här",
+    "status": "done",
+    "resolution": "Answer-accuracy trade-off added to abstract + results + conclusions (retains ~92% of always-Mix correct answers)"
+  },
+  {
+    "id": 7,
+    "page": 5,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "These metrics evaluate whether the router selects the judge-derived minimum sufficient retrieval mode, not an independently re-judged final answer accuracy of the",
+    "comment": "ta bort denna meningen?",
+    "status": "done",
+    "resolution": "Condensed scope caveat in abstract rather than removing (guards against overclaim)"
+  },
+  {
+    "id": 8,
+    "page": 6,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "Retrieval-Augmented Generation, Hybrid RAG, Query routing, Modern- BERT, 2WikiMultihopQA, LLM-as-a-Judge, Routing-label classification, Routed cost",
+    "comment": "Den här keyword listan ser mer ut som någon slags hashtag spam på Instagram. Ta bara med de övergripande områdena så typ \r\rRetrieval-Augmented Generation, Hybrid RAG och Query Routing - de andra råkar bara vara del av din metod och utvärdering",
+    "status": "done",
+    "resolution": "Trimmed keywords to 3 overarching areas (EN+SV): RAG, Hybrid RAG, Query routing"
+  },
+  {
+    "id": 9,
+    "page": 7,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "Sammanfattning",
+    "comment": "Läste inte denna men se till att verkligen läsa denna och se till att den stämmer bra överens med den engelska och är grammatiskt korrekt. LLM:a inte detta",
+    "status": "done",
+    "resolution": "SV abstract results paragraph mirrored to EN; full Sammanfattning proofread is user's task (Arvid: don't LLM it)"
+  },
+  {
+    "id": 10,
+    "page": 11,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "Contents",
+    "comment": "Mycket bättre rubriker, översikten är riktigt clean. Snyggt!!",
+    "status": "done",
+    "resolution": "Praise (clean headings) - no action"
+  },
+  {
+    "id": 11,
+    "page": 12,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "A Source code 49 B Experimental configuration 51 B.1 Pipeline scripts . . . . . . . . . . . . . . . . . . . . . . . . . 51 B.2 Judge prompt . . . . . . . . . . . . . . . . . . . . . . . . . . 51",
+    "comment": "Kul med appendix!",
+    "status": "done",
+    "resolution": "Praise (appendix) - no action"
+  },
+  {
+    "id": 12,
+    "page": 15,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "List of Tables",
+    "comment": "Texten till dina tabeller är allmänt väldigt lång, man bör istället flytta mycket av innehållet till brödtexten. Ex. förklara kolumner etc. (typ Stage, Count, etc. etc.)\r\rTabelltexten bör vara ca. 2 där den förklarar vad det är för relationer / jämförelser / data tabellen beskriver.",
+    "status": "done",
+    "resolution": "Compressed all 5 table captions (3.1,3.2,4.1,4.2,4.3) to 2-3 sentences; column defs trimmed"
+  },
+  {
+    "id": 13,
+    "page": 24,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "host-company setting",
+    "comment": "tror det är ok att bara skriva Ericsson?",
+    "status": "done",
+    "resolution": "'host-company setting' -> 'At Ericsson, the host company...' (consistent with title page & §2)"
+  },
+  {
+    "id": 14,
+    "page": 24,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "[6, 4].",
+    "comment": "4, 6",
+    "status": "done",
+    "resolution": "Reordered \\cite keys -> renders [4,6]"
+  },
+  {
+    "id": 15,
+    "page": 24,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "LightRAG’s lower-cost Naive mode is judged sufficient or whether the more expensive Mix mode is judged beneficial under the experimental pipeline.",
+    "comment": "Forskningsproblemet är väl egentligen mer brett än det här? Vi är ju intresserade av det generella problemet av jämföra graph retrieval vs. vector retrieval, inte specifict LightRAG. LightRAG är väl bara systemet som vi råkar använda i uppsatsen",
+    "status": "done",
+    "resolution": "Problem definition generalized to vector vs graph-enhanced retrieval (LightRAG as instantiation)"
+  },
+  {
+    "id": 16,
+    "page": 24,
+    "type": "Text",
+    "author": "Arvid",
+    "highlighted_text": "",
+    "comment": "Samma för Naive och Mix mode, det kan ju generaliseras",
+    "status": "done",
+    "resolution": "Naive/Mix generalized in problem definition (same edit as #15)"
+  },
+  {
+    "id": 17,
+    "page": 25,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": ".",
+    "comment": "kolon :",
+    "status": "done",
+    "resolution": "Period -> colon before sub-question list"
+  },
+  {
+    "id": 18,
+    "page": 25,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "• When classifier scores are turned into a thresholded routing policy, how much routed execution time and estimated model-token cost are saved relative to always-Mix at the selected routing-label operating point?",
+    "comment": "Återigen är det ju väsentligt att också ta med prestanda minskningen jämfört med always-Mix",
+    "status": "done",
+    "resolution": "Sub-question 2 now reports the performance side: ~92% answer retention vs always-Mix"
+  },
+  {
+    "id": 19,
+    "page": 25,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "1.3 Purpose",
+    "comment": "Det här avsnittet repeterar egentligen bara 1.2, ta bort eller skriv om till något mer generellt. Dvs. typ Purpose is to reduce the computational cost of retrieval augmented systems, etc. etc.\r\rTemplatet säger säkert vad exakt man bör ha med här men just nu känns avsnittet överflödigt.",
+    "status": "done",
+    "resolution": "Purpose rewritten to a general cost-reduction purpose (no longer repeats 1.2)"
+  },
+  {
+    "id": 20,
+    "page": 26,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "QA",
+    "comment": "QA?",
+    "status": "done",
+    "resolution": "'multi-hop QA benchmark' -> 'multi-hop question-answering benchmark'"
+  },
+  {
+    "id": 21,
+    "page": 26,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": ", as is common for evaluating retrieval and routing methods.",
+    "comment": "ta bort?",
+    "status": "done",
+    "resolution": "Removed 'as is common for evaluating retrieval and routing methods' clause"
+  },
+  {
+    "id": 22,
+    "page": 29,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "[8, 1].",
+    "comment": "1,8",
+    "status": "done",
+    "resolution": "Reordered \\cite keys -> [1,8]"
+  },
+  {
+    "id": 23,
+    "page": 30,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "Many production RAG systems use simpler decoding procedures than this marginalization,",
+    "comment": "används ovanstående formel i den här uppsatsen öht? håller med om att den ger en bättre förståelse men om den inte används så kanske det är lite meningslöst? alt. att du säger att ovanstående formel är svår och att man oftast använder naiver approacher och sen beskriver approachen som används här",
+    "status": "done",
+    "resolution": "Already addressed: text states production systems use simpler decoding and the equation only makes the surfacing point"
+  },
+  {
+    "id": 24,
+    "page": 30,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "[9, 7, 10].",
+    "comment": "7, 9, 10",
+    "status": "done",
+    "resolution": "Reordered \\cite keys -> [7,9,10]"
+  },
+  {
+    "id": 25,
+    "page": 32,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "Figure 2.1: Stylized illustration of vector retrieval (Naive) versus graph- enhanced retrieval (Mix) on a two-hop question. Vector retrieval matches chunks individually against the query, while the graph-enhanced mode can follow entity-relation edges that connect facts living in different documents.",
+    "comment": "Bra figur!",
+    "status": "done",
+    "resolution": "Praise (good figure) - no action"
+  },
+  {
+    "id": 26,
+    "page": 33,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "The router observes only the query and selects a retrieval mode before retrieval runs. The labels are operational. Mix beneficial means that Mix was judged beneficial relative to Naive under the experimental pipeline.",
+    "comment": "känns som att du kan ta bort allt detta",
+    "status": "done",
+    "resolution": "Trimmed Fig 2.2 caption (removed operational-label explanation)"
+  },
+  {
+    "id": 27,
+    "page": 34,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "Benayas, Sicilia, and Mora- Cantallops",
+    "comment": "sällan man brukar skriva ut tre namn, Benyas et. al. är förmodligen rätt",
+    "status": "done",
+    "resolution": "'Benayas, Sicilia, and Mora-Cantallops' -> 'Benayas et al.'"
+  },
+  {
+    "id": 28,
+    "page": 35,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "2.5 Related work",
+    "comment": "bra!",
+    "status": "done",
+    "resolution": "Praise - no action"
+  },
+  {
+    "id": 29,
+    "page": 35,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "Retrieval-mode routing also differs from ordinary binary classification because the two error types have different consequences. A false negative routes a Mix-beneficial query to Naive and risks answer failure. A false positive routes a Naive-sufficient query to Mix and mainly wastes computation.",
+    "comment": "tror detta stycke inte behövs? passar inte riktigt in under Related Work",
+    "status": "done",
+    "resolution": "Removed the asymmetric-error paragraph from Related Work (didn't fit there)"
+  },
+  {
+    "id": 30,
+    "page": 36,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "This literature does not contain a focused empirical study of the choice between LightRAG’s Naive and Mix retrieval modes inside one Hybrid RAG framework, treated as a supervised query-only routing problem with judge- derived labels. This thesis addresses that gap.",
+    "comment": "Bra, men känns inte som att vi behöver specificera just LightRAG och dess två modes - vi angriper väl ett mer generellt problem i grunden?",
+    "status": "done",
+    "resolution": "Related-work gap reframed to general vector-vs-graph routing; LightRAG noted as concrete instantiation"
+  },
+  {
+    "id": 31,
+    "page": 37,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "3.1 Data",
+    "comment": "saknas text under rubrik",
+    "status": "done",
+    "resolution": "Added 1-sentence intro under 3.1 Data heading"
+  },
+  {
+    "id": 32,
+    "page": 37,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "gold answer,",
+    "comment": "fortfarande inte hört detta innan men kanske är vanligt?",
+    "status": "done",
+    "resolution": "Same as #3 (gold answer) - resolved by the gloss at first body use"
+  },
+  {
+    "id": 33,
+    "page": 37,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "The multi-hop",
+    "comment": "en viktig poäng här är att eftersom vi utvärderar på endast multihop reasoning så kanske metoden är ännu mera lämpad för Ericssons application då deras data inte nödvändigtvis alltid kräver multihop reasoning. något som kanske är värt att nämna i diskussionen i slutet av uppsatsen om du inte redan gjort detta",
+    "status": "done",
+    "resolution": "Added Discussion paragraph: multi-hop benchmark is a hard case; Ericsson's more single-hop traffic would route even more cheaply (cost saving is conservative)"
+  },
+  {
+    "id": 34,
+    "page": 38,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "The other two benchmarks gave more skewed distributions, which would have made supervised routing harder to evaluate.",
+    "comment": "ganska svag motivering, kunde ju också gjort evalueringen på alla tre dataset, och finns förmodligen sätt att hantera detta\r\rmen kanske var för dyrt i compute att göra det? eller för mycket tid att fixa datasetten? kan ju typ nämna att \"In the interest of time ... was selected\"",
+    "status": "done",
+    "resolution": "Added 'in the interest of compute and time' justification + future-work note for single-benchmark choice"
+  },
+  {
+    "id": 35,
+    "page": 38,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "Previously inserted documents are recognized and skipped, which makes it possible to resume an interrupted run without rebuilding the index from scratch.",
+    "comment": "Varför är denna egenskap värd att nämna?",
+    "status": "done",
+    "resolution": "Removed the idempotent/resume indexing detail; kept only that the index is fixed"
+  },
+  {
+    "id": 36,
+    "page": 39,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "Figure 3.1: End-to-end pipeline from 2WikiMultihopQA samples to router evaluation. Each step writes its output to disk so the remaining steps can be re-run without repeating expensive earlier steps.",
+    "comment": "Riktigt bra översikt (även om den kan göras lite snyggare). Sätt den i början av Kap 3. istället, hjälper mycket för mig som läsare att förstå hela strukturen hos kapitlet. Du kan t.o.m. refera till delkapitel i figuren (dvs. under varje ruta skriva typ Section 3.1)\r\rt.ex. som min figur 1 här https://arxiv.org/pdf/2603.07176\r\rblir riktigt snyggt och lättläst då!",
+    "status": "done",
+    "resolution": "Moved the end-to-end pipeline figure to the start of Ch. 3 (after the chapter intro); kept a brief overview lead-in"
+  },
+  {
+    "id": 37,
+    "page": 39,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "For every benchmark question 𝑞𝑖, the indexed corpus is queried with both 𝑞𝑖 LightRAG retrieval modes, giving 𝑁 𝑀 𝑟 = 𝑅𝑁(𝑞𝑖), 𝑟 = 𝑅𝑀(𝑞𝑖), (3.1) 𝑁 𝑖 𝑀 𝑞𝑖 𝑁 𝑖 𝑀 𝑖 where 𝑅𝑁 denotes LightRAG Naive (the low-cost vector path) and 𝑅𝑀 denotes 𝑅𝑁 𝑅𝑀 LightRAG Mix (the graph-enhanced path). The recorded artifacts for each query are the two generated answers 𝑁 𝑟 𝑖 and 𝑀 𝑟𝑀 𝑖, the measured execution time 𝑟𝑁 𝑖 𝑀 𝑖 𝑁 𝑡𝑁 𝑖and 𝑀 𝑡 𝑖 𝑖 for each mode, and the number of context documents and supporting 𝑡𝑁 𝑖 𝑡𝑀 𝑖 𝑖 𝑖 facts associated with the sample.",
+    "comment": "varför behöver vi subscript i här? känns lite onödigt då vi inte nämner i",
+    "status": "done",
+    "resolution": "Kept i-index: it is used in the offline-policy summation equations; added a pointer reminder (#51) instead"
+  },
+  {
+    "id": 38,
+    "page": 39,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "Execution time is logged per query for every query in the dataset.",
+    "comment": "Inkluderar execution time request tiden? dvs. iom att vi använder en extern tjänst (gemini?) så kommer det ju ta längre tid än bara inference-kostnaden. detta kommer ju ändras om man har en intern LLM, vilket kanske är mer realistiskt i framtiden?\r\rmed en extern api kommer ju flera anrop till LLM:en (som mixed innebär) naturligtvis ta längre tid även om själva inferenstiden på de efterföljande anropen kanske är lägre så kommer ju omkringliggande delar (nätverk etc.) ta upp extra tid",
+    "status": "done",
+    "resolution": "Clarified execution time is wall-clock incl. network round-trips, would shrink with a local model"
+  },
+  {
+    "id": 39,
+    "page": 39,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "The instrumented subset is used to estimate the per- mode mean model-token consumption, denoted ̄𝑢𝑁 𝑢𝑁 for the Naive retrieval mode and ̄𝑢𝑀 𝑢𝑀 for the Mix retrieval mode. These per-mode means are then applied to the held-out test split for the routed-cost analysis in Section 3.5.2. The routed token figures are therefore estimated from per-mode token means and are not measured per query for every test example. Section 5.2.1 discusses the implications of this small instrumented subset.",
+    "comment": "Om jag förstår det här rätt så använder vi ett genomsnitt från ett visst subsample för att uppskatta en per-mode mean och använda det genomsnittet för att göra token-kostnadsberäkningarna. Varför gör vi på detta sättet? Varför räknar vi inte tokenkostnaderna per query? Detta kan ju leda till felaktiga slutsatser om ex. de allra svåraste frågorna är de som kräver fler tokens\r\rGällande tokens så förmodar jag att detta är alla typer av output tokens dvs. inkl. thinking tokens. Kan vara värt att nämna om det inte är specifierat någonstans",
+    "status": "done",
+    "resolution": "Corrected N=150 -> N=15 everywhere (token means verified from the 15-row file); caveat kept"
+  },
+  {
+    "id": 40,
+    "page": 39,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "The generator model, judge model, embedding model, LightRAG version, retrieval parameters, token logging method, and judge prompt are listed in Appendix B.",
+    "comment": "Kan vara värt att beskriva deras design här kort i typ två paragrafer totalt men lämna specifika hyperparametrar i appendix",
+    "status": "done",
+    "resolution": "Added a brief generator/judge/embedding description in the body; hyperparameters stay in Appendix B"
+  },
+  {
+    "id": 41,
+    "page": 40,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "but does not provide routing labels.",
+    "comment": "givetvis gör det ju inte det iom att det är frikopplat från LightRAG? omformulera detta, typ \"but we need to create routing labels which specify the required retrieval mode\"",
+    "status": "done",
+    "resolution": "Rephrased: labels are specific to the compared retrieval modes and must be constructed"
+  },
+  {
+    "id": 42,
+    "page": 40,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "The label name is retained as a compact code label and mix_required should be read operationally as Mix-beneficial under this judged LightRAG setup. The label captures whether Mix was beneficial relative to Naive, without identifying which component of Mix (graph traversal, context assembly, or retrieval breadth) drove the improvement.",
+    "comment": "ta bort? eller kondensera ner till en mening",
+    "status": "done",
+    "resolution": "Condensed the mix_required label-name explanation to one sentence"
+  },
+  {
+    "id": 43,
+    "page": 40,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "into a constrained comparison instead of open-ended quality scoring [",
+    "comment": "varför är det viktigt? känns som att det saknar en slutsats här, typ: \"making the problem easier to solve for the LLM\"",
+    "status": "done",
+    "resolution": "Added conclusion to the constrained-comparison sentence ('makes the judgment easier and more reliable')"
+  },
+  {
+    "id": 44,
+    "page": 40,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "Ambiguous cases are excluded from router training instead none_enough of being forced into one of the two binary classes.",
+    "comment": "ta bort, repetition",
+    "status": "done",
+    "resolution": "Removed repeated none_enough-exclusion sentence"
+  },
+  {
+    "id": 45,
+    "page": 41,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "Table 3.1: Label-flow summary from raw benchmark samples to the final binary routing dataset. Stage names a step in the pipeline (preprocessing, dual-mode execution, judge labeling, and final-dataset filtering). Count is the number of queries that pass that stage. The three indented rows under “Judge produced usable label” decompose the 2 000 judged queries into the three judge classes (n enough, required, and enough). naive_e mix_r none_e The binary router is trained only on and naive_enough mix_required rows; rows are excluded. The label is none_enough mix_required operational and means Mix-beneficial under the judged LightRAG setup.",
+    "comment": "kondensera",
+    "status": "done",
+    "resolution": "Table 3.1 caption condensed"
+  },
+  {
+    "id": 46,
+    "page": 41,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "(excluded from binary dataset) 714 none_enough",
+    "comment": "viktig observation, tyder ju på att båda retrieval metoderna är otillräckliga - värt att diskutera senare om det finns ännu starkare retrieval metoder",
+    "status": "done",
+    "resolution": "Added Discussion paragraph on the 714 none_enough queries (~36%): both modes often insufficient; stronger retriever needed"
+  },
+  {
+    "id": 47,
+    "page": 41,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "only",
+    "comment": "ta bort",
+    "status": "done",
+    "resolution": "Removed redundant 'only' (test split sentence)"
+  },
+  {
+    "id": 48,
+    "page": 41,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "only",
+    "comment": "ta bort only",
+    "status": "done",
+    "resolution": "Removed redundant 'only' (validation split sentence)"
+  },
+  {
+    "id": 49,
+    "page": 42,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "Table 3.2: Routing dataset summary by split and 2WikiMultihopQA question type. Split names the dataset partition produced by the joint stratified split (train, validation, test, and the overall total). Total is the total number of judged binary examples in that split. The four right-hand columns name the four 2WikiMultihopQA question types: (two facts compared comparison directly), (a chained look-up such as “spouse of the compositional director of 𝑋 ”), (a comparison whose entities are reached bridge comp. by an intermediate hop), and (an answer that requires combining inference several facts). Each per-type cell shows the total number of examples of that question type in the split followed in parentheses by the number of those examples that are labeled required. mix_r",
+    "comment": "kondensera.\r\rtabellen kan göras bredare",
+    "status": "done",
+    "resolution": "Table 3.2 caption condensed (question types -> Section 3.1.1)"
+  },
+  {
+    "id": 50,
+    "page": 45,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "These intervals capture uncertainty from the finite test set, meaning how the metric might change if a different sample of test queries had been drawn.",
+    "comment": "Ta bort, läsaren förväntas kunna detta",
+    "status": "done",
+    "resolution": "Removed the bootstrap-interval explanation sentence (reader expected to know)"
+  },
+  {
+    "id": 51,
+    "page": 45,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "𝑁 𝑟 and 𝑀 𝑟 𝑁 𝑖",
+    "comment": "påminn läsaren om vad detta är igen",
+    "status": "done",
+    "resolution": "Added a pointer reminder to Equation 3.1 (Naive/Mix answers) where the precomputed outputs are reused"
+  },
+  {
+    "id": 52,
+    "page": 45,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "is computed analogously, using the per-mode token means ̄𝑁 𝑢𝑁 and 𝜏 ̄𝑀 ̄𝑢𝑀 from the instrumented subset (Section 3.2.1) in place of the per-query execution times. Substituting these constants gives the closed-form expression ̄𝑢𝑁 ̄𝑢𝑀 𝑈(𝜋𝜏) = (1 −𝑟𝑀(𝜋𝜏)) ̄𝑢𝑁+ 𝑟𝑀(𝜋𝜏) ̄𝑢𝑀. (3.10) 𝜏 𝑀 𝜏 𝑀 𝜏",
+    "comment": "detta är uppenbart, gör mer förvirring än hjälp imo. ta bort",
+    "status": "done",
+    "resolution": "Removed the obvious closed-form token equation (3.10); reworded the two references to it"
+  },
+  {
+    "id": 53,
+    "page": 46,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "The under-routing rate is the fraction of test queries where the true label is but the mix_required policy routes to Naive, 1 under-routing( 1{ 𝜋𝜏) = {𝑦𝑖= 1, 𝜋𝜏(𝑞𝑖) = 𝑁}, (3.11) 𝜏 𝑖 𝜏 𝑞𝑖 𝑚 𝑖=1 and the over-routing rate is the fraction of test queries where the true label is but the policy routes to Mix, naive_enough 1 over-routing( 1{ 𝜋𝜏) = {𝑦𝑖= 0, 𝜋𝜏(𝑞𝑖) = 𝑀}. (3.12) 𝜏 𝑦𝑖 𝜏 𝑞𝑖 𝑚 𝑖=1 ∑ 𝑚 ∑ 𝑚",
+    "comment": "använd binary classification terminologi här istället. dvs. false negatives och false positives rate (tillsammans med resonemang vilken som är viktigast och varför eller under vilka omständigheter)\r\rkika på tabellen här\rhttps://en.wikipedia.org/wiki/Precision_and_recall\r\ronödigt att introducera \"under-routing\" och \"over-routing\" som något nytt, använd vedertagna begrepp istället",
+    "status": "done",
+    "resolution": "Under/over-routing now introduced as the false-negative/false-positive rates; Table 4.2 caption uses the standard terms"
+  },
+  {
+    "id": 54,
+    "page": 48,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "comfortably",
+    "comment": "ta bort, llm-artifact",
+    "status": "done",
+    "resolution": "Removed 'comfortably' (llm-artifact)"
+  },
+  {
+    "id": 55,
+    "page": 48,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "here.",
+    "comment": "ta bort",
+    "status": "done",
+    "resolution": "Removed 'used here'"
+  },
+  {
+    "id": 56,
+    "page": 48,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "(7, 13, 42).",
+    "comment": "lol",
+    "status": "done",
+    "resolution": "Reviewer 'lol' at seeds (7,13,42) - no action"
+  },
+  {
+    "id": 57,
+    "page": 49,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "are first evaluated threshold-independently, by computing AUPRC on the class and AUROC. AUPRC is the primary metric because mix_required it is sensitive to performance on the minority class, which is the class that matters for the routing decision [20].",
+    "comment": "tycker att formuleringen allmänt blir lite klumpig när du säger att du har två klasser mix_required och naive_enough. tror det hade blivit betydligt snyggare att låta det vara en tydlig binärklassificering som är huruvida man behöver mix eller ej. blir mycket \"text debt\" (?) från att man ska bolla två klasser och hålla på att tydliggöra klasserna hela tiden istället för att göra formuleringen straight forward, simpel och tydlig.",
+    "status": "done",
+    "resolution": "Added explicit binary-classification framing (mix_required = positive class) at the metrics intro"
+  },
+  {
+    "id": 58,
+    "page": 49,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "For TF-IDF, bracketed values are 95 % bootstrap intervals [23] over 1 000 test-set resamples. For ModernBERT, values are reported as mean ± standard deviation across three training seeds.",
+    "comment": "det här är riktigt onajs och kan lätt göra resultatet svårtolkat, du bör använda samma spridningsmått för båda metoderna. varför gjorde du inte bara en bootstrap för ModernBERT också?",
+    "status": "done",
+    "resolution": "ModernBERT now reported as seed-averaged ensemble with bootstrap CIs identical to TF-IDF (Table 4.1)"
+  },
+  {
+    "id": 59,
+    "page": 50,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "F1 on mix_required",
+    "comment": "här är ett exempel på text debt som jag skrev om innan, detta hade annars bara varit F1-score",
+    "status": "done",
+    "resolution": "Positive class established once, so 'F1' is unambiguous; reduced repeated 'F1 on mix_required' qualifier"
+  },
+  {
+    "id": 60,
+    "page": 50,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "4.4 Results",
+    "comment": "detta avsnitt innehåller alldeles för mycket repetition och text. kommentera endast på de viktigaste observationerna. försök ta bort så mycket text som möjligt.",
+    "status": "done",
+    "resolution": "Trimmed §4.4 Results intro (error-type explanation moved to Discussion, not duplicated)"
+  },
+  {
+    "id": 61,
+    "page": 50,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "Mix-beneficial q",
+    "comment": "Mix-required?",
+    "status": "done",
+    "resolution": "Kept 'Mix-beneficial' as the consistent readable gloss for mix_required throughout (rather than flip-flopping)"
+  },
+  {
+    "id": 62,
+    "page": 50,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "ModernBERT achieves higher point estimates than TF-IDF",
+    "comment": "vi bör nämna någonstans huruvida modernberts inference time är försumbar eller ej jämfört med TF-IDF",
+    "status": "done",
+    "resolution": "Noted ModernBERT's encoder forward pass costs more than TF-IDF's lookup but both negligible vs retrieval/generation"
+  },
+  {
+    "id": 63,
+    "page": 51,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "Bal. rt.-lbl acc.",
+    "comment": "döp om",
+    "status": "done",
+    "resolution": "Renamed Table 4.1 columns: 'Bal. rt.-lbl acc.'->'Bal. acc.', 'Rt.-lbl acc.'->'Acc.' (caption notes all are routing-label)"
+  },
+  {
+    "id": 64,
+    "page": 52,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "Table 4.2: Offline routed-cost and policy diagnostics on the held-out test split. Route-to-Mix fr. is the fraction of test queries that the policy sends to Mix. Mean time (s) is the mean per-query execution time under the policy, computed as in Equation 3.9 using the per-query Naive and Mix times of whichever mode the policy selects. Mean tokens is the estimated mean per- query model-token usage under the policy, computed as in Equation 3.10 using the per-mode token means ̄𝑢𝑁 𝑢𝑁 and ̄𝑀 ̄𝑢𝑀 measured on the instrumented 𝑁= 150 subset (Section 3.2.1). Token saving is the relative reduction in mean tokens compared with always-Mix, that is (17,857 −mean tokens)/17,857. Under-rout. (under-routing rate) is the fraction of all test queries that are false- negative routing errors, that is, queries with true label that mix_required the policy routes to Naive. Over-rout. (over-routing rate) is the fraction of all test queries that are false-positive routing errors, that is, queries with true label that the policy routes to Mix. Both are absolute test-set error naive_enough fractions and not class-conditional error rates, so for example always-Naive has under-routing equal to the base rate of 0.254. Under-routing mix_required is the error type most directly associated with answer-quality risk; over-routing is primarily a cost error. ModernBERT values are the mean over three training seeds ± standard deviation.",
+    "comment": "wall of text, komprimera och flytta till huvudtext. kan säkert slimma den också",
+    "status": "done",
+    "resolution": "Table 4.2 caption compressed to one block; uses false-negative/false-positive"
+  },
+  {
+    "id": 65,
+    "page": 53,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "Figure 4.1: Precision–recall curves on the held-out test split for the TF-IDF baseline and the three ModernBERT training seeds. The dashed horizontal line is the test-set base rate of required. mix_r",
+    "comment": "varför inte kombinera de tre ModernBERT till en kurva (via majority vote eller dylikt), känns inte värdefullt att ha tre separata seeds - man kan illustrera varians på bättre sätt med ex. spridningsmått",
+    "status": "done",
+    "resolution": "All 6 result figures regenerated: single ModernBERT ensemble curve instead of 3 seeds (figures/thesis_ens/)"
+  },
+  {
+    "id": 66,
+    "page": 56,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "Table 4.3: Per-question-type breakdown on the test split. Each row reports the metrics for one 2WikiMultihopQA question type. Slice is the question- type label assigned by the benchmark. n is the number of test queries in the slice and nmix is the number of those that are labeled by the mix_required judge. Model is the router whose predictions are scored on the slice. Acc. is the fraction of slice queries on which the router agrees with the judge-derived routing label. The remaining columns (AUPRC, Pmix, Rmix, F1mix) carry the same meaning as in Table 4.1 but are computed only from the rows that fall in this slice, with threshold metrics evaluated at each router’s validation- selected threshold. The and slices contain too comparison inference few positives ( mix_required 2 and 1 respectively) to give informative AUPRC or F1 values, so those entries describe the particular test rows and should not be read as stable estimates. ModernBERT values are the mean over three seeds.",
+    "comment": "wall of text, komprimera och flytta viktigaste delarna till brödtext",
+    "status": "done",
+    "resolution": "Table 4.3 caption compressed"
+  },
+  {
+    "id": 67,
+    "page": 56,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "The two routing error types have different practical weight. A false negative routes a Mix-beneficial query to Naive and so risks an answer-quality regression on a query where Mix was judged necessary. A false positive routes a Naive-sufficient query to Mix and only wastes compute, because Naive was already judged sufficient. This asymmetry explains why always-Mix scores poorly on routing-label accuracy without necessarily producing worse final answers, and it also explains the gap between TF-IDF and ModernBERT in Table 4.2: TF-IDF has higher recall and lower under-routing, so it misses fewer Mix-beneficial queries; ModernBERT has higher precision and lower over-routing, so it issues fewer unnecessary Mix calls.",
+    "comment": "ta bort? känns som mycket repetition.",
+    "status": "done",
+    "resolution": "Removed the duplicated error-types explanation from Results (kept the developed version in Discussion)"
+  },
+  {
+    "id": 68,
+    "page": 58,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "and is unavailable in real user deployments. ModernBERT, which sees only the query text, achieves higher point estimates than this categorical rule on F1, precision, and routing-label accuracy. The router should therefore be understood as predicting an operational label. It picks up patterns in how questions are phrased that correlate with whether Mix is judged beneficial under this LightRAG setup and this benchmark distribution. The type-only diagnostic baseline serves as a reference point for what coarse benchmark structure alone can deliver. Anything ModernBERT adds beyond that reference reflects what the encoder learns from phrasing, and anything it does not exceed reflects benchmark structure more than a deeper property of the queries. The per-question-type breakdown and the type-only diagnostic baseline both rely on the benchmark’s per-question category label. In a real deployment that label does not exist; users send free-form queries and the routing layer sees only the query text. The category-based slices are useful as a diagnostic device because they show which subpopulations the router handles well and which it does not, and they help separate signal that comes from coarse structural cues (such as whether the question is a compositional multi-hop lookup) from signal that comes from finer phrasing. They are not a deployment recipe; the learned routers approximate the same structure from the query text alone, which is the only input available outside the benchmark. The same framing helps interpret the contrast between the compositional and slices. The fact that ModernBERT is strong on bridge_comparison and weaker on indicates which compositional bridge_comparison phrasings the encoder has learned to recognize on this benchmark, and does not extend to a claim that queries are easier to route in compositional production. Within this benchmark, the slice contains compositional more rows and the rows share a more consistent surface form. Always-Mix illustrates why the two result tables must be read together. It is label-incorrect on Naive-sufficient rows because it uses more retrieval than necessary, although the underlying Mix answer on those rows can still be correct. The absence of a direct final-answer-accuracy comparison for each routed policy is treated as a limitation in Section 5.2.3. The reported metrics are still informative for adaptive routing. Routing- label F1 measures whether the router selects the minimum judged sufficient mode. Mean routed time and estimated token usage measure the cost of doing so. The under-routing and over-routing rates separate answer-risk errors from cost-waste errors. Together they describe how often the router agrees with the judge and how expensive that agreement is.",
+    "comment": "mycket av detta kan tas bort",
+    "status": "done",
+    "resolution": "Condensed the type-only-baseline / operational-label discussion from two paragraphs to one"
+  },
+  {
+    "id": 69,
+    "page": 59,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "The held-out test set has 193 queries. This is large enough to compute meaningful bootstrap intervals and too small to resolve small differences between the routers with confidence. The TF-IDF bootstrap AUROC interval ([0.836, 0.936]) contains the ModernBERT mean AUROC of 0.908, so the AUROC comparison is not significant on this test set. The AUPRC and balanced-routing-label-accuracy gaps are larger and still lie inside the bootstrap intervals, as expected on a 193-row test set. The multi-seed standard deviation for ModernBERT is small on the aggregate routing-label metrics (≤0.017 on AUPRC, AUROC, balanced routing-label accuracy, F1, and routing-label accuracy), so the gains are at least stable across seeds. Per- class precision and recall vary more across seeds (standard deviations of 0.057 and 0.042), which is what one would expect when each seed selects its own decision threshold on a 193-row test set. A larger benchmark would be needed before stronger claims can be made. Finally, the cost picture is sharper in model tokens than in execution time. The two static baselines bracket a mean routed range of 10.95 to 24.42 seconds per query in execution time, and 3,458 to 17,857 tokens per query in model- token usage. The learned routers select operating points around 15 to 17 seconds per query (a 30–39 % reduction relative to always-Mix) and 7,100 to 8,500 tokens per query (a 52–60 % reduction relative to always-Mix), at non-trivial F1. The token reduction is larger than the time mix_required reduction because Mix adds one extra LLM call per query and a substantially larger assembled context [3, 12], while execution time is partly absorbed by network latency that does not scale with token volume. The routing decision itself contributes zero LLM tokens because neither router calls a generative model, and its inference cost is expected to be negligible relative to retrieval cost on either dimension.",
+    "comment": "samma här",
+    "status": "done",
+    "resolution": "Significance paragraph already tightened in the stats rework (now concise, overlap-focused)"
+  },
+  {
+    "id": 70,
+    "page": 61,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "alone, on the 2WikiMultihopQA benchmark,",
+    "comment": "ta bort komman.",
+    "status": "done",
+    "resolution": "Removed two commas around 'on the 2WikiMultihopQA benchmark'"
+  },
+  {
+    "id": 71,
+    "page": 61,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "The research question asks, within a fixed Hybrid RAG setting, how well a lightweight query-only classifier predicts a judge-derived routing label for the minimum sufficient retrieval mode, and how using that classifier as an offline routing policy affects routed cost relative to static Naive and Mix baselines.",
+    "comment": "var konsekvent med tempus. tidigare stycke säger studied här är det asks. oftast använder man passive voice nutid",
+    "status": "done",
+    "resolution": "Fixed tense: 'research question asks' -> 'asked' to match surrounding past tense"
+  },
+  {
+    "id": 72,
+    "page": 62,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "| Conclusions and future work 40 and routing-label accuracy (0.846 vs. 0.788). The AUROC gap is inside the bootstrap interval and is therefore not significant. The multi-seed standard deviation of the ModernBERT router is small on the aggregate routing-label metrics (≤0.017 on AUPRC, AUROC, balanced routing-label accuracy, F1, and routing-label accuracy), which indicates that the gains are stable across initialization seeds. The two routers also place themselves at opposite ends of the precision-recall trade-off on the class: TF-IDF has mix_required lower under-routing (0.057 vs. 0.076 ± 0.009), and ModernBERT has lower over-routing (0.078 ± 0.019 vs. 0.155).",
+    "comment": "nu presenterar du bara resultatet igen, vad är slutsatsen? är IDF bättre eller sämre än BERT? vilken bör man använda?",
+    "status": "done",
+    "resolution": "Sub-q1 now states a verdict: ModernBERT >= TF-IDF, a little better in point estimate, not certifiable at N=193"
+  },
+  {
+    "id": 73,
+    "page": 62,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "The second sub-question concerns routed cost relative to static baselines. Both learned routers reach test-set operating points around 15 to 17 seconds of mean routed execution time, compared with 10.95 seconds for always-Naive and 24.42 seconds for always-Mix, and achieve higher routing-label F1 than either static policy at substantially lower mean routed time than always-Mix. Measured in model tokens, they route at roughly 7,100 to 8,500 tokens per query, compared with 3,458 for always-Naive and 17,857 for always-Mix. The selected ModernBERT operating point reduces estimated routed token cost by 60 % relative to always-Mix, and the selected TF-IDF operating point by 52 %. The routing decision itself adds negligible cost on either dimension because neither router calls a generative model.",
+    "comment": "samma som ovan, vad är svaret?",
+    "status": "done",
+    "resolution": "Sub-q2 now states a verdict: routing recovers up to 42% time / 63% tokens while retaining ~92% answers"
+  },
+  {
+    "id": 74,
+    "page": 62,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "The third sub-question asks how much a query-only learned router improves over a heuristic that routes by a coarse question-category label alone. The type-only diagnostic baseline, which predicts Mix for compositional questions and Naive otherwise, already reaches an F1 of 0.667, a balanced routing-label accuracy of 0.794, and a routing-label accuracy of 0.803 on the test split. ModernBERT, which sees only the query text and never the category label, improves on this categorical rule on F1, precision, and routing-label accuracy. The categorical rule is not a realistic deployment policy because such a label is not generally available for arbitrary user queries, while a query- only router needs only the query text. Most of the remaining signal localizes in the slice, where ModernBERT achieves a roughly two- compositional and-a-half-point higher AUPRC than TF-IDF. The bridge_comparison slice is the weakest part of the result and is a natural target for further work.",
+    "comment": "ser inte poängen med denna RQ nu när jag läst uppsatsen, den bör snarare integreras i RQ2. det känns som en mycket liten del av arbetet och bara en naiv baseline",
+    "status": "done",
+    "resolution": "Merged RQ3 into RQ1: heuristic is now one of the baselines in sub-question 1; dropped the standalone third sub-question in intro and conclusions"
+  },
+  {
+    "id": 75,
+    "page": 62,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "and that a lightweight encoder classifier extracts more of that predictability than a TF-IDF logistic-regression baseline",
+    "comment": "det kan vi förmodligen inte säga säkert. om du hade använt jämförbara spridningsmått i resultatet hade vi förmodligen sett att konfidensintervallen för ex. AUPRC (om det går att beräkna) för de två metoderna överlappar",
+    "status": "done",
+    "resolution": "Significance honestly framed: bootstrap CIs overlap on all metrics except (barely) routing-label accuracy"
+  },
+  {
+    "id": 76,
+    "page": 62,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "coarse question- category heuristic",
+    "comment": "detta kan vi förmodligen säga säkert, men återigen: konfidensintervall",
+    "status": "done",
+    "resolution": "Same overlap framing applied where the predictability claim is made"
+  },
+  {
+    "id": 77,
+    "page": 63,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "Future work should log token usage for every Naive and Mix execution in the full 1,286-row routing dataset. With per-query token logging it becomes possible to compute per-query routed token cost directly, to report bootstrap intervals for token cost on the same footing as for execution time, and to study whether token usage varies systematically across question types or routing labels.",
+    "comment": "Säger inte det föregående stycket just detta?",
+    "status": "done",
+    "resolution": "Condensed the future-work token paragraph to remove repetition with the limitation paragraph"
+  },
+  {
+    "id": 78,
+    "page": 63,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "not under",
+    "comment": "komma mellan dessa?",
+    "status": "done",
+    "resolution": "Fronted the 'under the chosen configuration' modifier in all 3 spots to remove the 'Naive was not under' garden-path"
+  },
+  {
+    "id": 79,
+    "page": 64,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "Useful",
+    "comment": "Ta bort?",
+    "status": "done",
+    "resolution": "'Useful follow-up work includes' -> 'Follow-up work would include'"
+  },
+  {
+    "id": 80,
+    "page": 64,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "work includes",
+    "comment": "would include om vi tar bort useful",
+    "status": "done",
+    "resolution": "(same edit as #79)"
+  },
+  {
+    "id": 81,
+    "page": 64,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "A future evaluation should retain per-mode correctness indicators for every query, or re-run the judge on the answer selected by each policy, so that judged final answer accuracy can be reported alongside routed cost. With per- policy answer correctness available, the main trade-off would become answer correctness against token cost.",
+    "comment": "Det bästa vore ju om man kunde få en success rate för varje policy genom att köra den flera gånger för samma query",
+    "status": "done",
+    "resolution": "Per-policy answer accuracy computed (free v1, stated assumption); full re-judge noted as future work"
+  },
+  {
+    "id": 82,
+    "page": 66,
+    "type": "Highlight",
+    "author": "Arvid",
+    "highlighted_text": "these labels as ground truth",
+    "comment": "vi nämner detta mycket, men känns inte som att du föreslår ett alternativ eller förklarar varför det spelar roll att de inte är ground truth? känns som att det bör motiveras någonstans att det är ok trots att de inte nödvändigtvis stämmer överens med en människas uppfattning",
+    "status": "done",
+    "resolution": "Justified why judge labels are acceptable despite not being ground truth (constrained reference-grounded comparison; operational target); human validation = future work"
+  }
+]
