@@ -21,6 +21,17 @@ Every number was recomputed from the raw artifacts (per-query predictions, judge
 
 Final state: compiles from a clean directory (pdfLaTeX → makeglossaries → bibtex → pdfLaTeX ×2) to 76 pages with zero unresolved references, correct PDF metadata title, and citations rendering in ascending order.
 
+## Second external-review round (7 further fixes)
+
+A second reviewer pass over the revision surfaced seven additional points; all were verified against the code and logs before editing:
+
+- **Token accounting made explicit (completes Arvid's #39).** Verified from the instrumentation logs: the reported totals are the Gemini `usage_metadata` total per generation call = prompt + output + internal reasoning ("thinking") tokens, with the reasoning component nonzero in every instrumented call; embedding calls never reported usage and their tokenizer estimates (tens of tokens/query) are excluded. Section 3.2.1 and the Appendix B token-logging row now say exactly this.
+- **Appendix B judge prompt corrected and strengthened.** The old text claimed the label semantics were "annotations, not part of the prompt" — factually wrong: the user prompt in `judge_query_results.py` defines all three labels and nine decision rules (including the minimum-sufficiency tie-break "if both correct → naive_enough"). Both the system prompt and the full user prompt are now reproduced verbatim.
+- **Citation sweep completed.** A programmatic pass over every multi-key citation found one remaining misorder: [2, 3, 6, 4] → [2, 3, 4, 6] in Section 1.2. All 13 multi-citations now render ascending.
+- **Abstract self-containment:** "gold answer" → "benchmark reference answer" in the English abstract (the Swedish "facit" was already self-explanatory).
+- **92 % claim made explicitly conditional** in the English abstract, Swedish abstract, and conclusions: "retaining about 92 % of always-Mix's judged-correct answers under the stated assumption that Mix remains correct on queries where Naive was judged sufficient."
+- **New limitation sentence:** the same model checkpoint generates and judges the answers, so the judge may share biases with the generators; comparison against a different judge model or human annotations is named as the way to quantify this.
+
 ## Statistics, significance & results integrity
 
 - **#58** (p.49, «For TF-IDF, bracketed values are 95 % bootstrap intervals [23] over 1…»)

@@ -387,7 +387,7 @@
     "highlighted_text": "The instrumented subset is used to estimate the per- mode mean model-token consumption, denoted ̄𝑢𝑁 𝑢𝑁 for the Naive retrieval mode and ̄𝑢𝑀 𝑢𝑀 for the Mix retrieval mode. These per-mode means are then applied to the held-out test split for the routed-cost analysis in Section 3.5.2. The routed token figures are therefore estimated from per-mode token means and are not measured per query for every test example. Section 5.2.1 discusses the implications of this small instrumented subset.",
     "comment": "Om jag förstår det här rätt så använder vi ett genomsnitt från ett visst subsample för att uppskatta en per-mode mean och använda det genomsnittet för att göra token-kostnadsberäkningarna. Varför gör vi på detta sättet? Varför räknar vi inte tokenkostnaderna per query? Detta kan ju leda till felaktiga slutsatser om ex. de allra svåraste frågorna är de som kräver fler tokens\r\rGällande tokens så förmodar jag att detta är alla typer av output tokens dvs. inkl. thinking tokens. Kan vara värt att nämna om det inte är specifierat någonstans",
     "status": "done",
-    "resolution": "Corrected N=150 -> N=15 everywhere (token means verified from the 15-row file); caveat kept"
+    "resolution": "Corrected N=150 -> N=15 everywhere (token means verified from the 15-row file); caveat kept; second pass: §3.2.1 now states exactly what the totals include (prompt + output + reasoning/thinking tokens per Gemini usage_metadata; embedding estimates excluded) — answers Arvid's thinking-token question directly"
   },
   {
     "id": 40,
