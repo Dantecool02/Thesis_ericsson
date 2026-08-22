@@ -4,7 +4,16 @@
     "commented_by": "Pawel Herman (examiner)",
     "baseline_tex": "documents/Final_Feedback/thesis_pawel_commented_version.tex",
     "email_summary": "Good piece of work, report overall in good condition. Before presentation: (1) restructuring, (2) add a proper Discussion chapter, (3) polish results, their analysis and interpretation, (4) provide statistical evidence to support claims about results, (5) annotate all text changes in the revised version.",
-    "n_items": 15
+    "n_items": 15,
+    "revision_tex": "documents/Thesis_overleaf/thesis_post_final_feedback.tex",
+    "tracked_changes": "documents/Thesis_overleaf/thesis_diff.pdf (latexdiff vs thesis_pawel_commented_version.tex)",
+    "email_asks_resolution": {
+      "restructuring": "done (items 3,5,7,12-15)",
+      "discussion_chapter": "done (item 12)",
+      "results_polish": "done (items 8,11)",
+      "statistical_evidence": "done (items 6,9,11)",
+      "annotate_changes": "tracked-changes PDF via latexdiff + response letter"
+    }
   },
   "items": [
     {
@@ -15,8 +24,8 @@
       "highlighted_or_context_text": "evidence is split across documents but uses substantially more compute than vector retrieval. Applying graph-enhanced retrieval to every query wastes resources on questions that the low-cost path could already handle, while always using vector retrieval risks missing questions that benefit from the richer retrieval mode. This thesis studies whether the choice between a low-cost vector retrieval",
       "comment": "You introduce some abbreviations (e.g. TF-IDF) without really defining them on the first use.\rThe same should be repeated for the main body of text, irrespective of the Abstract.",
       "theme": "acronyms",
-      "status": "open",
-      "resolution": ""
+      "status": "done",
+      "resolution": "Acronyms: TF-IDF now spelled out at first use in both abstracts ('term frequency--inverse document frequency (TF-IDF)'). Body already expands every glossary acronym on first use after \\glsresetall; added glossary entries for CPU, JSON and API and replaced literal uses (§3.4, §5.x, App. B); 'GPT' expanded inline in §2.4.1; 'CIs' spelled out in Table B.3 (Appendix B.1)."
     },
     {
       "id": 2,
@@ -26,8 +35,8 @@
       "highlighted_or_context_text": "",
       "comment": "Have you used chatGPT in your research? If yes, I suggest openly admitting it and discussing how - benefits and your reflections - in a separate section in the Discussion chapter.",
       "theme": "genAI-disclosure",
-      "status": "open",
-      "resolution": ""
+      "status": "done",
+      "resolution": "New Section 5.7 'Use of generative AI tools' in the Discussion chapter: discloses advisory use of OpenAI Codex and Anthropic Claude Code as a discussion partner (articulation, implementation alternatives, debugging, also for the revisions), states author responsibility and verification practice, and reflects on benefits (iteration speed) and risks (over-reliance)."
     },
     {
       "id": 3,
@@ -37,8 +46,8 @@
       "highlighted_or_context_text": "This chapter introduces the thesis topic and motivates the problem studied in this thesis project. Section 1.1 gives the necessary background in retrieval- augmented question answering and the cost of different retrieval modes. Section 1.2 defines the problem and research question. Section 1.3 states the purpose of the work, Section 1.4 presents the goals, Section 1.5 outlines the research methodology, Section 1.6 defines the delimitations, and Section 1.7",
       "comment": "This thesis outline should be placed in a separate and last section of this chapter.",
       "theme": "structure-ch1",
-      "status": "open",
-      "resolution": ""
+      "status": "done",
+      "resolution": "Chapter 1 now opens with a one-sentence lead; the section-by-section outline was moved into the last section, 1.6 'Structure of the thesis', together with the chapter outline (updated to the new chapter structure)."
     },
     {
       "id": 4,
@@ -48,8 +57,8 @@
       "highlighted_or_context_text": "The research question is further split into the following sub-questions: • How well does a fine-tuned encoder-only classifier predict the judge- derived routing label, compared to a term frequency-inverse document frequency (TF-IDF) logistic-regression baseline and a non-deployable coarse question-category heuristic?",
       "comment": "The first question could be formulated \"How does A compare to B ...\" rather than \"How well does A ... predict, compared to B, ...\" - it is a matter of style.",
       "theme": "style-RQ",
-      "status": "open",
-      "resolution": ""
+      "status": "done",
+      "resolution": "Sub-question 1 reworded to 'How does a fine-tuned encoder-only classifier compare to a TF-IDF logistic-regression baseline and to a non-deployable coarse question-category heuristic in predicting the judge-derived routing label?'"
     },
     {
       "id": 5,
@@ -59,8 +68,8 @@
       "highlighted_or_context_text": "1.5 Research methodology This thesis is a quantitative empirical study on a public multi-hop question- answering benchmark. The predictability of retrieval-mode selection from the query text is evaluated by training query-only routers on judge-derived",
       "comment": "Please remove this unnecessary section on Research methodology as it does not really help (unlike in the Project plan where it helps us understand your planned approach; here you have done your work so I can read up on it in the subsequent parts of your thesis report, it is misplaced. Methods should describe your instruments.",
       "theme": "structure-ch1",
-      "status": "open",
-      "resolution": ""
+      "status": "done",
+      "resolution": "Section 1.5 'Research methodology' removed. Its only non-redundant content (routing-label vs final-answer accuracy caveat) already appears in §1.5 Delimitations and §3.5."
     },
     {
       "id": 6,
@@ -70,8 +79,8 @@
       "highlighted_or_context_text": "that checkpoint is then used for all reported test metrics. Hyperparameters are listed in Chapter 4. 3.5 Evaluation Evaluation separates routing-label prediction from routed-cost analysis. Held-",
       "comment": "It would be recommended that you mention statistical testing and what statistical tests you use to provide meaningful evidence supporting your results.",
       "theme": "statistics",
-      "status": "open",
-      "resolution": ""
+      "status": "done",
+      "resolution": "New Section 3.5.3 'Statistical testing' in Methods: paired bootstrap CI of differences (10,000 resamples), paired permutation test (model swap; within-model ranks for AUPRC/AUROC, 0/1 decisions for thresholded metrics; DeLong cross-check for AUROC), McNemar's exact test (all rows / mix rows / naive rows), alpha=0.05, Holm adjustment over the seven metrics; script src/router/thesis_stats_tests.py added to Table B.3 (Appendix B.1)."
     },
     {
       "id": 7,
@@ -81,8 +90,8 @@
       "highlighted_or_context_text": "Chapter 4 Implementation",
       "comment": "I am always skeptical about separating Methods from Implementation since Implementation is your method. So, I would suggest moving the implementation part to the Methods. Now what is absolutely critical to do is that you have a proper Results chapter.",
       "theme": "structure-chapters",
-      "status": "open",
-      "resolution": ""
+      "status": "done",
+      "resolution": "Chapter 4 'Implementation' dissolved: model training (old 4.1) merged into §3.4 Router models; experiment descriptions (old 4.2, 4.3) became §3.6 'Experimental design'; a proper Chapter 4 'Results and analysis' was created (6 sections)."
     },
     {
       "id": 8,
@@ -92,8 +101,8 @@
       "highlighted_or_context_text": "points the learned routers are compared against. 4.4 Results Tables 4.1 and 4.2 summarize the test-set results: Table 4.1 reports routing- label classification performance, and Table 4.2 reports offline routed cost and",
       "comment": "You need to provide a more systematic narrative where the reader understand what experiments you run and for what purpose before you lash out Tables and Figures.",
       "theme": "results-narrative",
-      "status": "open",
-      "resolution": ""
+      "status": "done",
+      "resolution": "Chapter 4 now opens with a narrative overview of the experiments, their purposes and where each is reported, plus the shared conventions (test split, thresholds, CIs, p-values); each section states the purpose of its experiment before presenting tables/figures."
     },
     {
       "id": 9,
@@ -103,8 +112,8 @@
       "highlighted_or_context_text": "Section 4.5. ModernBERT achieves higher point estimates than TF-IDF on every aggregate routing-label metric:",
       "comment": "you cannot make that statement without providing any statistical evidence (as a result of stat testing, some p-value)",
       "theme": "statistics",
-      "status": "open",
-      "resolution": ""
+      "status": "done",
+      "resolution": "The sentence is now followed by the paired statistical evidence (Table 4.2): precision +0.209 [0.115, 0.312], p<0.001 (Holm <0.001); routing-label accuracy +0.078 [0.026, 0.130], p=0.006 (Holm 0.035), McNemar 21 vs 6 (p=0.006); AUPRC/AUROC/balanced accuracy/F1/recall differences not significant (p=0.52/0.165/0.52/0.113/0.127). Versus the type-only heuristic: precision significant (Holm 0.002), accuracy only unadjusted (0.024; Holm 0.096). Per-slice: only compositional precision significant (p=0.003). Claims throughout (abstract, §4.1, §4.4, §5.1, §6.1) restated accordingly; §5.6.5 gives minimum detectable differences."
     },
     {
       "id": 10,
@@ -114,8 +123,8 @@
       "highlighted_or_context_text": "as it uses the benchmark’s question-category label. Policy AUPRC AUROC Bal. acc. Pmix Rmix F1mix Acc. Always-Naive 0.254 0.500 0.500 0.000 0.000 0.000 0.746 Always-Mix 0.254 0.500 0.500 0.254 1.000 0.405 0.254 Type-only diagnostic — — 0.794 0.585 0.776 0.667 0.803 TF-IDF 0.742 [0.610, 0.853] 0.892 [0.836, 0.936] 0.784 0.559 0.776 0.650 [0.547, 0.740] 0.788 [0.731, 0.845] ModernBERT 0.769 [0.645, 0.889] 0.910 [0.865, 0.949] 0.802 [0.730, 0.872] 0.767 0.673 0.717 [0.607, 0.810] 0.865 [0.819, 0.912]",
       "comment": "These tables are illegible, the font is far too small.",
       "theme": "tables-legibility",
-      "status": "open",
-      "resolution": ""
+      "status": "done",
+      "resolution": "All result tables rebuilt without \\resizebox at \\small size: Table 4.1 (point estimates), new Table 4.2 (CIs + paired tests, two-line cells), Table 4.3 (routed cost, two-line headers), Table 4.4 (per-type, 7 columns), new Table 4.5 (seeds); Table 3.2 raised from \\footnotesize to \\small. Table B.3's script-path column (previously overflowing the margin) now wraps."
     },
     {
       "id": 11,
@@ -125,8 +134,8 @@
       "highlighted_or_context_text": "",
       "comment": "This discussion of the results reflects their analysis and interpretation. It should be integrated with the Results. You present the results, explain them, analyse and interpret. Here you present all the results and then you discuss all the results. These aspects should be inherently intertwined - finding after finding. Also, the analysis has to be supported by statistical testing to provide statistically meaningful evidence. Otherwise everything is inconclusive, reflecting trends rather than concrete conclusive outcomes.",
       "theme": "results-narrative+statistics",
-      "status": "open",
-      "resolution": ""
+      "status": "done",
+      "resolution": "Old §4.5 Discussion dissolved into the Results chapter: each finding is presented, explained and interpreted in place (§4.1 classification + tests, §4.2 cost and error types + McNemar, §4.3 thresholds/frontier, §4.4 per-type + per-slice tests, §4.5 answer-quality retention, §4.6 seed stability). Statistical support added where claims are made."
     },
     {
       "id": 12,
@@ -136,8 +145,8 @@
       "highlighted_or_context_text": "",
       "comment": "You need a Discussion chapter where you summarise (briefly!) your key findings, discuss them in the context of the literature (research contribution), their Societal impact/industrial relevance, share Ethics considerations, bring up Sustainability issues and cover your reflections on limitations.",
       "theme": "structure-discussion",
-      "status": "open",
-      "resolution": ""
+      "status": "done",
+      "resolution": "New Chapter 5 'Discussion': 5.1 key findings (brief), 5.2 relation to prior work and research contribution, 5.3 industrial relevance and societal impact, 5.4 ethical considerations, 5.5 sustainability, 5.6 limitations (7 subsections incl. new 'Statistical power'), 5.7 use of generative AI tools."
     },
     {
       "id": 13,
@@ -147,8 +156,8 @@
       "highlighted_or_context_text": "5.2 Limitations and future work 5.2.1 Token-cost measurement scope Model-token cost in this thesis is estimated using per-mode mean token",
       "comment": "This is part of the Discussion chapter.",
       "theme": "structure-discussion",
-      "status": "open",
-      "resolution": ""
+      "status": "done",
+      "resolution": "Limitations moved to §5.6 of the Discussion chapter (future-work sentences extracted to §6.2)."
     },
     {
       "id": 14,
@@ -158,8 +167,8 @@
       "highlighted_or_context_text": "5.3 Reflections This thesis is centered on making a Hybrid RAG system more resource- efficient. The most direct connection is to the United Nations (UN) Sustainable Development Goal (SDG) number 12 (responsible consumption",
       "comment": "This is also part of the Discussion chapter.",
       "theme": "structure-discussion",
-      "status": "open",
-      "resolution": ""
+      "status": "done",
+      "resolution": "Reflections content moved into the Discussion chapter as §5.4 Ethical considerations and §5.5 Sustainability."
     },
     {
       "id": 15,
@@ -169,8 +178,8 @@
       "highlighted_or_context_text": "",
       "comment": "How about Future work section?",
       "theme": "structure-future-work",
-      "status": "open",
-      "resolution": ""
+      "status": "done",
+      "resolution": "New Section 6.2 'Future work' collecting all follow-up directions (per-query token logging, judge validation, final-answer accuracy, other frameworks/benchmarks/larger test set, routing beyond the query, calibration and abstention)."
     }
   ]
 }

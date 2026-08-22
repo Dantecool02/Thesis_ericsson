@@ -310,3 +310,27 @@ A second reviewer pass over the revision surfaced seven additional points; all w
 - **#56** (p.48, «(7, 13, 42).»)
   - *Arvid:* lol
   - *Changed:* Reviewer 'lol' at seeds (7,13,42) - no action
+
+---
+
+# Round 3 — examiner feedback (Pawel Herman), 2026-08-22
+
+Source: `documents/Final_Feedback/Dante_Wesslund_Thesis_PHcomments.pdf` (15 annotations + email: restructure, proper Discussion chapter, polish results/analysis, statistical evidence, annotate all changes). Tracker: `documents/Final_Feedback/feedback_pawel.json` (15/15 done). Response letter: `documents/Final_Feedback/response_to_examiner.md`. Baseline he read: `documents/Final_Feedback/thesis_pawel_commented_version.tex`. Revision: `documents/Thesis_overleaf/thesis_post_final_feedback.tex` (+ `thesis_diff.tex/pdf`, latexdiff tracked changes).
+
+## Structure
+- Ch.1: §1.5 Research methodology removed; outline moved to new last section §1.6 Structure of the thesis; sub-question 1 reworded ("How does A compare to B…").
+- Ch.3 Methods now contains: implementation/training (old §4.1 → §3.4), §3.5 Evaluation metrics and statistical testing (new §3.5.3), §3.6 Experimental design (old §4.2–4.3 + new §3.6.3 secondary analyses).
+- New Ch.4 Results and analysis: overview narrative, then §4.1 classification (+Table 4.2 uncertainty & paired tests), §4.2 routed cost & error types (+McNemar per error type), §4.3 thresholds/frontier, §4.4 per-type (+per-slice tests), §4.5 answer-quality retention, §4.6 seed stability (new Table 4.5). Old §4.5 Discussion paragraphs distributed into these sections.
+- New Ch.5 Discussion: key findings; prior work & contribution; industrial/societal; ethics; sustainability; limitations (7 subsections incl. new Statistical power); use of generative AI tools (new disclosure, advisory use of Codex/Claude Code).
+- Ch.6 Conclusions and future work: conclusions restated on the basis of the tests; new §6.2 Future work (6 subsections).
+
+## Statistics (new `src/router/thesis_stats_tests.py` → `data/models/thesis_analysis/stats_tests.json`)
+- Paired bootstrap CIs of differences (10k), paired permutation (model swap; within-model ranks for AUPRC/AUROC; DeLong cross-check), McNemar exact (all/mix/naive rows), Holm over 7 metrics. Independently re-derived by a second implementation (136 checks, 0 discrepancies).
+- Result: precision and routing-label accuracy (and over-routing) of ModernBERT significantly better than TF-IDF; AUPRC/AUROC/bal-acc/F1/recall not significant; vs type-only: accuracy & precision significant; per-type n.s. Abstract/§4.1/§5.1/§6.1 reworded accordingly (old "CIs overlap ⇒ not significant" reasoning removed).
+
+## Tables / presentation
+- All result tables rebuilt without `\resizebox` at `\small` (Tables 4.1–4.5; Table 3.2 enlarged).
+- Acronyms: TF-IDF spelled out in both abstracts; CPU/JSON/API glossary entries; GPT expanded; "CIs" spelled out.
+- N=150 → N=15 (5 sites; 15 rows in `query_token_usage.jsonl`).
+- Template fixes for the pdfLaTeX path (in the tex preamble): `\pageNumberFont` fallback (removes 80 benign errors) and `amssymb` (ℝ now renders).
+- Bib: mcnemar1947, holm1979, delong1988, dietterich1998.
