@@ -1,0 +1,257 @@
+[
+  {
+    "id": 1,
+    "page": 5,
+    "type": "Text",
+    "author": "paherman",
+    "subject": "Sticky Note",
+    "modified": "D:20260705160540Z00'00'",
+    "highlighted_text": null,
+    "context_if_note": "evidence is split across documents but uses substantially more compute than vector retrieval. Applying graph-enhanced retrieval to every query wastes resources on questions that the low-cost path could already handle, while always using vector retrieval risks missing questions that benefit from the richer retrieval mode. This thesis studies whether the choice between a low-cost vector retrieval",
+    "comment": "You introduce some abbreviations (e.g. TF-IDF) without really defining them on the first use.\rThe same should be repeated for the main body of text, irrespective of the Abstract.",
+    "rect": [
+      557.7,
+      236.1,
+      581.7,
+      260.1
+    ]
+  },
+  {
+    "id": 2,
+    "page": 9,
+    "type": "Text",
+    "author": "paherman",
+    "subject": "Sticky Note",
+    "modified": "D:20260705181635+02'00'",
+    "highlighted_text": null,
+    "context_if_note": "",
+    "comment": "Have you used chatGPT in your research? If yes, I suggest openly admitting it and discussing how - benefits and your reflections - in a separate section in the Discussion chapter.",
+    "rect": [
+      117.3,
+      304.5,
+      141.3,
+      328.5
+    ]
+  },
+  {
+    "id": 3,
+    "page": 21,
+    "type": "Text",
+    "author": "paherman",
+    "subject": "Sticky Note",
+    "modified": "D:20260705180627+02'00'",
+    "highlighted_text": null,
+    "context_if_note": "This chapter introduces the thesis topic and motivates the problem studied in this thesis project. Section 1.1 gives the necessary background in retrieval- augmented question answering and the cost of different retrieval modes. Section 1.2 defines the problem and research question. Section 1.3 states the purpose of the work, Section 1.4 presents the goals, Section 1.5 outlines the research methodology, Section 1.6 defines the delimitations, and Section 1.7",
+    "comment": "This thesis outline should be placed in a separate and last section of this chapter.",
+    "rect": [
+      503.7,
+      330.8,
+      527.7,
+      354.8
+    ]
+  },
+  {
+    "id": 4,
+    "page": 23,
+    "type": "Text",
+    "author": "paherman",
+    "subject": "Sticky Note",
+    "modified": "D:20260705180920+02'00'",
+    "highlighted_text": null,
+    "context_if_note": "The research question is further split into the following sub-questions: • How well does a fine-tuned encoder-only classifier predict the judge- derived routing label, compared to a term frequency-inverse document frequency (TF-IDF) logistic-regression baseline and a non-deployable coarse question-category heuristic?",
+    "comment": "The first question could be formulated \"How does A compare to B ...\" rather than \"How well does A ... predict, compared to B, ...\" - it is a matter of style.",
+    "rect": [
+      499.9,
+      405.2,
+      523.9,
+      429.2
+    ]
+  },
+  {
+    "id": 5,
+    "page": 24,
+    "type": "Text",
+    "author": "paherman",
+    "subject": "Sticky Note",
+    "modified": "D:20260705181123+02'00'",
+    "highlighted_text": null,
+    "context_if_note": "1.5 Research methodology This thesis is a quantitative empirical study on a public multi-hop question- answering benchmark. The predictability of retrieval-mode selection from the query text is evaluated by training query-only routers on judge-derived",
+    "comment": "Please remove this unnecessary section on Research methodology as it does not really help (unlike in the Project plan where it helps us understand your planned approach; here you have done your work so I can read up on it in the subsequent parts of your thesis report, it is misplaced. Methods should describe your instruments.",
+    "rect": [
+      348.8,
+      517.9,
+      372.8,
+      541.9
+    ]
+  },
+  {
+    "id": 6,
+    "page": 42,
+    "type": "Text",
+    "author": "paherman",
+    "subject": "Sticky Note",
+    "modified": "D:20260705181249+02'00'",
+    "highlighted_text": null,
+    "context_if_note": "that checkpoint is then used for all reported test metrics. Hyperparameters are listed in Chapter 4. 3.5 Evaluation Evaluation separates routing-label prediction from routed-cost analysis. Held-",
+    "comment": "It would be recommended that you mention statistical testing and what statistical tests you use to provide meaningful evidence supporting your results.",
+    "rect": [
+      283.4,
+      328.5,
+      307.4,
+      352.5
+    ]
+  },
+  {
+    "id": 7,
+    "page": 47,
+    "type": "Text",
+    "author": "paherman",
+    "subject": "Sticky Note",
+    "modified": "D:20260705181428+02'00'",
+    "highlighted_text": null,
+    "context_if_note": "Chapter 4 Implementation",
+    "comment": "I am always skeptical about separating Methods from Implementation since Implementation is your method. So, I would suggest moving the implementation part to the Methods. Now what is absolutely critical to do is that you have a proper Results chapter.",
+    "rect": [
+      346.6,
+      212.0,
+      370.6,
+      236.0
+    ]
+  },
+  {
+    "id": 8,
+    "page": 50,
+    "type": "Text",
+    "author": "paherman",
+    "subject": "Sticky Note",
+    "modified": "D:20260706030750+02'00'",
+    "highlighted_text": null,
+    "context_if_note": "points the learned routers are compared against. 4.4 Results Tables 4.1 and 4.2 summarize the test-set results: Table 4.1 reports routing- label classification performance, and Table 4.2 reports offline routed cost and",
+    "comment": "You need to provide a more systematic narrative where the reader understand what experiments you run and for what purpose before you lash out Tables and Figures.",
+    "rect": [
+      239.1,
+      358.6,
+      263.1,
+      382.6
+    ]
+  },
+  {
+    "id": 9,
+    "page": 50,
+    "type": "Highlight",
+    "author": "paherman",
+    "subject": "Comment on Text",
+    "modified": "D:20260706030851+02'00'",
+    "highlighted_text": "Section 4.5. ModernBERT achieves higher point estimates than TF-IDF on every aggregate routing-label metric:",
+    "context_if_note": null,
+    "comment": "you cannot make that statement without providing any statistical evidence (as a result of stat testing, some p-value)",
+    "rect": [
+      98.7,
+      429.2,
+      468.2,
+      476.5
+    ]
+  },
+  {
+    "id": 10,
+    "page": 51,
+    "type": "Text",
+    "author": "paherman",
+    "subject": "Sticky Note",
+    "modified": "D:20260706030912+02'00'",
+    "highlighted_text": null,
+    "context_if_note": "as it uses the benchmark’s question-category label. Policy AUPRC AUROC Bal. acc. Pmix Rmix F1mix Acc. Always-Naive 0.254 0.500 0.500 0.000 0.000 0.000 0.746 Always-Mix 0.254 0.500 0.500 0.254 1.000 0.405 0.254 Type-only diagnostic — — 0.794 0.585 0.776 0.667 0.803 TF-IDF 0.742 [0.610, 0.853] 0.892 [0.836, 0.936] 0.784 0.559 0.776 0.650 [0.547, 0.740] 0.788 [0.731, 0.845] ModernBERT 0.769 [0.645, 0.889] 0.910 [0.865, 0.949] 0.802 [0.730, 0.872] 0.767 0.673 0.717 [0.607, 0.810] 0.865 [0.819, 0.912]",
+    "comment": "These tables are illegible, the font is far too small.",
+    "rect": [
+      498.4,
+      403.7,
+      522.4,
+      427.7
+    ]
+  },
+  {
+    "id": 11,
+    "page": 56,
+    "type": "Text",
+    "author": "paherman",
+    "subject": "Sticky Note",
+    "modified": "D:20260706011330Z00'00'",
+    "highlighted_text": null,
+    "context_if_note": "",
+    "comment": "This discussion of the results reflects their analysis and interpretation. It should be integrated with the Results. You present the results, explain them, analyse and interpret. Here you present all the results and then you discuss all the results. These aspects should be inherently intertwined - finding after finding. Also, the analysis has to be supported by statistical testing to provide statistically meaningful evidence. Otherwise everything is inconclusive, reflecting trends rather than concrete conclusive outcomes.",
+    "rect": [
+      296.1,
+      731.5,
+      320.1,
+      755.5
+    ]
+  },
+  {
+    "id": 12,
+    "page": 61,
+    "type": "Text",
+    "author": "paherman",
+    "subject": "Sticky Note",
+    "modified": "D:20260705183511+02'00'",
+    "highlighted_text": null,
+    "context_if_note": "",
+    "comment": "You need a Discussion chapter where you summarise (briefly!) your key findings, discuss them in the context of the literature (research contribution), their Societal impact/industrial relevance, share Ethics considerations, bring up Sustainability issues and cover your reflections on limitations.",
+    "rect": [
+      100.0,
+      103.8,
+      124.0,
+      127.8
+    ]
+  },
+  {
+    "id": 13,
+    "page": 63,
+    "type": "Text",
+    "author": "paherman",
+    "subject": "Sticky Note",
+    "modified": "D:20260705181457+02'00'",
+    "highlighted_text": null,
+    "context_if_note": "5.2 Limitations and future work 5.2.1 Token-cost measurement scope Model-token cost in this thesis is estimated using per-mode mean token",
+    "comment": "This is part of the Discussion chapter.",
+    "rect": [
+      435.3,
+      247.3,
+      459.3,
+      271.3
+    ]
+  },
+  {
+    "id": 14,
+    "page": 65,
+    "type": "Text",
+    "author": "paherman",
+    "subject": "Sticky Note",
+    "modified": "D:20260705181520+02'00'",
+    "highlighted_text": null,
+    "context_if_note": "5.3 Reflections This thesis is centered on making a Hybrid RAG system more resource- efficient. The most direct connection is to the United Nations (UN) Sustainable Development Goal (SDG) number 12 (responsible consumption",
+    "comment": "This is also part of the Discussion chapter.",
+    "rect": [
+      520.2,
+      513.4,
+      544.2,
+      537.4
+    ]
+  },
+  {
+    "id": 15,
+    "page": 66,
+    "type": "Text",
+    "author": "paherman",
+    "subject": "Sticky Note",
+    "modified": "D:20260705181532+02'00'",
+    "highlighted_text": null,
+    "context_if_note": "",
+    "comment": "How about Future work section?",
+    "rect": [
+      283.4,
+      466.1,
+      307.4,
+      490.1
+    ]
+  }
+]
