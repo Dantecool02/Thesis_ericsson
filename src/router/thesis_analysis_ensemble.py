@@ -1,7 +1,7 @@
 import sys, json, tempfile
 from pathlib import Path
 import numpy as np
-sys.path.insert(0, "/Users/dante/Thesis_ericsson/src/router")
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import thesis_analysis as ta
 
 SEEDS = ta.SEEDS
@@ -65,6 +65,6 @@ for name in ["tfidf_baseline","modernbert_ensemble"]:
     policy_report(name, (sc>=thr).astype(int))
 
 # save ensemble summary + PR curve for the figure (do NOT overwrite original summary.json)
-out = Path("/Users/dante/Thesis_ericsson/data/models/thesis_analysis/summary_ensemble.json")
+out = Path(__file__).resolve().parents[2] / "data/models/thesis_analysis/summary_ensemble.json"
 out.write_text(json.dumps(results, indent=2))
 print(f"\nSaved {out}")

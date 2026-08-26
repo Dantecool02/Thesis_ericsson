@@ -14,7 +14,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
-ROOT = Path("/Users/dante/Thesis_ericsson")
+ROOT = Path(__file__).resolve().parents[2]
 SUMMARY_PATH = ROOT / "data/models/thesis_analysis/summary_ensemble.json"
 FIG_DIR = ROOT / "documents/Thesis_overleaf/figures/thesis_ens"
 FIG_DIR.mkdir(parents=True, exist_ok=True)

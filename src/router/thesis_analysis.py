@@ -16,7 +16,7 @@ from sklearn.metrics import (
 )
 
 
-ROOT = Path("/Users/dante/Thesis_ericsson")
+ROOT = Path(__file__).resolve().parents[2]
 DATASET_DIR = ROOT / "data/processed/2wiki/router_binary"
 MODELS_DIR = ROOT / "data/models"
 OUT_DIR = ROOT / "data/models/thesis_analysis"

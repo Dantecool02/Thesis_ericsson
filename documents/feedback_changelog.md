@@ -334,3 +334,18 @@ Source: `documents/Final_Feedback/Dante_Wesslund_Thesis_PHcomments.pdf` (15 anno
 - N=150 → N=15 (5 sites; 15 rows in `query_token_usage.jsonl`).
 - Template fixes for the pdfLaTeX path (in the tex preamble): `\pageNumberFont` fallback (removes 80 benign errors) and `amssymb` (ℝ now renders).
 - Bib: mcnemar1947, holm1979, delong1988, dietterich1998.
+
+## Round 3b — senior pre-submission review, 2026-08-22 (late)
+
+External senior review of the revised thesis + public repository. All "must" items addressed; two suggestions declined with reasons (colored links kept as template default; full generated-answer dumps not published — manifests + checksums instead).
+
+- **Repository synchronized with the thesis** (this was the review's core finding): final scripts pushed (`thesis_analysis_ensemble.py`, `thesis_figures_ensemble.py`, `thesis_stats_tests.py`, `thesis_stats_rederive.py`); hard-coded `/Users/dante/...` paths removed from five scripts; README rewritten with the exact commands as actually run; `requirements-lock.txt` added; new `results/` directory publishes routing labels (2,000), split membership (1,286), token-subset identities (15), summary outputs, and checksums; Appendix A cites the `examiner-revision` tag; B.3 caption's reproduction claim scoped to the deterministic stages.
+- **Factual correction (found while verifying the review's top_k concern):** the dual-mode runs and the token subset BOTH used `top_k = chunk_top_k = 5` (recorded per row). Appendix B.1 wrongly said 3 (the script default, not what ran) — corrected to 5. Senior's suspected token-subset/config mismatch does not exist; the appendix was wrong instead.
+- **Ensemble honesty:** "single encoder forward pass" corrected in §5.3/§6.1/§4.2 — the reported ensemble does three forward passes; router latency not in routed-time figures (stated as expectation, not measurement).
+- **Routed-time claim upgraded instead of retreated:** new paired test on per-query routed-time differences (−2.87 s, 95% CI [−5.57, −0.88], sign-flip p = 0.003, 27 discordant queries) added to `thesis_stats_tests.py`/§3.6.2/§4.2; token difference explicitly untested extrapolation (§4.3/§4.5/§5.1 reworded).
+- **Selection documented:** 2,000 = first 2,000 of 2,279 queryable train-split samples in benchmark order (§3.1.2, B.1 row); N = 15 = first 15 of the stream (§3.2.1, B.1); abstract/conclusions "every benchmark question" → "each of the 2,000 selected".
+- **Conditioning prominence:** §6.1 states results are conditional on the 64% of judged queries where ≥1 mode was correct; abstract parenthetical added; none_enough "stronger retrieval backbone" claim widened to end-to-end pipeline improvements (§5.2, §6.2).
+- **Softening:** "conservative estimate" → transfer-dependent; energy "lowers" → "may reduce"; "inexpensive to build" → label-generation and index costs named; heuristic AUPRC/AUROC "undefined" → "not reported (no ranking score)"; novelty claim scoped ("to the best of the author's knowledge").
+- **New limitations:** benchmark-selection effect + row-random split template leakage (§5.6.4); global per-mode token means assumption + non-random subset (§5.6.1).
+- **Wording:** "Three design choices" → "Two"; "and judge calls" removed from execution-time definition; discussion-partner plurals; variance sentence; answer-quality sentence; abstract lists the metrics and names the lower recall (EN+SV); §6.1 non-inferiority phrasing removed.
+- **Presentation:** Table B.3 ragged-right wider stage column; bibliography title braces ({LightRAG}, {Adaptive-RAG}, {RouterBench}, {Self-RAG}, {Graph RAG}, {LLM-as-a-Judge}, {MT-Bench}); deliverable copy named `Dante_Wesslund_Master_Thesis.pdf`.

@@ -9,7 +9,7 @@ import json, sys, numpy as np
 from scipy.stats import binom, norm
 from sklearn.metrics import average_precision_score, roc_auc_score
 
-ROOT = "/Users/dante/Thesis_ericsson/"
+ROOT = str(Path(__file__).resolve().parents[2]) + "/"
 def load(p):
     rows = [json.loads(l) for l in open(ROOT + p)]
     return {r["sample_id"]: r for r in rows}, [r["sample_id"] for r in rows]

@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-ROOT = Path("/Users/dante/Thesis_ericsson")
+ROOT = Path(__file__).resolve().parents[2]
 SUMMARY_PATH = ROOT / "data/models/thesis_analysis/summary.json"
 FIG_DIR = ROOT / "documents/Thesis_overleaf/figures/thesis"
 FIG_DIR.mkdir(parents=True, exist_ok=True)

@@ -346,6 +346,29 @@ def main() -> None:
     out["per_seed"] = seeds
     out["seed_stability"] = stab
 
+    # ---------- routed execution time: paired comparison of the two policies ----------
+    # (per-query routed time = time of whichever mode the policy selects; the per-query difference
+    # d_i is nonzero only on queries the two policies route differently. Separate RNG stream.)
+    naive_t = np.array([r["naive_time_seconds"] for r in tf_test])
+    mix_t = np.array([r["mix_time_seconds"] for r in tf_test])
+    t_mb = np.where(p_mb == 1, mix_t, naive_t)
+    t_tf = np.where(p_tf == 1, mix_t, naive_t)
+    d = t_mb - t_tf
+    obs_t = float(d.mean())
+    rng_t = np.random.default_rng(20260823)
+    boots = np.array([d[rng_t.integers(0, n, n)].mean() for _ in range(B)])
+    signs = rng_t.integers(0, 2, size=(B, n)) * 2 - 1
+    perm_d = (signs * d).mean(axis=1)
+    p_time = float((np.sum(np.abs(perm_d) >= abs(obs_t) - 1e-12) + 1) / (B + 1))
+    out["routed_time_mb_vs_tfidf"] = {
+        "mean_mb_seconds": float(t_mb.mean()),
+        "mean_tfidf_seconds": float(t_tf.mean()),
+        "diff_mean_seconds": obs_t,
+        "diff_ci95": [float(np.percentile(boots, 2.5)), float(np.percentile(boots, 97.5))],
+        "perm_p": p_time,
+        "n_queries_routed_differently": int((d != 0).sum()),
+    }
+
     # ---------- marginal 95% bootstrap CIs for precision/recall at the selected thresholds ----------
     # (1,000 resamples, as for the other marginal intervals in thesis_analysis.py; separate RNG so that the
     # paired streams above are unaffected)
@@ -391,6 +414,8 @@ def main() -> None:
         d = seeds[str(s)]
         print(f"  seed {s:2d} thr={d['threshold']:.2f}  AUPRC={d['auprc']:.3f} AUROC={d['auroc']:.3f} bal={d['balanced_accuracy']:.3f} F1={d['f1_mix']:.3f} P={d['precision_mix']:.3f} R={d['recall_mix']:.3f} acc={d['accuracy']:.3f}")
     print("  std across seeds: " + ", ".join(f"{k}={v['std']:.3f}" for k, v in stab.items()))
+    rt=out["routed_time_mb_vs_tfidf"]
+    print(f"\n==== routed time (MB - TFIDF): diff={rt['diff_mean_seconds']:+.2f}s CI=[{rt['diff_ci95'][0]:+.2f},{rt['diff_ci95'][1]:+.2f}] p={rt['perm_p']:.4f} (n_diff={rt['n_queries_routed_differently']}) ====")
     print("\n==== marginal 95% CIs for P/R ====")
     for k, v in marg.items():
         print(f"  {k}: P {v['precision_mix_ci95'][0]:.3f}-{v['precision_mix_ci95'][1]:.3f}  R {v['recall_mix_ci95'][0]:.3f}-{v['recall_mix_ci95'][1]:.3f}")
