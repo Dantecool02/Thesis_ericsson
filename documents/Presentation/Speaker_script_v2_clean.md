@@ -1,6 +1,6 @@
 # Speaker script (clean version): Adaptive Hybrid Retrieval-Augmented Generation
 
-From the speaker notes of `Dante_Wesslund_Thesis_Presentation_v2_clean.pptx`. Times assume 135 words per minute, plus the marked pauses and about 3 seconds per slide change. Main talk: 3,206 words, about 25.0 minutes.
+From the speaker notes of `Dante_Wesslund_Thesis_Presentation_v2_clean.pptx`. Times assume 135 words per minute, plus the marked pauses and about 3 seconds per slide change. Main talk: 3,156 words, about 24.6 minutes.
 
 ## 1. Title
 
@@ -141,17 +141,16 @@ So roughly: you give up about eight percentage points of answers to save almost 
 
 ## 16. In practice
 
-*18:50 to 20:30*  ·  217 words ≈ 99 s
+*18:50 to 20:05*  ·  167 words ≈ 77 s
 
-So what does this mean in practice? Four points.
+So what does this mean in practice? Three points.
 First, prior work. Adaptive-RAG showed that a small classifier can choose a retrieval strategy from the question, and my results show the idea carries over to choosing between a vector mode and a graph mode in one framework. As RouterBench found for language models, a simple router keeps most of the quality at a fraction of the cost.
 Second, deployment. The router makes no language-model call per question. The real set-up cost is the labels, which need both modes and the judge once per training question. For Ericsson, real workloads probably contain more simple look-up questions than this multi-hop benchmark, so the savings could be larger. But their documents have no gold answers, so a small human-labelled set, or a judge that does not need gold answers, comes first.
 Third, the threshold is a cost dial. Where a weak answer is expensive, you lower it and send more to Mix. Where compute is the constraint, you raise it.
-Fourth, sustainability and ethics. Fewer Mix calls should mean less energy, which ties to the UN goal on responsible consumption, though I did not measure energy. And a router can serve some question types worse, like bridge-comparison here, so quality should be monitored per question type, not only on average.
 
 ## 17. Limitations
 
-*20:30 to 21:55*  ·  187 words ≈ 86 s
+*20:05 to 21:30*  ·  187 words ≈ 86 s
 
 I want to be clear about the limits.
 Labels: they come from a language-model judge, and the same Gemini model both wrote and judged the answers, with no human checking a sample. Giving the judge the correct answer reduces the risk, but shared bias is possible.
@@ -161,7 +160,7 @@ These do not change the main findings on this data, but they limit how far the n
 
 ## 18. Future work
 
-*21:55 to 23:25*  ·  198 words ≈ 91 s
+*21:30 to 23:05*  ·  198 words ≈ 91 s
 
 Each limitation has a matching next step.
 First, check the labels: validate a sample of the judge's decisions by hand, and repeat the judging with a model from a different family, to measure how much the labels depend on the judge.
@@ -172,7 +171,7 @@ Before I conclude, one disclosure, as in Section 5.7 of the thesis: I used Codex
 
 ## 19. Conclusions
 
-*23:25 to 24:55*  ·  187 words ≈ 88 s
+*23:05 to 24:30*  ·  187 words ≈ 88 s
 
 To conclude, the two parts of the research question.
 Prediction: yes, partly. From the question alone, both routers find the Mix-needing questions far above chance, and at the thresholds chosen on validation, ModernBERT is significantly more precise than both the TF-IDF baseline and the question-type rule. Whether it ranks questions better overall is not resolved at this test size.
@@ -183,7 +182,7 @@ My contributions are three: a statistically tested study of query-only routing b
 
 ## 20. Thank you
 
-*24:55 to 25:00*  ·  11 words ≈ 8 s
+*24:30 to 24:40*  ·  11 words ≈ 8 s
 
 Thank you for listening. I am happy to take your questions.
 

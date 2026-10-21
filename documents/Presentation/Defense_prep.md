@@ -127,6 +127,59 @@ Also be ready for the following:
 - **Ethics and sustainability** (slide 16, thesis Sections 5.4 and 5.5): lower compute per query may reduce energy use, though energy was not measured; the thesis links this to UN SDG 12 (responsible consumption) and SDG 9 (industry and infrastructure). The router can serve some question types systematically worse: here it misses 7 of the 8 Mix-required bridge-comparison test questions, so monitor quality per segment. If asked about the net effect, a back-of-the-envelope estimate (not in the thesis): labelling costs about 21,000 tokens per question for the two modes, plus the judge, and routing saves about 11,000 tokens per query against always-Mix, so labelling 2,000 questions pays back after roughly 4,000 routed queries, before counting the judge.
 - **Use of generative AI** (said at the end of slide 18, thesis Section 5.7): "I used Codex and Claude Code as assistants, for wording and for drafting and debugging code, including analysis code and the scripts that build these slides, and when preparing the revisions and this talk. I reviewed and ran everything myself, every number comes from my own runs, and the research question, design and conclusions are mine." Check that this matches how you actually used them, and adjust it if not.
 
+## 3b. Opponent's review (Pontus): his points and short answers
+
+His five seminar questions are the ones in section 3 above (questions 1 to 5 of the opponent list). His written points, with an answer for each:
+
+- **Abstract is dense; say the 63% is estimated.** The abstract already says "estimated", but agree it could add "from 15 instrumented queries".
+- **Ericsson-specific details, such as query volume.** I did not have reliable volume figures. The saving is per query, so the total grows with volume.
+- **A plain-language sentence before the research question.** Agree; the talk does this on slide 6 ("is the need for Mix visible in how a question is phrased?").
+- **A background section on LLM-as-a-judge.** Agree. It is covered in Methods (Section 3.2.2, with Zheng et al.), but a background section would help, especially given that the same model generates and judges.
+- **Describe Mix mode in more detail (2.2.2).** Agree. Mix combines LightRAG's graph retrieval (entities and relations) with the same vector chunks that Naive uses.
+- **Related work could include recent studies comparing vector RAG with GraphRAG.** Agree; the related-work section is short and benchmark comparisons of the two would strengthen it.
+- **A router that uses the query embedding.** Good idea, and nearly free: Naive search already embeds the question, so a logistic regression on that embedding would add almost no cost. It sits between TF-IDF and fine-tuning and would be a fair extra baseline.
+- **Manually check a sample of labels.** Agree; it is the first future-work item (Section 6.2.2).
+- **Score each answer separately to get final answer accuracy.** Yes, exactly; that is Section 6.2.3, and both answers were stored. One nuance: Mix's correctness is already known on the Mix-needing questions; only on the questions where Naive was right is it unknown.
+- **Example questions with both answers and the judge label.** Agree; the talk shows two (slide 5), and a small table in the report would help.
+- **Compare the routers at the same threshold or the same cost.** The two models' scores are not on the same scale, so the same threshold is not comparable, but the same cost is: Figure 4.5 plots F1 against cost. At about 14 s, TF-IDF reaches precision 0.80, recall 0.57 and F1 0.67, against ModernBERT's 0.77, 0.67 and 0.72 (backup 25).
+- **Check the retention figure instead of assuming it.** Same answer as scoring the answers separately. The assumption also favours the policies that over-route, so the 92% is if anything conservative.
+- **Figure 4.6 repeats Table 4.4.** Agree; it repeats the AUPRC column for the two informative types and could be removed.
+- **A confusion matrix per router.** Agree. At the chosen thresholds: TF-IDF 38 caught, 11 missed, 30 unneeded, 114 correctly kept on Naive; ModernBERT 33, 16, 10, 134.
+- **Section 3.5.3 (statistical testing) is hard to follow.** Agree. One-line summary: paired bootstrap for the intervals, paired permutation tests for the p-values, Holm correction across the seven metrics, and McNemar as a cross-check on the routing errors.
+- **How many queries before the savings pay back the labelling?** Back of the envelope, not in the thesis: labelling costs about 21,000 tokens per question for the two modes plus the judge, routing saves about 11,000 per query, so labelling 2,000 questions pays back after roughly 4,000 routed queries, before counting the judge.
+
+## 3c. The opponent's ten questions, in his order
+
+1. **The router only sees the question. If you could give it one cheap signal from retrieval, what would you add, and what would it cost?**
+   Run only Naive's vector search, without generating an answer, and check whether the retrieved text covers the entities the question mentions; if not, escalate to Mix. That costs one cheap search per question, far less than generating a full Naive answer first. It would mostly help the questions where the wording alone is not enough, like bridge-comparison.
+
+2. **How confident can we be in the judge labels, given that the same Gemini model both generated and judged the answers?**
+   They are judged labels, not ground truth. The judge sees the gold answer, so it compares against a reference instead of grading freely, and the gold answers are short (names, dates), which makes most decisions close to matching. The risk is shared bias on borderline or reworded answers, which I did not measure. The fix is a hand-checked sample and a second judge from another model family.
+
+3. **The token savings are estimated from 15 instrumented questions. How much would you trust the 63% figure?**
+   The direction fully, the exact number roughly. It combines per-mode averages from those questions with the share of questions sent to Mix. Time is measured on every question, and the same estimation method applied to time lands within about a point of the measured value. Tokens save more than time because Mix adds an extra LLM call and a much larger context. The fix is to log tokens for every question.
+
+4. **Why do you think ModernBERT ends up more precise than TF-IDF?**
+   TF-IDF only sees which words appear, so it essentially rediscovers the question type and sends most multi-hop-looking questions to Mix. ModernBERT reads the whole phrasing in context and can tell which of those questions Naive can still handle. Part of it is also where its threshold sits, and whether it ranks questions better overall is not resolved.
+
+5. **Do you think the results would hold on another benchmark, or on Ericsson's own documentation?**
+   Partly. Much of the signal is this benchmark's question structure, and similar question templates may appear in both training and test. Ericsson's questions are probably more often simple look-ups, so the savings could be larger, but their documents have no gold answers, so a small labelled set and validation come first.
+
+6. **Why ModernBERT as the router, and not an LLM or a bigger encoder?**
+   The router has to be much cheaper than the retrieval it saves, and an LLM router adds a generative call to every question. ModernBERT is small, modern, strong at classification, fine-tunes on a CPU, and makes no LLM call. Comparing against an LLM router would still be fair future work.
+
+7. **You average three ModernBERT models but use a single TF-IDF model. Is that fair?**
+   The averaging removes seed luck rather than boosting the score. TF-IDF gives the same model every time, so there is nothing to average, and each ModernBERT seed on its own also beats it on the main metrics. The price is three encoder passes per question; one model, or a distilled one, would need one.
+
+8. **Doesn't LightRAG have other modes that would be of interest? Why only Naive and Mix?**
+   They are the two ends of the scale: pure vector search, and the full graph plus vector search. A binary choice keeps the judge's decision and the threshold simple and answers the first question, whether the signal exists at all. The modes in between could come next, as a multi-class router.
+
+9. **How well would the router generalise to a different setup, for example another generator model or other LightRAG settings?**
+   Not automatically. The label means "Mix was needed in this pipeline", so a different generator or different settings could change which questions need Mix. What transfers is the method: relabel with the new setup and retrain. The underlying signal, multi-hop structure showing in the wording, is likely to remain.
+
+10. **If you deployed this at Ericsson, how would you choose the threshold?**
+    It is a cost decision: how expensive a wasted Mix call is compared with a worse answer. Where answers matter most, lower it and send more to Mix; where compute is the constraint, raise it. Pick it from the cost curve on a small labelled set of their own questions, then monitor answer quality per type of question.
+
 ## 4. What good ML thesis defenses look like (and what this deck takes from them)
 
 - **Open with the point, not an agenda.** Slide 2 gives the one-line message and the three headline numbers, then names the four parts. Sources: Peyton Jones; Zanibbi (RIT).

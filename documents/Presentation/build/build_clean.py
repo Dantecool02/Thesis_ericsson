@@ -238,10 +238,10 @@ def bullets(s, items, y=2.3, size=24):
         paras.append({"runs": [(head + "  ", {"bold": True, "color": KTH}), (body, {})], "size": size, "bullet": True, "space_after": 26, "line": 1.1})
     text(s, X0, y, W_FULL, 4.4, paras)
 
-def cards(s, items, y=2.15, ch=2.05, body_size=19):
-    cw = 5.86
+def cards(s, items, y=2.15, ch=2.05, body_size=19, cols=2):
+    cw = (W_FULL - 0.3 * (cols - 1)) / cols
     for i, (h_, b_) in enumerate(items):
-        r_, c_ = divmod(i, 2)
+        r_, c_ = divmod(i, cols)
         rect(s, X0 + c_ * (cw + 0.3), y + r_ * (ch + 0.3), cw, ch, LIGHT, radius=0.05, anchor=MSO_ANCHOR.TOP, pad=0.28,
              paras=[{"runs": h_, "size": 24, "bold": True, "color": KTH, "space_after": 8}, {"runs": b_, "size": body_size, "color": "333333", "line": 1.1}])
 
@@ -614,14 +614,12 @@ So roughly: you give up about eight percentage points of answers to save almost 
 s = content("In practice", 3)
 cards(s, (("Prior work", "Extends Adaptive-RAG to vector vs graph retrieval. As in RouterBench: most of the quality, a fraction of the cost."),
           ("Deployment", "No language-model call per question. The set-up cost is the labels. Needs a small labelled set from the target workload first."),
-          ("A cost dial", "The threshold trades wasted Mix calls against missed ones. Each deployment sets its own."),
-          ("Sustainability and ethics", "Fewer Mix calls should save energy (not measured). Monitor quality per question type, not just on average.")))
+          ("A cost dial", "The threshold trades wasted Mix calls against missed ones. Each deployment sets its own.")), y=2.3, ch=3.4, body_size=20, cols=3)
 notes(s, f"""
-So what does this mean in practice? Four points.
+So what does this mean in practice? Three points.
 First, prior work. Adaptive-RAG showed that a small classifier can choose a retrieval strategy from the question, and my results show the idea carries over to choosing between a vector mode and a graph mode in one framework. As RouterBench found for language models, a simple router keeps most of the quality at a fraction of the cost.
 Second, deployment. The router makes no language-model call per question. The real set-up cost is the labels, which need both modes and the judge once per training question. For Ericsson, real workloads probably contain more simple look-up questions than this multi-hop benchmark, so the savings could be larger. But their documents have no gold answers, so a small human-labelled set, or a judge that does not need gold answers, comes first.
 Third, the threshold is a cost dial. Where a weak answer is expensive, you lower it and send more to Mix. Where compute is the constraint, you raise it.
-Fourth, sustainability and ethics. Fewer Mix calls should mean less energy, which ties to the UN goal on responsible consumption, though I did not measure energy. And a router can serve some question types worse, like bridge-comparison here, so quality should be monitored per question type, not only on average.
 """, "In practice")
 
 # ============================================================================== 17 limitations

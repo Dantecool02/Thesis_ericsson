@@ -10,6 +10,7 @@ Defense of "Adaptive Hybrid Retrieval-Augmented Generation" (DA233X, KTH, with E
 - `Speaker_script_v2_clean.md`: the full script with a time stamp and word count per slide.
 - `Defense_prep.md`: run sheet, Zoom and Keynote checklist, and prepared answers to likely questions.
 - `Study_notes_results.md`: the results and the statistics explained.
+- `Opposition_answers.md`: the opponent's ten questions in his order, each with a two-minute answer.
 
 Older material: `Dante_Wesslund_Thesis_Presentation.pptx` / `.pdf` and `Speaker_script.md` are an earlier, more detailed version of the talk. `reference/` holds the KTH template overviews.
 
