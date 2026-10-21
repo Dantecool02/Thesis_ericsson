@@ -557,8 +557,8 @@ text(s, ix, yy + 0.08, iw, 1.0, [{"runs": "The rule needs a type label that real
 notes(s, f"""
 This chart shows how often each question type needed Mix. Comparison questions, like the film example, almost never did: {BT['comparison']['mix']} of {BT['comparison']['n']}. Compositional questions, like the director example, needed it {BT['compositional']['mix']/BT['compositional']['n']*100:.0f} percent of the time.
 So a simple rule, use Mix if the question is compositional, already does well, but it uses a label the benchmark provides and real questions do not have. Its precision is {tp['precision_mix']:.2f}. TF-IDF, at {CMP['precision_mix']['tfidf']:.2f}, is not significantly different from that rule on any metric: from the vocabulary it essentially recovers the question type. ModernBERT, from the wording alone, is significantly more precise than the rule, at {CMP['precision_mix']['modernbert']:.2f}. Its F1 is not significantly higher than the rule's, and its recall is lower, also not significantly.
-So the signal is largely question structure, plus some precision on top. That is also a warning: part of it is how this benchmark builds its questions. One weak spot: on bridge-comparison questions, ModernBERT found only 1 of the 8 that needed Mix in the test set.
-Next: what that precision means for the actual routing decisions.
+So the signal is largely question structure, plus some precision on top.
+Now, what does that precision mean for the actual routing decisions?
 """, "Where the signal comes from")
 
 # ============================================================================== 13 errors
@@ -571,9 +571,10 @@ hpanel(s, X0 + 6.4, 2.6, 5.6, "Missed Mix calls", f"of {D['n_pos']} questions th
        (("TF-IDF", tf["fn"], SKY), ("ModernBERT", mb["fn"], KTH)), 34, lambda v: str(int(v)), sig=(f"not significant, McNemar {pv(mu['p_value'])}", False))
 notes(s, f"""
 Precision shows up directly in the routing decisions. There are two kinds of mistakes, and they matter differently.
-On the left, unnecessary Mix calls: Naive was enough, but the router chose Mix anyway. That only wastes compute. TF-IDF makes {tf['fp']} of these, ModernBERT {mb['fp']}. ModernBERT avoids {mo['a_right_b_wrong']} of TF-IDF's mistakes and makes no new ones. A McNemar test, which looks only at the questions where the two routers disagree, here {mo['a_right_b_wrong']} against {mo['a_wrong_b_right']}, gives p below 0.001.
-On the right, missed Mix calls: the question needed Mix but went to Naive. Those are the dangerous ones, because the answer suffers. ModernBERT misses {mb['fn']}, TF-IDF {tf['fn']}. The gap comes from seven questions, six one way and one the other, and it is not significant.
-[pause] So: much less wasted compute, for a small and statistically unresolved increase in risk. Which side you prefer depends on what a wasted Mix call costs compared with a worse answer. Next: what that means for cost.
+On the left, we see unnecessary Mix calls, where Naive was enough but the router chose Mix anyway, which is a waste of compute. TF-IDF makes {tf['fp']} of these, while ModernBERT only makes {mb['fp']}. ModernBERT also avoids {mo['a_right_b_wrong']} of TF-IDF's mistakes while not making any new ones. A McNemar test, which looks only at the questions where the two routers disagree, here {mo['a_right_b_wrong']} against {mo['a_wrong_b_right']}, gives p below 0.001.
+On the right, we see missed Mix calls, which is where the question needed Mix but went to Naive instead. Those are the dangerous ones, because the answer suffers. ModernBERT misses {mb['fn']} here, while TF-IDF only misses {tf['fn']}. The gap comes from just {mu['n_discordant']} questions where the routers disagree, and using McNemar we get a p-value of {mu['p_value']:.3f}, so it is not significant.
+[pause] So overall, ModernBERT wastes much less compute, at the price of a small increase in risk that we cannot statistically confirm. Which of the two you would prefer depends on what a wasted Mix call costs, compared with a worse answer.
+Now, what does this mean for cost?
 """, "Routing errors")
 
 # ============================================================================== 14 cost
@@ -589,11 +590,9 @@ hpanel(s, X0 + 6.4, 2.6, 5.6, "Model tokens per question", f"estimated from {TM[
        (("Always Mix", TOK["always_mix"], PALE), ("TF-IDF routing", TOK["tfidf"], SKY), ("ModernBERT routing", TOK["modernbert"], KTH), ("Always Naive", TOK["always_naive"], PALE)),
        19800, lambda v: fmt_int(v), row_h=0.74)
 notes(s, f"""
-Now the second part of the research question: cost.
-On the left, mean time per question, measured on every test question. Always using Mix takes {am['mean_time']:.1f} seconds, always using Naive {an['mean_time']:.1f}. Routing with TF-IDF gives {tf['mean_time']:.1f} seconds, and routing with ModernBERT {mb['mean_time']:.1f}: {mb['time_saving']*100:.0f} percent less than always-Mix. ModernBERT's routing is also significantly faster than TF-IDF's, by about {abs(rt['diff_mean_seconds']):.1f} seconds per question, because it makes far fewer unnecessary Mix calls.
-On the right, language-model tokens per question. ModernBERT routing uses under 7,000 tokens per question, against almost 18,000 for always-Mix: {mb['token_saving']*100:.0f} percent fewer.
-Two caveats. The token numbers are estimates from per-mode averages over {TM['n']} instrumented questions, while the times are measured. And the router's own running time is not included. It is three small encoder passes and no language-model call, next to retrieval calls of about 11 to 24 seconds, but I did not measure it.
-In other words: the time saving is measured, the token saving is estimated, and both point the same way.
+On the left, we see the mean time per question, measured on every test question. Always using Mix takes {am['mean_time']:.1f} seconds, while always using Naive takes {an['mean_time']:.1f} seconds. Routing with TF-IDF takes {tf['mean_time']:.0f} seconds, and routing with ModernBERT takes {mb['mean_time']:.1f} seconds, which is {mb['time_saving']*100:.0f} percent less than always using Mix. ModernBERT's routing is also significantly faster than TF-IDF's, by about {abs(rt['diff_mean_seconds']):.1f} seconds per question, which is because it makes far fewer unnecessary Mix calls.
+On the right, we see tokens per question. ModernBERT routing uses under 7,000 tokens per question, compared to almost 18,000 for always-Mix, which is {mb['token_saving']*100:.0f} percent fewer tokens.
+In other words: ModernBERT saves the most time and tokens out of the relevant routers.
 """, "Cost")
 
 # ============================================================================== 15 answers kept
@@ -604,7 +603,7 @@ hpanel(s, X0, 2.6, 8.2, "Share of always-Mix's correct answers kept", "assuming 
        (("Always Mix", 100.0, PALE), ("TF-IDF routing", tf["retention"] * 100, SKY), ("ModernBERT routing", mb["retention"] * 100, KTH), ("Always Naive", an["retention"] * 100, PALE)),
        108, lambda v: f"{v:.1f}%", row_h=0.74)
 notes(s, f"""
-What does that saving cost in answer quality?
+So, what do those savings cost in answer quality?
 I did not re-judge the answers each routing policy would produce, so this relies on one explicit assumption: that Mix answers correctly whenever Naive does. Under that assumption, the only way routing loses an answer is by sending a Mix-needing question to Naive.
 Then always-Mix keeps all its correct answers by definition, and always-Naive keeps {an['retention']*100:.1f} percent. ModernBERT routing keeps {mb['retention']*100:.1f} percent, at {TOK['modernbert']/TOK['always_mix']*100:.0f} percent of always-Mix's token cost. TF-IDF keeps a little more, {tf['retention']*100:.1f} percent, at about half the cost.
 These shares cover the questions where at least one mode was right, about {D['n_binary']/D['n_judged']*100:.0f} percent of all judged questions. When both fail, routing only changes the cost, not the answer.

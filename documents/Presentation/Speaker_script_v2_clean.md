@@ -1,6 +1,6 @@
 # Speaker script (clean version): Adaptive Hybrid Retrieval-Augmented Generation
 
-From the speaker notes of `Dante_Wesslund_Thesis_Presentation_v2_clean.pptx`. Times assume 135 words per minute, plus the marked pauses and about 3 seconds per slide change. Main talk: 3,249 words, about 25.3 minutes.
+From the speaker notes of `Dante_Wesslund_Thesis_Presentation_v2_clean.pptx`. Times assume 135 words per minute, plus the marked pauses and about 3 seconds per slide change. Main talk: 3,206 words, about 25.0 minutes.
 
 ## 1. Title
 
@@ -104,37 +104,36 @@ One caveat: precision depends on where the threshold sits. Both thresholds were 
 
 ## 12. Where the signal comes from
 
-*14:05 to 15:25*  ·  177 words ≈ 82 s
+*14:05 to 15:10*  ·  143 words ≈ 67 s
 
 This chart shows how often each question type needed Mix. Comparison questions, like the film example, almost never did: 12 of 594. Compositional questions, like the director example, needed it 58 percent of the time.
 So a simple rule, use Mix if the question is compositional, already does well, but it uses a label the benchmark provides and real questions do not have. Its precision is 0.58. TF-IDF, at 0.56, is not significantly different from that rule on any metric: from the vocabulary it essentially recovers the question type. ModernBERT, from the wording alone, is significantly more precise than the rule, at 0.77. Its F1 is not significantly higher than the rule's, and its recall is lower, also not significantly.
-So the signal is largely question structure, plus some precision on top. That is also a warning: part of it is how this benchmark builds its questions. One weak spot: on bridge-comparison questions, ModernBERT found only 1 of the 8 that needed Mix in the test set.
-Next: what that precision means for the actual routing decisions.
+So the signal is largely question structure, plus some precision on top.
+Now, what does that precision mean for the actual routing decisions?
 
 ## 13. Routing errors
 
-*15:25 to 16:40*  ·  160 words ≈ 76 s
+*15:10 to 16:45*  ·  198 words ≈ 93 s
 
 Precision shows up directly in the routing decisions. There are two kinds of mistakes, and they matter differently.
-On the left, unnecessary Mix calls: Naive was enough, but the router chose Mix anyway. That only wastes compute. TF-IDF makes 30 of these, ModernBERT 10. ModernBERT avoids 20 of TF-IDF's mistakes and makes no new ones. A McNemar test, which looks only at the questions where the two routers disagree, here 20 against 0, gives p below 0.001.
-On the right, missed Mix calls: the question needed Mix but went to Naive. Those are the dangerous ones, because the answer suffers. ModernBERT misses 16, TF-IDF 11. The gap comes from seven questions, six one way and one the other, and it is not significant.
-[pause] So: much less wasted compute, for a small and statistically unresolved increase in risk. Which side you prefer depends on what a wasted Mix call costs compared with a worse answer. Next: what that means for cost.
+On the left, we see unnecessary Mix calls, where Naive was enough but the router chose Mix anyway, which is a waste of compute. TF-IDF makes 30 of these, while ModernBERT only makes 10. ModernBERT also avoids 20 of TF-IDF's mistakes while not making any new ones. A McNemar test, which looks only at the questions where the two routers disagree, here 20 against 0, gives p below 0.001.
+On the right, we see missed Mix calls, which is where the question needed Mix but went to Naive instead. Those are the dangerous ones, because the answer suffers. ModernBERT misses 16 here, while TF-IDF only misses 11. The gap comes from just 7 questions where the routers disagree, and using McNemar we get a p-value of 0.125, so it is not significant.
+[pause] So overall, ModernBERT wastes much less compute, at the price of a small increase in risk that we cannot statistically confirm. Which of the two you would prefer depends on what a wasted Mix call costs, compared with a worse answer.
+Now, what does this mean for cost?
 
 ## 14. Cost
 
-*16:40 to 17:55*  ·  165 words ≈ 76 s
+*16:45 to 17:40*  ·  117 words ≈ 55 s
 
-Now the second part of the research question: cost.
-On the left, mean time per question, measured on every test question. Always using Mix takes 24.4 seconds, always using Naive 10.9. Routing with TF-IDF gives 17.0 seconds, and routing with ModernBERT 14.1: 42 percent less than always-Mix. ModernBERT's routing is also significantly faster than TF-IDF's, by about 2.9 seconds per question, because it makes far fewer unnecessary Mix calls.
-On the right, language-model tokens per question. ModernBERT routing uses under 7,000 tokens per question, against almost 18,000 for always-Mix: 63 percent fewer.
-Two caveats. The token numbers are estimates from per-mode averages over 15 instrumented questions, while the times are measured. And the router's own running time is not included. It is three small encoder passes and no language-model call, next to retrieval calls of about 11 to 24 seconds, but I did not measure it.
-In other words: the time saving is measured, the token saving is estimated, and both point the same way.
+On the left, we see the mean time per question, measured on every test question. Always using Mix takes 24.4 seconds, while always using Naive takes 10.9 seconds. Routing with TF-IDF takes 17 seconds, and routing with ModernBERT takes 14.1 seconds, which is 42 percent less than always using Mix. ModernBERT's routing is also significantly faster than TF-IDF's, by about 2.9 seconds per question, which is because it makes far fewer unnecessary Mix calls.
+On the right, we see tokens per question. ModernBERT routing uses under 7,000 tokens per question, compared to almost 18,000 for always-Mix, which is 63 percent fewer tokens.
+In other words: ModernBERT saves the most time and tokens out of the relevant routers.
 
 ## 15. Answers kept
 
-*17:55 to 19:05*  ·  147 words ≈ 70 s
+*17:40 to 18:50*  ·  148 words ≈ 71 s
 
-What does that saving cost in answer quality?
+So, what do those savings cost in answer quality?
 I did not re-judge the answers each routing policy would produce, so this relies on one explicit assumption: that Mix answers correctly whenever Naive does. Under that assumption, the only way routing loses an answer is by sending a Mix-needing question to Naive.
 Then always-Mix keeps all its correct answers by definition, and always-Naive keeps 74.6 percent. ModernBERT routing keeps 91.7 percent, at 37 percent of always-Mix's token cost. TF-IDF keeps a little more, 94.3 percent, at about half the cost.
 These shares cover the questions where at least one mode was right, about 64 percent of all judged questions. When both fail, routing only changes the cost, not the answer.
@@ -142,7 +141,7 @@ So roughly: you give up about eight percentage points of answers to save almost 
 
 ## 16. In practice
 
-*19:05 to 20:45*  ·  217 words ≈ 99 s
+*18:50 to 20:30*  ·  217 words ≈ 99 s
 
 So what does this mean in practice? Four points.
 First, prior work. Adaptive-RAG showed that a small classifier can choose a retrieval strategy from the question, and my results show the idea carries over to choosing between a vector mode and a graph mode in one framework. As RouterBench found for language models, a simple router keeps most of the quality at a fraction of the cost.
@@ -152,7 +151,7 @@ Fourth, sustainability and ethics. Fewer Mix calls should mean less energy, whic
 
 ## 17. Limitations
 
-*20:45 to 22:15*  ·  187 words ≈ 86 s
+*20:30 to 21:55*  ·  187 words ≈ 86 s
 
 I want to be clear about the limits.
 Labels: they come from a language-model judge, and the same Gemini model both wrote and judged the answers, with no human checking a sample. Giving the judge the correct answer reduces the risk, but shared bias is possible.
@@ -162,7 +161,7 @@ These do not change the main findings on this data, but they limit how far the n
 
 ## 18. Future work
 
-*22:15 to 23:45*  ·  198 words ≈ 91 s
+*21:55 to 23:25*  ·  198 words ≈ 91 s
 
 Each limitation has a matching next step.
 First, check the labels: validate a sample of the judge's decisions by hand, and repeat the judging with a model from a different family, to measure how much the labels depend on the judge.
@@ -173,7 +172,7 @@ Before I conclude, one disclosure, as in Section 5.7 of the thesis: I used Codex
 
 ## 19. Conclusions
 
-*23:45 to 25:10*  ·  187 words ≈ 88 s
+*23:25 to 24:55*  ·  187 words ≈ 88 s
 
 To conclude, the two parts of the research question.
 Prediction: yes, partly. From the question alone, both routers find the Mix-needing questions far above chance, and at the thresholds chosen on validation, ModernBERT is significantly more precise than both the TF-IDF baseline and the question-type rule. Whether it ranks questions better overall is not resolved at this test size.
@@ -184,7 +183,7 @@ My contributions are three: a statistically tested study of query-only routing b
 
 ## 20. Thank you
 
-*25:10 to 25:20*  ·  11 words ≈ 8 s
+*24:55 to 25:00*  ·  11 words ≈ 8 s
 
 Thank you for listening. I am happy to take your questions.
 
