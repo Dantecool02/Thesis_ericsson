@@ -8,10 +8,8 @@ The questions in the order Pontus will ask them. Under each, the points of the a
 - The price: the router cannot react when retrieval turns out to be weak.
 - My one signal: run only Naive's vector search, without generating an answer.
 - Then check whether the retrieved chunks cover the entities in the question; if not, escalate to Mix.
-- Example: in the director question, Naive found the film's page but nothing about the director.
 - Cost: one cheap vector search, no LLM call.
 - Far cheaper than answering with Naive first and escalating on failure, which pays for Naive every time and for both modes on every escalation.
-- Helps most where the wording is not enough, like bridge-comparison (ModernBERT caught 1 of 8).
 - It is the thesis's future work, and close to how Adaptive-RAG uses cheap intermediate signals.
 
 ## 2. How confident can we be in the judge labels, given that the same Gemini model both generated and judged the answers?

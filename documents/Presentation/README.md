@@ -9,6 +9,7 @@ Defense of "Adaptive Hybrid Retrieval-Augmented Generation" (DA233X, KTH, with E
 - `Dante_Wesslund_Thesis_Presentation_v2_clean.pdf`: the same deck as a PDF, the fallback during the talk.
 - `Speaker_script_v2_clean.md`: the full script with a time stamp and word count per slide.
 - `Defense_prep.md`: run sheet, Zoom and Keynote checklist, and prepared answers to likely questions.
+- `Things_to_learn.md`: the metrics, confidence intervals and statistical tests explained with your own numbers, with questions to check yourself. Start here.
 - `Study_notes_results.md`: the results and the statistics explained.
 - `Opposition_answers.md`: the opponent's ten questions in his order, each with the points of a two-minute answer.
 
