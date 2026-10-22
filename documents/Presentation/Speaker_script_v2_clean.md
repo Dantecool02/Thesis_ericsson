@@ -1,6 +1,6 @@
 # Speaker script (clean version): Adaptive Hybrid Retrieval-Augmented Generation
 
-From the speaker notes of `Dante_Wesslund_Thesis_Presentation_v2_clean.pptx`. Times assume 135 words per minute, plus the marked pauses and about 3 seconds per slide change. Main talk: 3,156 words, about 24.6 minutes.
+From the speaker notes of `Dante_Wesslund_Thesis_Presentation_v2_clean.pptx`. Times assume 135 words per minute, plus the marked pauses and about 3 seconds per slide change. Main talk: 3,084 words, about 24.1 minutes.
 
 ## 1. Title
 
@@ -160,29 +160,28 @@ These do not change the main findings on this data, but they limit how far the n
 
 ## 18. Future work
 
-*21:30 to 23:05*  ·  198 words ≈ 91 s
+*21:30 to 22:35*  ·  132 words ≈ 62 s
 
 Each limitation has a matching next step.
 First, check the labels: validate a sample of the judge's decisions by hand, and repeat the judging with a model from a different family, to measure how much the labels depend on the judge.
 Second, measure everything: log tokens for every question instead of a sample, time the router itself, and re-judge the answers each routing policy actually picks, so the answer-quality estimate no longer needs an assumption.
 Third, go further: other benchmarks and frameworks, a larger test set, and a second stage that runs only the cheap vector search, checks whether the retrieved text covers the question's entities, and escalates to Mix if not. That could recover answers the router misses.
 The first two come first, because they strengthen the numbers I already have.
-Before I conclude, one disclosure, as in Section 5.7 of the thesis: I used Codex and Claude Code as assistants, for wording and for drafting and debugging code, including analysis code and the scripts that build these slides. I reviewed and ran everything myself, every number comes from my own runs, and the research question, design and conclusions are mine. Let me close with the conclusions.
 
 ## 19. Conclusions
 
-*23:05 to 24:30*  ·  187 words ≈ 88 s
+*22:35 to 24:00*  ·  181 words ≈ 85 s
 
 To conclude, the two parts of the research question.
 Prediction: yes, partly. From the question alone, both routers find the Mix-needing questions far above chance, and at the thresholds chosen on validation, ModernBERT is significantly more precise than both the TF-IDF baseline and the question-type rule. Whether it ranks questions better overall is not resolved at this test size.
 Cost: routing with ModernBERT cuts the mean time per question by 42 percent and the estimated tokens by 63 percent compared with always using Mix, while keeping about 92 percent of the correct answers, under the assumption I stated.
 The scope is one benchmark with judged labels, so the router should be validated on real questions before it is deployed.
-My contributions are three: a statistically tested study of query-only routing between a vector mode and a graph mode, an open and reproducible pipeline and judge-labelled dataset, and the finding that the encoder's advantage lies in precision, and so in cost, rather than in a demonstrably better ranking.
+My contributions are the following: a statistically tested study of query-only routing between a vector mode and a graph mode, an open and reproducible pipeline and judge-labelled dataset, and the finding that the encoder's advantage lies in precision, and so in cost.
 [pause] So, in one line: route before you retrieve. The question alone often tells you whether the expensive retrieval is needed.
 
 ## 20. Thank you
 
-*24:30 to 24:40*  ·  11 words ≈ 8 s
+*24:00 to 24:05*  ·  11 words ≈ 8 s
 
 Thank you for listening. I am happy to take your questions.
 

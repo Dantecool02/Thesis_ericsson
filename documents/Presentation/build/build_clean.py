@@ -646,7 +646,6 @@ First, check the labels: validate a sample of the judge's decisions by hand, and
 Second, measure everything: log tokens for every question instead of a sample, time the router itself, and re-judge the answers each routing policy actually picks, so the answer-quality estimate no longer needs an assumption.
 Third, go further: other benchmarks and frameworks, a larger test set, and a second stage that runs only the cheap vector search, checks whether the retrieved text covers the question's entities, and escalates to Mix if not. That could recover answers the router misses.
 The first two come first, because they strengthen the numbers I already have.
-Before I conclude, one disclosure, as in Section 5.7 of the thesis: I used Codex and Claude Code as assistants, for wording and for drafting and debugging code, including analysis code and the scripts that build these slides. I reviewed and ran everything myself, every number comes from my own runs, and the research question, design and conclusions are mine. Let me close with the conclusions.
 """, "Future work")
 
 # ============================================================================== 19 conclusions
@@ -664,7 +663,7 @@ To conclude, the two parts of the research question.
 Prediction: yes, partly. From the question alone, both routers find the Mix-needing questions far above chance, and at the thresholds chosen on validation, ModernBERT is significantly more precise than both the TF-IDF baseline and the question-type rule. Whether it ranks questions better overall is not resolved at this test size.
 Cost: routing with ModernBERT cuts the mean time per question by {mb['time_saving']*100:.0f} percent and the estimated tokens by {mb['token_saving']*100:.0f} percent compared with always using Mix, while keeping about {mb['retention']*100:.0f} percent of the correct answers, under the assumption I stated.
 The scope is one benchmark with judged labels, so the router should be validated on real questions before it is deployed.
-My contributions are three: a statistically tested study of query-only routing between a vector mode and a graph mode, an open and reproducible pipeline and judge-labelled dataset, and the finding that the encoder's advantage lies in precision, and so in cost, rather than in a demonstrably better ranking.
+My contributions are the following: a statistically tested study of query-only routing between a vector mode and a graph mode, an open and reproducible pipeline and judge-labelled dataset, and the finding that the encoder's advantage lies in precision, and so in cost.
 [pause] So, in one line: route before you retrieve. The question alone often tells you whether the expensive retrieval is needed.
 """, "Conclusions")
 
